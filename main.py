@@ -9,6 +9,7 @@ import msg
 from telepot.namedtuple import InlineKeyboardMarkup, InlineKeyboardButton
 import db.mysqlconnector as msc
 import uuid
+import menu
 
 last_update_ids = {}
 # زمان حداکثر برای فعال بودن آخرین پیام دریافتی (به ثانیه)
@@ -16,21 +17,7 @@ MAX_IDLE_TIME = 600
 
 mydb = msc.mysqlconnector()
 idFromFile = None
-keyboard = InlineKeyboardMarkup(inline_keyboard=[
-    [InlineKeyboardButton(text='موسس هستم', callback_data='btnFounder')],
-    [InlineKeyboardButton(text='مسئول فنی هستم', callback_data='btnTechnicalResponsible')],
-    [InlineKeyboardButton(text='دانشجو هستم', callback_data='btnStudent')]
-])
-keyboardTypePharmacy = InlineKeyboardMarkup(inline_keyboard=[
-    [InlineKeyboardButton(text='شبانه روزی', callback_data='btNightDay')],
-    [InlineKeyboardButton(text='عادی', callback_data='btnNormal')]
-])
-keyboardTypeShift= InlineKeyboardMarkup(inline_keyboard=[
-    [InlineKeyboardButton(text='صبح', callback_data='btShiftMorning')],
-    [InlineKeyboardButton(text='عصر', callback_data='btShiftEvening')],
-    [InlineKeyboardButton(text='عصر و شب', callback_data='btShiftEveningNight')],
-    [InlineKeyboardButton(text='صبح و عصر', callback_data='btShiftMorningEvening')]
-])
+
 bot = telepot.Bot('6012649808:AAGXWUsZJBtvWsFlYuvqg18tgIwo7ildPUs')
 
 
@@ -68,7 +55,7 @@ def handle_new_messages(user_id, userName):
             message = update['message']
             if tempMember.register_progress == 0 and message['text'] == '/start':
                 bot.sendMessage(message['chat']['id'], str(msg.messageLib.helloClient.value).format(
-                    message['chat']['first_name']), reply_markup=keyboard)
+                    message['chat']['first_name']), reply_markup=menu.keyLib.kbWhoAreYou)
             elif tempMember.register_progress == 1:
                 mydb.member_update('name', message['text'], message['chat']['username'])
                 bot.sendMessage(message['chat']['id'],
@@ -95,7 +82,8 @@ def handle_new_messages(user_id, userName):
                 if tempMember.membership_type == 1:
                     mydb.founder_update('pharmacy_name', message['text'], message['chat']['username'])
                     bot.sendMessage(message['chat']['id'],
-                                    str(msg.messageLib.enterPharmacyType.value), reply_markup=keyboardTypePharmacy)
+                                    str(msg.messageLib.enterPharmacyType.value),
+                                    reply_markup=menu.keyLib.kbTypePharmacy)
                     mydb.member_update('registration_progress', 5, message['chat']['username'])
                     tempMember.register_progress = 5
                 elif tempMember.membership_type == 2:
@@ -120,7 +108,7 @@ def handle_new_messages(user_id, userName):
                         image_path = 'download/{0}{1}'.format(ufid, fileExtention)
                         bot.download_file(file_id, image_path)
                         mydb.technicalManager_update('membership_card_photo', '{0}{1}'.format(ufid, fileExtention),
-                                            message['chat']['username'])
+                                                     message['chat']['username'])
                         mydb.member_update('registration_progress', 10, message['chat']['username'])
                         bot.sendMessage(message['chat']['id'],
                                         str(msg.messageLib.endRegisteration.value))
@@ -194,7 +182,8 @@ def handle_new_messages(user_id, userName):
                         mydb.member_update('`personal_photo`', 9, message['chat']['username'])
                         tempMember.register_progress = 9
                         bot.sendMessage(message['chat']['id'],
-                                        str(msg.messageLib.enterPermitActivity.value))
+                                        str(msg.messageLib.enterPermitActivity.value),
+                                        reply_markup=menu.keyLib.kbTypeShift)
                     else:
                         bot.sendMessage(message['chat']['id'],
                                         str(msg.messageLib.errorSendFile.value))
