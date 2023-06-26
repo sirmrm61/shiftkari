@@ -21,6 +21,14 @@ idFromFile = None
 bot = telepot.Bot('6012649808:AAGXWUsZJBtvWsFlYuvqg18tgIwo7ildPUs')
 
 
+# admins = mydb.getAdmins()
+# image = 'download/2c3809f7-8e48-4cbf-acb7-bc7b0c9d1cd4.jpg'
+# pprint(admins)
+# for admin in admins:
+#     pprint(bot.sendPhoto(admin[0], open(image, 'rb')))
+# exit()
+
+
 def handle_new_messages(user_id, userName):
     global last_update_ids
     # دریافت آخرین شناسه update_id برای کاربر
@@ -55,7 +63,7 @@ def handle_new_messages(user_id, userName):
             message = update['message']
             if tempMember.register_progress == 0 and message['text'] == '/start':
                 bot.sendMessage(message['chat']['id'], str(msg.messageLib.helloClient.value).format(
-                    message['chat']['first_name']), reply_markup=menu.keyLib.kbWhoAreYou)
+                    message['chat']['first_name']), reply_markup=menu.keyLib.kbWhoAreYou())
             elif tempMember.register_progress == 1:
                 mydb.member_update('name', message['text'], message['chat']['username'])
                 bot.sendMessage(message['chat']['id'],
@@ -73,17 +81,24 @@ def handle_new_messages(user_id, userName):
                 if tempMember.membership_type == 1:
                     bot.sendMessage(message['chat']['id'],
                                     str(msg.messageLib.enterPharmacyName.value))
+                    mydb.member_update('registration_progress', 4, message['chat']['username'])
+                    tempMember.register_progress = 4
                 elif tempMember.membership_type == 2 or tempMember.membership_type == 3:
                     bot.sendMessage(message['chat']['id'],
                                     str(msg.messageLib.enterNationCode.value))
-                mydb.member_update('registration_progress', 4, message['chat']['username'])
-                tempMember.register_progress = 4
+                    mydb.member_update('registration_progress', 4, message['chat']['username'])
+                    tempMember.register_progress = 4
+                elif tempMember.membership_type == 4:
+                    bot.sendMessage(message['chat']['id'],
+                                    str(msg.messageLib.endRegisteration.value))
+                    mydb.member_update('registration_progress', 10, message['chat']['username'])
+                    tempMember.register_progress = 10
             elif tempMember.register_progress == 4:
                 if tempMember.membership_type == 1:
                     mydb.founder_update('pharmacy_name', message['text'], message['chat']['username'])
                     bot.sendMessage(message['chat']['id'],
                                     str(msg.messageLib.enterPharmacyType.value),
-                                    reply_markup=menu.keyLib.kbTypePharmacy)
+                                    reply_markup=menu.keyLib.kbTypePharmacy())
                     mydb.member_update('registration_progress', 5, message['chat']['username'])
                     tempMember.register_progress = 5
                 elif tempMember.membership_type == 2:
@@ -177,17 +192,21 @@ def handle_new_messages(user_id, userName):
                         ufid = uuid.uuid4()
                         image_path = 'download/{0}{1}'.format(ufid, fileExtention)
                         bot.download_file(file_id, image_path)
-                        mydb.student_update('overtime_license_photo', '{0}{1}'.format(ufid, fileExtention),
+                        mydb.student_update('personal_photo', '{0}{1}'.format(ufid, fileExtention),
                                             message['chat']['username'])
-                        mydb.member_update('`personal_photo`', 9, message['chat']['username'])
                         tempMember.register_progress = 9
                         bot.sendMessage(message['chat']['id'],
                                         str(msg.messageLib.enterPermitActivity.value),
-                                        reply_markup=menu.keyLib.kbTypeShift)
+                                        reply_markup=menu.keyLib.kbTypeShift())
                     else:
                         bot.sendMessage(message['chat']['id'],
                                         str(msg.messageLib.errorSendFile.value))
-
+            elif tempMember.register_progress == 10 and message['text'] == '/start':
+                if tempMember.membership_type == 4:
+                    bot.sendMessage(message['chat']['id'],
+                                    str(msg.messageLib.helloAdmin.value).format(
+                                        tempMember.name + ' ' + tempMember.last_name),
+                                    reply_markup=menu.keyLib.kbAdmin())
 
         elif 'callback_query' in update:
             message = update['callback_query']['message']
@@ -199,6 +218,7 @@ def handle_new_messages(user_id, userName):
                 tempMember.chatId = update['callback_query']['chat_instance']
                 tempMember.register_progress = 1
                 mydb.member_update('membership_type', 1, message['chat']['username'])
+                mydb.member_update('chat_id', user_id, message['chat']['username'])
                 pprint(mydb.member_update('registration_progress', 1, message['chat']['username']))
                 bot.sendMessage(message['chat']['id'],
                                 str(msg.messageLib.enterName.value))
@@ -209,6 +229,7 @@ def handle_new_messages(user_id, userName):
                 tempMember.chatId = update['callback_query']['chat_instance']
                 tempMember.register_progress = 1
                 mydb.member_update('membership_type', 2, message['chat']['username'])
+                mydb.member_update('chat_id', user_id, message['chat']['username'])
                 pprint(mydb.member_update('registration_progress', 1, message['chat']['username']))
                 bot.sendMessage(message['chat']['id'],
                                 str(msg.messageLib.enterName.value))
@@ -219,6 +240,18 @@ def handle_new_messages(user_id, userName):
                 tempMember.chatId = update['callback_query']['chat_instance']
                 tempMember.register_progress = 1
                 mydb.member_update('membership_type', 3, message['chat']['username'])
+                mydb.member_update('chat_id', user_id, message['chat']['username'])
+                pprint(mydb.member_update('registration_progress', 1, message['chat']['username']))
+                bot.sendMessage(message['chat']['id'],
+                                str(msg.messageLib.enterName.value))
+            if btn == 'btnMananger':
+                tempMember.userName = update['callback_query']['from']['username']
+                tempMember.lastMessage = update['update_id']
+                tempMember.membership_type = 4
+                tempMember.chatId = update['callback_query']['chat_instance']
+                tempMember.register_progress = 1
+                mydb.member_update('membership_type', 4, message['chat']['username'])
+                mydb.member_update('chat_id', user_id, message['chat']['username'])
                 pprint(mydb.member_update('registration_progress', 1, message['chat']['username']))
                 bot.sendMessage(message['chat']['id'],
                                 str(msg.messageLib.enterName.value))
@@ -238,24 +271,172 @@ def handle_new_messages(user_id, userName):
                 mydb.student_update('shift_access', 'صبح', message['chat']['username'])
                 bot.sendMessage(message['chat']['id'],
                                 str(msg.messageLib.endRegisteration.value))
+
+                admins = mydb.getAdmins()
+                for admin in admins:
+                    bot.sendMessage(admin[0],
+                                    str(msg.messageLib.messAdminApproveStudent.value))
+                    bot.sendMessage(admin[0],
+                                    str(msg.messageLib.labeName.value).format(tempMember.name, tempMember.last_name))
+                    bot.sendMessage(admin[0],
+                                    str(msg.messageLib.labelNationCode.value).format(
+                                        mydb.get_student_property('national_code'
+                                                                  , message[
+                                                                      'chat'][
+                                                                      'username'])))
+                    bot.sendMessage(admin[0],
+                                    str(msg.messageLib.labelPhoneNumber.value).format(tempMember.phone_number))
+                    bot.sendMessage(admin[0],
+                                    str(msg.messageLib.labelDateStartPermit.value).format(
+                                        mydb.get_student_property('start_date',
+                                                                  message['chat']['username'])))
+                    bot.sendMessage(admin[0],
+                                    str(msg.messageLib.labelDateEndPermit.value).format(
+                                        mydb.get_student_property('end_date', message['chat']['username'])))
+                    bot.sendMessage(admin[0],
+                                    str(msg.messageLib.labelShift.value).format(
+                                        mydb.get_student_property('shift_access', message['chat']['username'])))
+                    bot.sendMessage(admin[0],
+                                    str(msg.messageLib.labelSelfiPhoto.value))
+                    img = 'download/{}'.format(mydb.get_student_property('personal_photo', message['chat']['username']))
+                    print(
+                        'download/{}'.format(mydb.get_student_property('personal_photo', message['chat']['username'])))
+                    bot.sendPhoto(admin[0], open(img, 'rb'))
+                    bot.sendMessage(admin[0],
+                                    str(msg.messageLib.labelPermitPhoto.value))
+                    img = 'download/{}'.format(
+                        mydb.get_student_property('overtime_license_photo', message['chat']['username']))
+                    bot.sendPhoto(admin[0], open(img, 'rb'))
+                    bot.sendMessage(admin[0], msg.messageLib.messAdminApprove.value,
+                                    reply_markup=menu.keyLib.kbCreateKey(message['chat']['id']))
                 mydb.member_update('registration_progress', 10, message['chat']['username'])
                 tempMember.register_progress = 10
             if btn == 'btShiftEvening':
                 mydb.student_update('shift_access', 'عصر', message['chat']['username'])
                 bot.sendMessage(message['chat']['id'],
                                 str(msg.messageLib.endRegisteration.value))
+                admins = mydb.getAdmins()
+                for admin in admins:
+                    bot.sendMessage(admin[0],
+                                    str(msg.messageLib.messAdminApproveStudent.value))
+                    bot.sendMessage(admin[0],
+                                    str(msg.messageLib.labeName.value).format(tempMember.name, tempMember.last_name))
+                    bot.sendMessage(admin[0],
+                                    str(msg.messageLib.labelNationCode.value).format(
+                                        mydb.get_student_property('national_code'
+                                                                  , message[
+                                                                      'chat'][
+                                                                      'username'])))
+                    bot.sendMessage(admin[0],
+                                    str(msg.messageLib.labelPhoneNumber.value).format(tempMember.phone_number))
+                    bot.sendMessage(admin[0],
+                                    str(msg.messageLib.labelDateStartPermit.value).format(
+                                        mydb.get_student_property('start_date',
+                                                                  message['chat']['username'])))
+                    bot.sendMessage(admin[0],
+                                    str(msg.messageLib.labelDateEndPermit.value).format(
+                                        mydb.get_student_property('end_date', message['chat']['username'])))
+                    bot.sendMessage(admin[0],
+                                    str(msg.messageLib.labelShift.value).format(
+                                        mydb.get_student_property('shift_access', message['chat']['username'])))
+                    bot.sendMessage(admin[0],
+                                    str(msg.messageLib.labelSelfiPhoto.value))
+                    img = 'download/{}'.format(mydb.get_student_property('personal_photo', message['chat']['username']))
+                    print(
+                        'download/{}'.format(mydb.get_student_property('personal_photo', message['chat']['username'])))
+                    bot.sendPhoto(admin[0], open(img, 'rb'))
+                    bot.sendMessage(admin[0],
+                                    str(msg.messageLib.labelPermitPhoto.value))
+                    img = 'download/{}'.format(
+                        mydb.get_student_property('overtime_license_photo', message['chat']['username']))
+                    bot.sendPhoto(admin[0], open(img, 'rb'))
+                    bot.sendMessage(admin[0], msg.messageLib.messAdminApprove.value,
+                                    reply_markup=menu.keyLib.kbCreateKey(message['chat']['id']))
                 mydb.member_update('registration_progress', 10, message['chat']['username'])
                 tempMember.register_progress = 10
             if btn == 'btShiftEveningNight':
                 mydb.student_update('shift_access', 'عصر و شب', message['chat']['username'])
                 bot.sendMessage(message['chat']['id'],
                                 str(msg.messageLib.endRegisteration.value))
+                admins = mydb.getAdmins()
+                for admin in admins:
+                    bot.sendMessage(admin[0],
+                                    str(msg.messageLib.messAdminApproveStudent.value))
+                    bot.sendMessage(admin[0],
+                                    str(msg.messageLib.labeName.value).format(tempMember.name, tempMember.last_name))
+                    bot.sendMessage(admin[0],
+                                    str(msg.messageLib.labelNationCode.value).format(
+                                        mydb.get_student_property('national_code'
+                                                                  , message[
+                                                                      'chat'][
+                                                                      'username'])))
+                    bot.sendMessage(admin[0],
+                                    str(msg.messageLib.labelPhoneNumber.value).format(tempMember.phone_number))
+                    bot.sendMessage(admin[0],
+                                    str(msg.messageLib.labelDateStartPermit.value).format(
+                                        mydb.get_student_property('start_date',
+                                                                  message['chat']['username'])))
+                    bot.sendMessage(admin[0],
+                                    str(msg.messageLib.labelDateEndPermit.value).format(
+                                        mydb.get_student_property('end_date', message['chat']['username'])))
+                    bot.sendMessage(admin[0],
+                                    str(msg.messageLib.labelShift.value).format(
+                                        mydb.get_student_property('shift_access', message['chat']['username'])))
+                    bot.sendMessage(admin[0],
+                                    str(msg.messageLib.labelSelfiPhoto.value))
+                    img = 'download/{}'.format(mydb.get_student_property('personal_photo', message['chat']['username']))
+                    print(
+                        'download/{}'.format(mydb.get_student_property('personal_photo', message['chat']['username'])))
+                    bot.sendPhoto(admin[0], open(img, 'rb'))
+                    bot.sendMessage(admin[0],
+                                    str(msg.messageLib.labelPermitPhoto.value))
+                    img = 'download/{}'.format(
+                        mydb.get_student_property('overtime_license_photo', message['chat']['username']))
+                    bot.sendPhoto(admin[0], open(img, 'rb'))
+                    bot.sendMessage(admin[0], msg.messageLib.messAdminApprove.value,
+                                    reply_markup=menu.keyLib.kbCreateKey(message['chat']['id']))
                 mydb.member_update('registration_progress', 10, message['chat']['username'])
                 tempMember.register_progress = 10
             if btn == 'btShiftMorningEvening':
                 mydb.student_update('shift_access', 'صبح و عصر', message['chat']['username'])
                 bot.sendMessage(message['chat']['id'],
                                 str(msg.messageLib.endRegisteration.value))
+                admins = mydb.getAdmins()
+                for admin in admins:
+                    bot.sendMessage(admin[0],
+                                    str(msg.messageLib.messAdminApproveStudent.value))
+                    bot.sendMessage(admin[0],
+                                    str(msg.messageLib.labeName.value).format(tempMember.name, tempMember.last_name))
+                    bot.sendMessage(admin[0],
+                                    str(msg.messageLib.labelNationCode.value).format(
+                                        mydb.get_student_property('national_code'
+                                                                  , message[
+                                                                      'chat'][
+                                                                      'username'])))
+                    bot.sendMessage(admin[0],
+                                    str(msg.messageLib.labelPhoneNumber.value).format(tempMember.phone_number))
+                    bot.sendMessage(admin[0],
+                                    str(msg.messageLib.labelDateStartPermit.value).format(
+                                        mydb.get_student_property('start_date',
+                                                                  message['chat']['username'])))
+                    bot.sendMessage(admin[0],
+                                    str(msg.messageLib.labelDateEndPermit.value).format(
+                                        mydb.get_student_property('end_date', message['chat']['username'])))
+                    bot.sendMessage(admin[0],
+                                    str(msg.messageLib.labelShift.value).format(
+                                        mydb.get_student_property('shift_access', message['chat']['username'])))
+                    bot.sendMessage(admin[0],
+                                    str(msg.messageLib.labelSelfiPhoto.value))
+                    img = 'download/{}'.format(mydb.get_student_property('personal_photo', message['chat']['username']))
+                    print(
+                        'download/{}'.format(mydb.get_student_property('personal_photo', message['chat']['username'])))
+                    bot.sendPhoto(admin[0], open(img, 'rb'))
+                    bot.sendMessage(admin[0],
+                                    str(msg.messageLib.labelPermitPhoto.value))
+                    img = 'download/{}'.format(
+                        mydb.get_student_property('overtime_license_photo', message['chat']['username']))
+                    bot.sendPhoto(admin[0], open(img, 'rb'))
+                    bot.sendMessage(admin[0], msg.messageLib.messAdminApprove.value,reply_markup= menu.keyLib.kbCreateKey(message['chat']['id']))
                 mydb.member_update('registration_progress', 10, message['chat']['username'])
                 tempMember.register_progress = 10
             # پردازش پیام
