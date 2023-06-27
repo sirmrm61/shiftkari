@@ -1,12 +1,9 @@
 import telepot
-import threading
 import time
-import json
 from model.membership import Membership
 import os
 from pprint import pprint
 import msg
-from telepot.namedtuple import InlineKeyboardMarkup, InlineKeyboardButton
 import db.mysqlconnector as msc
 import uuid
 import menu
@@ -52,8 +49,6 @@ def handle_new_messages(user_id, userName):
     if elapsed_time > MAX_IDLE_TIME and last_update_time > 0:
         del last_update_ids[user_id]
         return
-    # pprint('tempmember = {}'.format(tempMember.userName))
-    # print('get last_message_id = {} where user is {}'.format(last_update_id, user_id))
     # دریافت پیام های جدید
     updates = bot.getUpdates(offset=last_update_id + 1, timeout=10)
     message = None
@@ -124,9 +119,30 @@ def handle_new_messages(user_id, userName):
                         bot.download_file(file_id, image_path)
                         mydb.technicalManager_update('membership_card_photo', '{0}{1}'.format(ufid, fileExtention),
                                                      message['chat']['username'])
-                        mydb.member_update('registration_progress', 10, message['chat']['username'])
                         bot.sendMessage(message['chat']['id'],
                                         str(msg.messageLib.endRegisteration.value))
+                        admins = mydb.getAdmins()
+                        for admin in admins:
+                            bot.sendMessage(admin[0],
+                                            str(msg.messageLib.messAdminApproveFunder.value))
+                            bot.sendMessage(admin[0],
+                                            str(msg.messageLib.labeName.value).format(tempMember.name,
+                                                                                      tempMember.last_name))
+                            bot.sendMessage(admin[0],
+                                            str(msg.messageLib.labelPhoneNumber.value).format(tempMember.phone_number))
+                            bot.sendMessage(admin[0],
+                                            str(msg.messageLib.labelNationCode.value).format(
+                                                mydb.get_technical_property('national_code',
+                                                                            message['chat']['username'])))
+                            bot.sendMessage(admin[0],
+                                            str(msg.messageLib.labelMembershipCardPhoto.value))
+                            img = 'download/{}'.format(
+                                mydb.get_technical_property('membership_card_photo', message['chat']['username']))
+                            bot.sendPhoto(admin[0], open(img, 'rb'))
+                            bot.sendMessage(admin[0], msg.messageLib.messAdminApprove.value,
+                                            reply_markup=menu.keyLib.kbCreateKey(message['chat']['id']))
+                        mydb.member_update('registration_progress', 10, message['chat']['username'])
+                        tempMember.register_progress = 10
                     else:
                         bot.sendMessage(message['chat']['id'],
                                         str(msg.messageLib.errorSendFile.value))
@@ -160,9 +176,37 @@ def handle_new_messages(user_id, userName):
                         bot.download_file(file_id, image_path)
                         mydb.founder_update('license_photo', '{0}{1}'.format(ufid, fileExtention),
                                             message['chat']['username'])
-                        mydb.member_update('registration_progress', 10, message['chat']['username'])
                         bot.sendMessage(message['chat']['id'],
                                         str(msg.messageLib.endRegisteration.value))
+                        admins = mydb.getAdmins()
+                        for admin in admins:
+                            bot.sendMessage(admin[0],
+                                            str(msg.messageLib.messAdminApproveFunder.value))
+                            bot.sendMessage(admin[0],
+                                            str(msg.messageLib.labeName.value).format(tempMember.name,
+                                                                                      tempMember.last_name))
+                            bot.sendMessage(admin[0],
+                                            str(msg.messageLib.labelPhoneNumber.value).format(tempMember.phone_number))
+                            bot.sendMessage(admin[0],
+                                            str(msg.messageLib.labelPharmacyName.value).format(
+                                                mydb.get_funder_property('pharmacy_name',
+                                                                         message['chat']['username'])))
+                            bot.sendMessage(admin[0],
+                                            str(msg.messageLib.labelPharmacyType.value).format(
+                                                mydb.get_funder_property('pharmacy_type', message['chat']['username'])))
+                            bot.sendMessage(admin[0],
+                                            str(msg.messageLib.labelPharmacyAddress.value).format(
+                                                mydb.get_funder_property('pharmacy_address',
+                                                                         message['chat']['username'])))
+                            bot.sendMessage(admin[0],
+                                            str(msg.messageLib.labelPermitPhoto.value))
+                            img = 'download/{}'.format(
+                                mydb.get_funder_property('license_photo', message['chat']['username']))
+                            bot.sendPhoto(admin[0], open(img, 'rb'))
+                            bot.sendMessage(admin[0], msg.messageLib.messAdminApprove.value,
+                                            reply_markup=menu.keyLib.kbCreateKey(message['chat']['id']))
+                        mydb.member_update('registration_progress', 10, message['chat']['username'])
+                        tempMember.register_progress = 10
                     else:
                         bot.sendMessage(message['chat']['id'],
                                         str(msg.messageLib.errorSendFile.value))
@@ -280,10 +324,7 @@ def handle_new_messages(user_id, userName):
                                     str(msg.messageLib.labeName.value).format(tempMember.name, tempMember.last_name))
                     bot.sendMessage(admin[0],
                                     str(msg.messageLib.labelNationCode.value).format(
-                                        mydb.get_student_property('national_code'
-                                                                  , message[
-                                                                      'chat'][
-                                                                      'username'])))
+                                        mydb.get_student_property('national_code', message['chat']['username'])))
                     bot.sendMessage(admin[0],
                                     str(msg.messageLib.labelPhoneNumber.value).format(tempMember.phone_number))
                     bot.sendMessage(admin[0],
@@ -323,16 +364,12 @@ def handle_new_messages(user_id, userName):
                                     str(msg.messageLib.labeName.value).format(tempMember.name, tempMember.last_name))
                     bot.sendMessage(admin[0],
                                     str(msg.messageLib.labelNationCode.value).format(
-                                        mydb.get_student_property('national_code'
-                                                                  , message[
-                                                                      'chat'][
-                                                                      'username'])))
+                                        mydb.get_student_property('national_code', message['chat']['username'])))
                     bot.sendMessage(admin[0],
                                     str(msg.messageLib.labelPhoneNumber.value).format(tempMember.phone_number))
                     bot.sendMessage(admin[0],
                                     str(msg.messageLib.labelDateStartPermit.value).format(
-                                        mydb.get_student_property('start_date',
-                                                                  message['chat']['username'])))
+                                        mydb.get_student_property('start_date', message['chat']['username'])))
                     bot.sendMessage(admin[0],
                                     str(msg.messageLib.labelDateEndPermit.value).format(
                                         mydb.get_student_property('end_date', message['chat']['username'])))
@@ -366,10 +403,7 @@ def handle_new_messages(user_id, userName):
                                     str(msg.messageLib.labeName.value).format(tempMember.name, tempMember.last_name))
                     bot.sendMessage(admin[0],
                                     str(msg.messageLib.labelNationCode.value).format(
-                                        mydb.get_student_property('national_code'
-                                                                  , message[
-                                                                      'chat'][
-                                                                      'username'])))
+                                        mydb.get_student_property('national_code', message['chat']['username'])))
                     bot.sendMessage(admin[0],
                                     str(msg.messageLib.labelPhoneNumber.value).format(tempMember.phone_number))
                     bot.sendMessage(admin[0],
@@ -409,10 +443,7 @@ def handle_new_messages(user_id, userName):
                                     str(msg.messageLib.labeName.value).format(tempMember.name, tempMember.last_name))
                     bot.sendMessage(admin[0],
                                     str(msg.messageLib.labelNationCode.value).format(
-                                        mydb.get_student_property('national_code'
-                                                                  , message[
-                                                                      'chat'][
-                                                                      'username'])))
+                                        mydb.get_student_property('national_code', message['chat']['username'])))
                     bot.sendMessage(admin[0],
                                     str(msg.messageLib.labelPhoneNumber.value).format(tempMember.phone_number))
                     bot.sendMessage(admin[0],
@@ -436,7 +467,8 @@ def handle_new_messages(user_id, userName):
                     img = 'download/{}'.format(
                         mydb.get_student_property('overtime_license_photo', message['chat']['username']))
                     bot.sendPhoto(admin[0], open(img, 'rb'))
-                    bot.sendMessage(admin[0], msg.messageLib.messAdminApprove.value,reply_markup= menu.keyLib.kbCreateKey(message['chat']['id']))
+                    bot.sendMessage(admin[0], msg.messageLib.messAdminApprove.value,
+                                    reply_markup=menu.keyLib.kbCreateKey(message['chat']['id']))
                 mydb.member_update('registration_progress', 10, message['chat']['username'])
                 tempMember.register_progress = 10
             # پردازش پیام
@@ -450,6 +482,7 @@ def handle_new_messages(user_id, userName):
 
 # پردازش تمامی پیام های دریافتی
 def handle_updates(updates):
+    message = None
     for update in updates:
         if 'message' in update:
             message = update['message']
