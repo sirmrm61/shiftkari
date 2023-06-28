@@ -124,7 +124,7 @@ def handle_new_messages(user_id, userName):
                         admins = mydb.getAdmins()
                         for admin in admins:
                             bot.sendMessage(admin[0],
-                                            str(msg.messageLib.messAdminApproveFunder.value))
+                                            str(msg.messageLib.messAdminApproveTechnical.value))
                             bot.sendMessage(admin[0],
                                             str(msg.messageLib.labeName.value).format(tempMember.name,
                                                                                       tempMember.last_name))
