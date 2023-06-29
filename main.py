@@ -527,7 +527,11 @@ def handle_updates(updates):
         elif 'callback_query' in update:
             message = update['callback_query']['message']
         elif 'my_chat_member' in update:
-            bot.deleteMessage(update['my_chat_member']['chat']['id'], update['update_id'])
+            chatid = update['my_chat_member']['chat']['id']
+            msgid = update['update_id']
+            print(chatid)
+            print(msgid)
+            bot.deleteMessage()
             return
         user_id = message['chat']['id']
         user_name = None
