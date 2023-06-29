@@ -42,8 +42,13 @@ class keyLib:
              InlineKeyboardButton(text='دانشجویان', callback_data='btShiftEvening')]
         ])
 
-    def kbCreateKey(self=None, chat_id=None):
+    def kbCreateApproveKey(self=None, chat_id=None):
         return InlineKeyboardMarkup(inline_keyboard=[
             [InlineKeyboardButton(text='تائید', callback_data='btn_verify_{}'.format(str(chat_id))),
              InlineKeyboardButton(text='عدم تائید', callback_data='btn_deny_{}'.format(str(chat_id)))]
+        ])
+    def kbCreateDelKey(self=None, chat_id=None):
+        return InlineKeyboardMarkup(inline_keyboard=[
+            [InlineKeyboardButton(text='تائید', callback_data='btn_Del_{}'.format(str(chat_id))),
+             InlineKeyboardButton(text='عدم تائید', callback_data='btn_No_{}'.format(str(chat_id)))]
         ])

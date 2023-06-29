@@ -146,16 +146,64 @@ class mysqlconnector:
         resualt= mycursor.execute(sqlQuery)
         mycursor.reset()
         return  resualt
-
-    def set_member_last_update_id(self,uname,last_uid):
-        sqlQuery = 'UPDATE `botshiftkari`.`membership` SET last_message_sent = {1}  where username = \'{0}\''.format(uname,last_uid)
+    def member_update_chatid(self,fieldName,fieldValue,chatid):
+        sqlQuery = 'UPDATE `botshiftkari`.`membership` SET `{0}` = \'{1}\'  where chat_id = \'{2}\''.format(fieldName,fieldValue,chatid)
         mydb = self.connector()
         mydb.autocommit=True
         mycursor = mydb.cursor()
         resualt= mycursor.execute(sqlQuery)
         mycursor.reset()
         return  resualt
-
+    def set_member_last_update_id(self,chatid,last_uid):
+        sqlQuery = 'UPDATE `botshiftkari`.`membership` SET last_message_sent = {1}  where chat_id = \'{0}\''.format(chatid,last_uid)
+        mydb = self.connector()
+        mydb.autocommit=True
+        mycursor = mydb.cursor()
+        resualt= mycursor.execute(sqlQuery)
+        mycursor.reset()
+        return  resualt
+    def del_member_chatid(self,chatid):
+        sqlQuery = 'select id from `botshiftkari`.`membership` where chat_id=\'{0}\''.format(chatid)
+        mydb = self.connector()
+        mydb.autocommit = True
+        mycursor = mydb.cursor()
+        mycursor.execute(sqlQuery)
+        resualt = mycursor.fetchone();
+        print(chatid)
+        print(resualt[0])
+        if resualt is None:
+            return None
+        else:
+            sqlQuery = '''DELETE FROM `botshiftkari`.`membership` WHERE id={0};
+                          DELETE FROM `botshiftkari`.`founder`WHERE idMember={0};
+                          DELETE FROM `botshiftkari`.`student` WHERE idMember ={0};
+                          DELETE FROM `botshiftkari`.`technicalmanager` WHERE idMember={0};'''.format(resualt[0])
+            mycursor.execute(sqlQuery)
+            return resualt[0]
+    def get_member_property_Adminchatid(self,fieldName,chatid):
+        sqlQuery = 'select `{1}` from `botshiftkari`.`membership` where  adminChatId = \'{0}\''.format(chatid,fieldName)
+        print(sqlQuery)
+        mydb = self.connector()
+        mydb.autocommit = True
+        mycursor = mydb.cursor()
+        mycursor.execute(sqlQuery)
+        resualt = mycursor.fetchone();
+        if resualt is None:
+            return None
+        else:
+            return resualt[0]
+    def get_member_property_chatid(self,fieldName,chatid):
+        sqlQuery = 'select `{1}` from `botshiftkari`.`membership` where  chat_id = \'{0}\''.format(chatid,fieldName)
+        print(sqlQuery)
+        mydb = self.connector()
+        mydb.autocommit = True
+        mycursor = mydb.cursor()
+        mycursor.execute(sqlQuery)
+        resualt = mycursor.fetchone();
+        if resualt is None:
+            return None
+        else:
+            return resualt[0]
     def create_member(self,member:Membership):
         sqlQuery = 'select * from `botshiftkari`.`membership` where username = \'{}\''.format(member.userName)
         mydb = self.connector()
@@ -169,12 +217,12 @@ class mysqlconnector:
             registration_progress,username,chat_id,last_message_sent) VALUEs (%s,%s,%s,%s,%s,%s,%s,%s,%s)'''
             val = (
             member.name, member.last_name, member.phone_number, member.membership_type, member.membership_fee_paid,
-            member.register_progress, member.userName, member.chatId, member.lastMessage)
+            member.register_progress, member.userName, member.chatid, member.lastMessage)
             resualt = mycursor.execute(sql, val)
             mycursor.reset()
         return member;
-    def get_funder_property(self,fieldName,uname):
-        sqlQuery = 'select id from `botshiftkari`.`membership` where  username = \'{0}\''.format(uname)
+    def get_funder_property(self,fieldName,chatid):
+        sqlQuery = 'select id from `botshiftkari`.`membership` where  chat_id = \'{0}\''.format(chatid)
         mydb = self.connector()
         mydb.autocommit = True
         mycursor = mydb.cursor()
@@ -188,8 +236,8 @@ class mysqlconnector:
             return None
         else:
             return resualt[0]
-    def founder_update(self,fieldName,fieldValue,uname):
-        sqlQuery = 'select id from `botshiftkari`.`membership` where  username = \'{0}\''.format(uname)
+    def founder_update(self,fieldName,fieldValue,chatid):
+        sqlQuery = 'select id from `botshiftkari`.`membership` where  chat_id = \'{0}\''.format(chatid)
         mydb = self.connector()
         mydb.autocommit=True
         mycursor = mydb.cursor()
@@ -207,8 +255,8 @@ class mysqlconnector:
         mycursor.execute(sqlQuery)
         mycursor.reset()
         return  resualt
-    def get_student_property(self,fieldName,uname):
-        sqlQuery = 'select id from `botshiftkari`.`membership` where  username = \'{0}\''.format(uname)
+    def get_student_property(self,fieldName,chatid):
+        sqlQuery = 'select id from `botshiftkari`.`membership` where  chatid = \'{0}\''.format(chat_id)
         mydb = self.connector()
         mydb.autocommit = True
         mycursor = mydb.cursor()
@@ -222,8 +270,8 @@ class mysqlconnector:
             return None
         else:
             return resualt[0]
-    def student_update(self,fieldName,fieldValue,uname):
-        sqlQuery = 'select id from `botshiftkari`.`membership` where  username = \'{0}\''.format(uname)
+    def student_update(self,fieldName,fieldValue,chatid):
+        sqlQuery = 'select id from `botshiftkari`.`membership` where  chat_id = \'{0}\''.format(chatid)
         mydb = self.connector()
         mydb.autocommit=True
         mycursor = mydb.cursor()
@@ -241,8 +289,8 @@ class mysqlconnector:
         mycursor.execute(sqlQuery)
         mycursor.reset()
         return  resualt
-    def get_technical_property(self,fieldName,uname):
-        sqlQuery = 'select id from `botshiftkari`.`membership` where  username = \'{0}\''.format(uname)
+    def get_technical_property(self,fieldName,chatid):
+        sqlQuery = 'select id from `botshiftkari`.`membership` where  chat_id = \'{0}\''.format(chatid)
         mydb = self.connector()
         mydb.autocommit = True
         mycursor = mydb.cursor()
@@ -256,8 +304,8 @@ class mysqlconnector:
             return None
         else:
             return resualt[0]
-    def technicalManager_update(self,fieldName,fieldValue,uname):
-        sqlQuery = 'select id from `botshiftkari`.`membership` where  username = \'{0}\''.format(uname)
+    def technicalManager_update(self,fieldName,fieldValue,chatid):
+        sqlQuery = 'select id from `botshiftkari`.`membership` where  chat_id = \'{0}\''.format(chatid)
         mydb = self.connector()
         mydb.autocommit=True
         mycursor = mydb.cursor()

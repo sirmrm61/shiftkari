@@ -1,5 +1,5 @@
 class Membership:
-    def __init__(self, name = None, last_name = None, phone_number = None, userName = None):
+    def __init__(self, name = None, last_name = None, phone_number = None, userName = None,chatid=None):
         self._name = None
         self._last_name = None
         self._phone_number = phone_number
@@ -10,8 +10,15 @@ class Membership:
         self._chatId = None
         self._lastMessage = 0
         self._lastActivity = None
+        self._chatid =None
 
+    @property
+    def chatid(self):
+        return self._chatid
 
+    @chatid.setter
+    def chatid(self, new_chatid):
+        self._chatid = new_chatid
     @property
     def name(self):
         return self._name
