@@ -34,11 +34,12 @@ def handle_new_messages(user_id, userName):
     tempMember = None if tempV is None else tempV[0]
     last_update_time = 0 if tempV is None else tempV[1]
     if tempMember is None:
-        tempMember = mydb.load_member(userName)
+        tempMember = mydb.load_member(user_id)
         if tempMember is not None:
             last_update_id = tempMember.lastMessage
         else:
-            tempMember = mydb.create_member(Membership(userName=userName,chatid=user_id))
+            print(user_id)
+            tempMember = mydb.create_member(Membership(userName=userName, chatid=user_id))
             last_update_id = 0
     else:
         last_update_id = int(tempMember.lastMessage)
@@ -269,13 +270,11 @@ def handle_new_messages(user_id, userName):
                     chatIdUser = mydb.get_member_property_Adminchatid(fieldName='chat_id', chatid=message['chat']['id'])
                     print(chatIdUser)
                     if chatIdUser is not None:
-                        mydb.member_update_chatid_chatid('desc', message['text'], chatIdUser)
-                        mydb.member_update_chatid_chatid('adminChatId', 'Deny', chatIdUser)
+                        mydb.member_update_chatid('desc', message['text'], chatIdUser)
+                        mydb.member_update_chatid('adminChatId', 'Deny', chatIdUser)
                         mydb.del_member_chatid(chatid=chatIdUser)
                         bot.sendMessage(chatIdUser, msg.messageLib.sorryDenyAdmin.value)
                         bot.sendMessage(chatIdUser, message['text'])
-
-
         elif 'callback_query' in update:
             message = update['callback_query']['message']
             btn = update['callback_query']['data']
@@ -283,13 +282,13 @@ def handle_new_messages(user_id, userName):
             pprint(btn)
             if len(spBtn) > 1:
                 if spBtn[1] == 'verify':
-                    mydb.member_update_chatid_chatid('verifyAdmin', 1, spBtn[2])
+                    mydb.member_update_chatid('verifyAdmin', 1, spBtn[2])
                     bot.sendMessage(spBtn[2], msg.messageLib.congratulationsApproveAdmin.value)
                 elif spBtn[1] == 'deny':
                     bot.sendMessage(message['chat']['id'],
                                     str(msg.messageLib.descDenyAdmin.value))
-                    mydb.member_update_chatid_chatid('registration_progress', 15, spBtn[2])
-                    mydb.member_update_chatid_chatid('adminChatId', message['chat']['id'], spBtn[2])
+                    mydb.member_update_chatid('registration_progress', 15, spBtn[2])
+                    mydb.member_update_chatid('adminChatId', message['chat']['id'], spBtn[2])
 
             if btn == 'btnFounder':
                 tempMember.userName = update['callback_query']['from']['username']
@@ -508,24 +507,27 @@ def handle_new_messages(user_id, userName):
                 mydb.member_update_chatid('registration_progress', 10, message['chat']['id'])
                 tempMember.register_progress = 10
             # پردازش پیام
-
         # بروزرسانی شناسه آخرین پیام دریافتی و زمان آن
         # print('last_message_id = {} where user is {}'.format(update['update_id'], user_id))
         print('test = {}'.format(tempMember.register_progress))
         last_update_ids[user_id] = (tempMember, update['update_id'])
         mydb.set_member_last_update_id(message['chat']['id'], update['update_id'])
-        # mydb.member_update_chatid_chatid(fieldName='last_message_sent', fieldValue=update['update_id'],
+        # mydb.member_update_chatid(fieldName='last_message_sent', fieldValue=update['update_id'],
         #                           chatid=message['chat']['id'])
 
 
 # پردازش تمامی پیام های دریافتی
 def handle_updates(updates):
     message = None
+    user_id = None
     for update in updates:
+        print(update)
         if 'message' in update:
             message = update['message']
         elif 'callback_query' in update:
             message = update['callback_query']['message']
+        elif 'my_chat_member' in update:
+            return
         user_id = message['chat']['id']
         user_name = None
         if 'username' in message['chat']:

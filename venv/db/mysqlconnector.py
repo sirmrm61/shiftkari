@@ -50,7 +50,7 @@ class mysqlconnector:
     def connector(self):
         return mysql.connector.connect(host=self._ipDb,user=self._userDb,password=self._passDb,port=self._portDb,database=helper.dbName)
     def insert_Founder(self, member: Founder):
-            sqlQuery= 'select * from `botshiftkari`.`membership` where username = \'{}\''.format(member.userName)
+            sqlQuery= 'select * from `botshiftkari`.`membership` where chat_id = \'{}\''.format(member.chatId)
             mydb = self.connector()
             mydb.autocommit = True;
             mycursor =mydb.cursor()
@@ -90,9 +90,9 @@ class mysqlconnector:
                         updateExp = ', `registration_progress` = \'{}\''.format(member.register_progress)
                 if member.chatId != None:
                     if updateExp != None:
-                        updateExp = '`chat_id` = \'{}\''.format(member.chatId)
+                        updateExp = '`username` = \'{}\''.format(member.userName)
                     else:
-                        updateExp = ', `chat_id` = \'{}\''.format(member.chatId)
+                        updateExp = ', `username` = \'{}\''.format(member.userName)
                 if member.lastMessage != None:
                     if updateExp != None:
                         updateExp = '`last_message_sent` = \'{}\''.format(member.lastMessage)
@@ -100,7 +100,7 @@ class mysqlconnector:
                         updateExp = ', `last_message_sent` = \'{}\''.format(member.lastMessage)
                 print(updateExp)
                 if len(updateExp) > 0 :
-                    updateExp += ' WHERE `username` = \'{0}\';'.format(member.userName)
+                    updateExp += ' WHERE `chat_id` = \'{0}\';'.format(member.chatId)
                     sql += updateExp
                     pprint(sql)
                     resualt = mycursor.execute(sql)
@@ -117,8 +117,8 @@ class mysqlconnector:
         mycursor.reset()
         return  resualt
 
-    def load_member(self,uname):
-        sqlQuery = 'select * from `botshiftkari`.`membership` where username = \'{}\''.format(uname)
+    def load_member(self,chatid):
+        sqlQuery = 'select * from `botshiftkari`.`membership` where chat_id = \'{}\''.format(chatid)
         mydb = self.connector()
         mycursor = mydb.cursor()
         mycursor.execute(sqlQuery)
@@ -205,7 +205,7 @@ class mysqlconnector:
         else:
             return resualt[0]
     def create_member(self,member:Membership):
-        sqlQuery = 'select * from `botshiftkari`.`membership` where username = \'{}\''.format(member.userName)
+        sqlQuery = 'select * from `botshiftkari`.`membership` where chat_id = \'{}\''.format(member.chatId)
         mydb = self.connector()
         mydb.autocommit = True;
         mycursor = mydb.cursor()
@@ -217,7 +217,7 @@ class mysqlconnector:
             registration_progress,username,chat_id,last_message_sent) VALUEs (%s,%s,%s,%s,%s,%s,%s,%s,%s)'''
             val = (
             member.name, member.last_name, member.phone_number, member.membership_type, member.membership_fee_paid,
-            member.register_progress, member.userName, member.chatid, member.lastMessage)
+            member.register_progress, member.userName, member.chatId, member.lastMessage)
             resualt = mycursor.execute(sql, val)
             mycursor.reset()
         return member;

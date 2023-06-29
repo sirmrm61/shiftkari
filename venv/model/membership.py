@@ -7,18 +7,12 @@ class Membership:
         self._membership_fee_paid = None
         self._register_progress = 0
         self._userName = userName
-        self._chatId = None
+        self._chatId = chatid
         self._lastMessage = 0
         self._lastActivity = None
         self._chatid =None
 
-    @property
-    def chatid(self):
-        return self._chatid
 
-    @chatid.setter
-    def chatid(self, new_chatid):
-        self._chatid = new_chatid
     @property
     def name(self):
         return self._name
