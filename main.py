@@ -57,9 +57,36 @@ def handle_new_messages(user_id, userName):
         print(update)
         if 'message' in update:
             message = update['message']
-            if tempMember.register_progress == 0 and message['text'] == '/start':
+            if message['text'] == '/myinfo':
+                titlePos = None
+                if tempMember.membership_type == 1:
+                    titlePos = 'موسس'
+                elif tempMember.membership_type == 2:
+                    titlePos = 'مسئول فنی'
+                elif tempMember.membership_type == 3:
+                    titlePos = 'دانشجو'
+                elif tempMember.membership_type == 4:
+                    titlePos = 'مدیر'
+                else:
+                    titlePos = 'نا مشخص'
+                bot.sendMessage(message['chat']['id'],
+                                str(msg.messageLib.duplicateregistration.value).format(titlePos))
+            elif tempMember.register_progress == 0 and message['text'] == '/start':
                 bot.sendMessage(message['chat']['id'], str(msg.messageLib.helloClient.value).format(
                     message['chat']['first_name']), reply_markup=menu.keyLib.kbWhoAreYou())
+            elif tempMember.register_progress != 0 and message['text'] == '/start':
+                titlePos = None
+                if tempMember.membership_type == 1:
+                    titlePos = 'موسس'
+                elif tempMember.membership_type == 2:
+                    titlePos = 'مسئول فنی'
+                elif tempMember.membership_type == 3:
+                    titlePos = 'دانشجو'
+                elif tempMember.membership_type == 4:
+                    titlePos = 'مدیر'
+                bot.sendMessage(message['chat']['id'],
+                                str(msg.messageLib.duplicateregistration.value).format(titlePos),
+                                reply_markup=menu.keyLib.kbCreateDelKey(message['chat']['id']))
             elif tempMember.register_progress == 1:
                 mydb.member_update_chatid('name', message['text'], message['chat']['id'])
                 bot.sendMessage(message['chat']['id'],
@@ -507,9 +534,10 @@ def handle_new_messages(user_id, userName):
                 mydb.member_update_chatid('registration_progress', 10, message['chat']['id'])
                 tempMember.register_progress = 10
             # پردازش پیام
+        elif 'my_chat_member' in update:
+            continue
         # بروزرسانی شناسه آخرین پیام دریافتی و زمان آن
         # print('last_message_id = {} where user is {}'.format(update['update_id'], user_id))
-        print('test = {}'.format(tempMember.register_progress))
         last_update_ids[user_id] = (tempMember, update['update_id'])
         mydb.set_member_last_update_id(message['chat']['id'], update['update_id'])
         # mydb.member_update_chatid(fieldName='last_message_sent', fieldValue=update['update_id'],
@@ -521,18 +549,12 @@ def handle_updates(updates):
     message = None
     user_id = None
     for update in updates:
-        print(update)
         if 'message' in update:
             message = update['message']
         elif 'callback_query' in update:
             message = update['callback_query']['message']
         elif 'my_chat_member' in update:
-            chatid = update['my_chat_member']['chat']['id']
-            msgid = update['update_id']
-            print(chatid)
-            print(msgid)
-            bot.deleteMessage()
-            return
+            continue
         user_id = message['chat']['id']
         user_name = None
         if 'username' in message['chat']:
