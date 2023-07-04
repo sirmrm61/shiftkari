@@ -138,8 +138,8 @@ class mysqlconnector:
         else:
             tempMember = None
         return  tempMember
-    def member_update(self,fieldName,fieldValue,uname):
-        sqlQuery = 'UPDATE `botshiftkari`.`membership` SET `{0}` = \'{1}\'  where username = \'{2}\''.format(fieldName,fieldValue,uname)
+    def member_update(self,fieldName,fieldValue,chatid):
+        sqlQuery = 'UPDATE `botshiftkari`.`membership` SET `{0}` = \'{1}\'  where chat_id = \'{2}\''.format(fieldName,fieldValue,chatid)
         mydb = self.connector()
         mydb.autocommit=True
         mycursor = mydb.cursor()
@@ -323,3 +323,114 @@ class mysqlconnector:
         mycursor.execute(sqlQuery)
         mycursor.reset()
         return  resualt
+    def shift_update(self,fieldName,fieldValue,chatid):
+        mydb = self.connector()
+        mydb.autocommit=True
+        mycursor = mydb.cursor()
+        sqlQuery = 'select idshift from `botshiftkari`.`shift` where progress=0 and Creator={}'.format(chatid)
+        mycursor.execute(sqlQuery)
+        resualt = mycursor.fetchone()
+        if resualt is None:
+            sqlQuery= 'insert into `botshiftkari`.`shift` (Creator,{0}) values (\'{1}\',\'{2}\')'.format(fieldName,chatid,fieldValue)
+        else:
+            sqlQuery = 'UPDATE `botshiftkari`.`shift` SET `{0}` = \'{1}\'  where progress=0 and Creator = \'{2}\''.format(fieldName,fieldValue,chatid)
+        mycursor.execute(sqlQuery)
+        mycursor.reset()
+        return  resualt
+
+    def shift_update_by_id(self, fieldName, fieldValue, idshift):
+        mydb = self.connector()
+        mydb.autocommit = True
+        mycursor = mydb.cursor()
+        sqlQuery = 'UPDATE `botshiftkari`.`shift` SET `{0}` = \'{1}\'  where  idshift = \'{2}\''.format(
+                fieldName, fieldValue, idshift)
+        print(sqlQuery)
+        mycursor.execute(sqlQuery)
+        mycursor.reset()
+        return None
+    def get_shift_property(self,fieldName,idShift):
+        mydb = self.connector()
+        mydb.autocommit = True
+        mycursor = mydb.cursor()
+        sqlQuery = 'select {0} from `botshiftkari`.`shift` where idshift={1}'.format(fieldName,idShift)
+        mycursor.execute(sqlQuery)
+        resualt = mycursor.fetchone()
+        if resualt is None:
+            return None
+        else:
+            return resualt[0]
+    def get_all_shift(self=None,progress=1,creator=0):
+        mydb = self.connector()
+        mydb.autocommit = True
+        mycursor = mydb.cursor()
+        sqlQuery = '''SELECT concat(mem.name,mem.last_name) as fullname,creator,
+                        DateShift,startTime,endTime,wage,pharmacyAddress,progress,approver,shi.idshift
+                        FROM botshiftkari.shift shi inner join botshiftkari.membership mem on
+                         mem.chat_id = shi.Creator where not shi.creator = '{0}' and shi.progress={1}'''.format(creator, progress)
+        mycursor.execute(sqlQuery)
+        resualt = mycursor.fetchall()
+        return resualt;
+    def get_all_shift_by_creator(self=None,creator=0):
+        mydb = self.connector()
+        mydb.autocommit = True
+        mycursor = mydb.cursor()
+        sqlQuery = '''SELECT concat(mem.name,mem.last_name) as fullname,creator,
+                        DateShift,startTime,endTime,wage,pharmacyAddress,progress,approver,shi.idshift
+                        FROM botshiftkari.shift shi inner join botshiftkari.membership mem on
+                         mem.chat_id = shi.Creator where  shi.creator = '{0}' and (shi.progress=1 or shi.progress=2)'''.format(creator)
+        print(sqlQuery)
+        mycursor.execute(sqlQuery)
+        resualt = mycursor.fetchall()
+        return resualt;
+    def get_all_shift_manager(self=None):
+        mydb = self.connector()
+        mydb.autocommit = True
+        mycursor = mydb.cursor()
+        sqlQuery = '''SELECT concat(mem.name,mem.last_name) as fullname,creator,
+                        DateShift,startTime,endTime,wage,pharmacyAddress,progress,approver,shi.idshift
+                        FROM botshiftkari.shift shi inner join botshiftkari.membership mem on
+                         mem.chat_id = shi.Creator '''
+        mycursor.execute(sqlQuery)
+        resualt = mycursor.fetchall()
+        return resualt;
+    def get_all_shift_managerForApprove(self=None):
+        mydb = self.connector()
+        mydb.autocommit = True
+        mycursor = mydb.cursor()
+        sqlQuery = '''SELECT concat(mem.name,mem.last_name) as fullname,creator,
+                        DateShift,startTime,endTime,wage,pharmacyAddress,progress,approver,shi.idshift
+                        FROM botshiftkari.shift shi inner join botshiftkari.membership mem on
+                         mem.chat_id = shi.Creator where progress = 1'''
+        mycursor.execute(sqlQuery)
+        resualt = mycursor.fetchall()
+        return resualt;
+    def get_all_member(self=None,tye=None):
+        mydb = self.connector()
+        mydb.autocommit = True
+        mycursor = mydb.cursor()
+        sqlQuery=None
+        if tye is None:
+            sqlQuery = '''select concat(mem.name,mem.last_name) as fullname,
+                            case 
+                            when mem.membership_type = 1 then 'موسس'
+                            when mem.membership_type = 2 then 'مسئول فنی'
+                            when mem.membership_type = 3 then 'دانشجو'
+                            when mem.membership_type = 4 then 'مدیر'
+                            else 'نامشخص'
+                            end as typeMember,
+                            mem.phone_number
+                            from  botshiftkari.membership as mem '''
+        else:
+            sqlQuery = '''select concat(mem.name,mem.last_name) as fullname,
+                                        case 
+                                        when mem.membership_type = 1 then 'موسس'
+                                        when mem.membership_type = 2 then 'مسئول فنی'
+                                        when mem.membership_type = 3 then 'دانشجو'
+                                        when mem.membership_type = 4 then 'مدیر'
+                                        else 'نامشخص'
+                                        end as typeMember,
+                                        mem.phone_number
+                                        from  botshiftkari.membership as mem  where mem.membership_type={}'''.format(tye)
+        mycursor.execute(sqlQuery)
+        resualt = mycursor.fetchall()
+        return resualt;

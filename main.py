@@ -57,7 +57,7 @@ def handle_new_messages(user_id, userName):
         print(update)
         if 'message' in update:
             message = update['message']
-            if message['text'] == '/myinfo':
+            if 'text' in message and message['text'] == '/myinfo':
                 titlePos = None
                 if tempMember.membership_type == 1:
                     titlePos = 'موسس'
@@ -70,11 +70,40 @@ def handle_new_messages(user_id, userName):
                 else:
                     titlePos = 'نا مشخص'
                 bot.sendMessage(message['chat']['id'],
-                                str(msg.messageLib.duplicateregistration.value).format(titlePos))
-            elif tempMember.register_progress == 0 and message['text'] == '/start':
+                                str(msg.messageLib.myInfo.value).format(titlePos))
+                bot.sendMessage(message['chat']['id'],
+                                str(msg.messageLib.labeName.value).format(tempMember.name, tempMember.last_name))
+                bot.sendMessage(message['chat']['id'],
+                                str(msg.messageLib.labelPhoneNumber.value).format(tempMember.phone_number))
+                if tempMember.membership_type == 1:
+                    bot.sendMessage(message['chat']['id'], msg.messageLib.yourOperation.value,
+                                    reply_markup=menu.keyLib.kbCreateMenuFunder(chatId=message['chat']['id']))
+                elif tempMember.membership_type == 2:
+                    bot.sendMessage(message['chat']['id'], msg.messageLib.yourOperation.value,
+                                    reply_markup=menu.keyLib.kbCreateMenuResponsible(chatId=message['chat']['id']))
+                elif tempMember.membership_type == 3:
+                    bot.sendMessage(message['chat']['id'], msg.messageLib.yourOperation.value,
+                                    reply_markup=menu.keyLib.kbCreateMenuStudent(chatId=message['chat']['id']))
+                elif tempMember.membership_type == 4:
+                    bot.sendMessage(message['chat']['id'], msg.messageLib.yourOperation.value,
+                                    reply_markup=menu.keyLib.kbCreateMenuManager(chatId=message['chat']['id']))
+            elif 'text' in message and message['text'] == '/myoperation':
+                if tempMember.membership_type == 1:
+                    bot.sendMessage(message['chat']['id'], msg.messageLib.yourOperation.value,
+                                    reply_markup=menu.keyLib.kbCreateMenuFunder(chatId=message['chat']['id']))
+                elif tempMember.membership_type == 2:
+                    bot.sendMessage(message['chat']['id'], msg.messageLib.yourOperation.value,
+                                    reply_markup=menu.keyLib.kbCreateMenuResponsible(chatId=message['chat']['id']))
+                elif tempMember.membership_type == 3:
+                    bot.sendMessage(message['chat']['id'], msg.messageLib.yourOperation.value,
+                                    reply_markup=menu.keyLib.kbCreateMenuStudent(chatId=message['chat']['id']))
+                elif tempMember.membership_type == 4:
+                    bot.sendMessage(message['chat']['id'], msg.messageLib.yourOperation.value,
+                                    reply_markup=menu.keyLib.kbCreateMenuManager(chatId=message['chat']['id']))
+            elif 'text' in message and tempMember.register_progress == 0 and message['text'] == '/start':
                 bot.sendMessage(message['chat']['id'], str(msg.messageLib.helloClient.value).format(
                     message['chat']['first_name']), reply_markup=menu.keyLib.kbWhoAreYou())
-            elif tempMember.register_progress != 0 and message['text'] == '/start':
+            elif 'text' in message and tempMember.register_progress != 0 and message['text'] == '/start':
                 titlePos = None
                 if tempMember.membership_type == 1:
                     titlePos = 'موسس'
@@ -159,8 +188,9 @@ def handle_new_messages(user_id, userName):
                         ufid = uuid.uuid4()
                         image_path = 'download/{0}{1}'.format(ufid, fileExtention)
                         bot.download_file(file_id, image_path)
+                        print()
                         mydb.technicalManager_update('membership_card_photo', '{0}{1}'.format(ufid, fileExtention),
-                                                     message['chat']['username'])
+                                                     message['chat']['id'])
                         bot.sendMessage(message['chat']['id'],
                                         str(msg.messageLib.endRegisteration.value))
                         admins = mydb.getAdmins()
@@ -175,7 +205,7 @@ def handle_new_messages(user_id, userName):
                             bot.sendMessage(admin[0],
                                             str(msg.messageLib.labelNationCode.value).format(
                                                 mydb.get_technical_property('national_code',
-                                                                            message['chat']['username'])))
+                                                                            message['chat']['id'])))
                             bot.sendMessage(admin[0],
                                             str(msg.messageLib.labelMembershipCardPhoto.value))
                             img = 'download/{}'.format(
@@ -302,6 +332,40 @@ def handle_new_messages(user_id, userName):
                         mydb.del_member_chatid(chatid=chatIdUser)
                         bot.sendMessage(chatIdUser, msg.messageLib.sorryDenyAdmin.value)
                         bot.sendMessage(chatIdUser, message['text'])
+                elif tempMember.membership_type == 2:
+                    op = mydb.get_member_property_chatid('op', message['chat']['id'])
+                    if op is not None:
+                        if op == 0:
+                            mydb.member_update('op', 1, message['chat']['id'])
+                            bot.sendMessage(message['chat']['id'],
+                                            'آیا {0} بعنوان تاریخ شیفت صحیح است؟'.format(message['text']),
+                                            reply_markup=menu.keyLib.kbCreateMenuYesNO(
+                                                chatId='{}_{}'.format(message['chat']['id'], message['text'])))
+                        if op == 2:
+                            mydb.member_update('op', 3, message['chat']['id'])
+                            bot.sendMessage(message['chat']['id'],
+                                            'آیا {0} بعنوان ساعت شروع شیفت صحیح است؟'.format(message['text']),
+                                            reply_markup=menu.keyLib.kbCreateMenuYesNO(
+                                                chatId='{}_{}'.format(message['chat']['id'], message['text'])))
+                        if op == 4:
+                            mydb.member_update('op', 5, message['chat']['id'])
+                            bot.sendMessage(message['chat']['id'],
+                                            'آیا {0} بعنوان ساعت پایان شیفت صحیح است؟'.format(message['text']),
+                                            reply_markup=menu.keyLib.kbCreateMenuYesNO(
+                                                chatId='{}_{}'.format(message['chat']['id'], message['text'])))
+                        if op == 6:
+                            mydb.member_update('op', 7, message['chat']['id'])
+                            bot.sendMessage(message['chat']['id'],
+                                            'آیا مبلغ {0} ریال بعنوان حق الزحمه صحیح است؟'.format(message['text']),
+                                            reply_markup=menu.keyLib.kbCreateMenuYesNO(
+                                                chatId='{}_{}'.format(message['chat']['id'], message['text'])))
+                        if op == 8:
+                            mydb.member_update('op', 9, message['chat']['id'])
+                            bot.sendMessage(message['chat']['id'],
+                                            'آیا آدرس {0} برای داروخانه صحیح است؟'.format(message['text']),
+                                            reply_markup=menu.keyLib.kbCreateMenuYesNO(
+                                                chatId='{}_{}'.format(message['chat']['id'], message['text'])))
+
         elif 'callback_query' in update:
             message = update['callback_query']['message']
             btn = update['callback_query']['data']
@@ -316,7 +380,225 @@ def handle_new_messages(user_id, userName):
                                     str(msg.messageLib.descDenyAdmin.value))
                     mydb.member_update_chatid('registration_progress', 15, spBtn[2])
                     mydb.member_update_chatid('adminChatId', message['chat']['id'], spBtn[2])
+                elif spBtn[1] == 'Del':
+                    mydb.del_member_chatid(message['chat']['id'])
+                    bot.sendMessage(message['chat']['id'], msg.messageLib.afteDelete.value)
+                elif spBtn[1] == 'createSift':
+                    if tempMember.membership_type == 1 or tempMember.membership_type == 2:
+                        bot.sendMessage(message['chat']['id'], msg.messageLib.dateShift.value)
+                        mydb.member_update('op', 0, message['chat']['id'])
+                    else:
+                        bot.sendMessage(message['chat']['id'], msg.messageLib.notAccess.value)
+                elif spBtn[1] == 'yes':
+                    op = mydb.get_member_property_chatid('op', message['chat']['id'])
+                    if int(op) == 1:
+                        bot.sendMessage(message['chat']['id'], msg.messageLib.shiftStartTime.value)
+                        mydb.member_update('op', 2, message['chat']['id'])
+                        mydb.shift_update('DateShift', spBtn[3], spBtn[2])
+                    if int(op) == 3:
+                        bot.sendMessage(message['chat']['id'], msg.messageLib.shiftEndTime.value)
+                        mydb.member_update('op', 4, message['chat']['id'])
+                        mydb.shift_update('startTime', spBtn[3], spBtn[2])
+                    if int(op) == 5:
+                        bot.sendMessage(message['chat']['id'], msg.messageLib.shiftWage.value)
+                        mydb.member_update('op', 6, message['chat']['id'])
+                        mydb.shift_update('endTime', spBtn[3], spBtn[2])
+                    if int(op) == 7:
+                        bot.sendMessage(message['chat']['id'], msg.messageLib.pharmacyAddress.value)
+                        addressPharmacy = None
+                        if tempMember.membership_type == 1:
+                            addressPharmacy = mydb.get_funder_property('pharmacy_address', message['chat']['id'])
+                        if addressPharmacy is not None:
+                            bot.sendMessage(message['chat']['id'],
+                                            'آیا آدرس {0} برای داروخانه صحیح است؟'.format(addressPharmacy),
+                                            reply_markup=menu.keyLib.kbCreateMenuYesNO(
+                                                chatId='{}_{}'.format(message['chat']['id'], addressPharmacy)))
+                            mydb.member_update('op', 9, message['chat']['id'])
+                        else:
+                            mydb.member_update('op', 8, message['chat']['id'])
+                        mydb.shift_update('wage', spBtn[3], spBtn[2])
+                    if int(op) == 9:
+                        bot.sendMessage(message['chat']['id'], msg.messageLib.endRegisterShift.value)
+                        mydb.member_update('op', 0, message['chat']['id'])
+                        mydb.shift_update('pharmacyAddress', spBtn[3], spBtn[2])
+                        mydb.shift_update('progress', 1, spBtn[2])
+                elif spBtn[1] == 'NO':
+                    op = mydb.get_member_property_chatid('op', message['chat']['id'])
+                    print(op)
+                    if int(op) == 1:
+                        mydb.member_update('op', 0, message['chat']['id'])
+                        bot.sendMessage(message['chat']['id'], msg.messageLib.dateShift.value)
+                    if int(op) == 3:
+                        mydb.member_update('op', 2, message['chat']['id'])
+                        bot.sendMessage(message['chat']['id'], msg.messageLib.shiftStartTime.value)
+                    if int(op) == 5:
+                        mydb.member_update('op', 4, message['chat']['id'])
+                        bot.sendMessage(message['chat']['id'], msg.messageLib.shiftEndTime.value)
+                    if int(op) == 7:
+                        mydb.member_update('op', 6, message['chat']['id'])
+                        bot.sendMessage(message['chat']['id'], msg.messageLib.shiftWage.value)
+                    if int(op) == 9:
+                        mydb.member_update('op', 8, message['chat']['id'])
+                        bot.sendMessage(message['chat']['id'], msg.messageLib.shiftWage.value)
+                elif spBtn[1] == 'listSift':
+                    allShift = mydb.get_all_shift(creator=message['chat']["id"])
 
+                    if len(allShift) == 0:
+                        bot.sendMessage(message['chat']["id"], msg.messageLib.emptyList.value)
+                    else:
+                        for shiftRow in allShift:
+                            rowReq = 'درخواست دهنده: {}'.format(shiftRow[0])
+                            rowDate = 'تاریخ  : {}'.format(shiftRow[2])
+                            rowStartTime = 'ساعت شروع  : {}'.format(shiftRow[3])
+                            rowEndTime = 'ساعت پایان  : {}'.format(shiftRow[4])
+                            rowWage = 'حق الزحمه  : {}'.format(shiftRow[5])
+                            rowaddr = 'آدرس  : {}'.format(shiftRow[6])
+                            bot.sendMessage(message['chat']["id"], '''
+{0}
+{1}
+{2}
+{3}
+{4}
+{5}
+{6}'''.format(rowReq, rowDate, rowStartTime, rowEndTime, rowWage, rowaddr,
+              msg.messageLib.doYouLike.value), reply_markup=menu.keyLib.kbCreateMenuApproveShift(shiftRow[9]))
+                elif spBtn[1] == 'shiftApprove':
+                    pprint(spBtn[2])
+                elif spBtn[1] == 'deleteShift':
+                    allShift = mydb.get_all_shift_by_creator(creator=message['chat']["id"])
+
+                    if len(allShift) == 0:
+                        bot.sendMessage(message['chat']["id"], msg.messageLib.emptyList.value)
+                    else:
+                        for shiftRow in allShift:
+                            rowReq = 'درخواست دهنده: {}'.format(shiftRow[0])
+                            rowDate = 'تاریخ  : {}'.format(shiftRow[2])
+                            rowStartTime = 'ساعت شروع  : {}'.format(shiftRow[3])
+                            rowEndTime = 'ساعت پایان  : {}'.format(shiftRow[4])
+                            rowWage = 'حق الزحمه  : {}'.format(shiftRow[5])
+                            rowaddr = 'آدرس  : {}'.format(shiftRow[6])
+                            approveManager = None
+                            if int(shiftRow[7]) == 1:
+                                approveManager = 'ندارد'
+                            else:
+                                approveManager = 'دارد'
+                            rowApprove = 'تائید مدیر: {}'.format(approveManager)
+                            bot.sendMessage(message['chat']["id"], '''
+{0}
+{1}
+{2}
+{3}
+{4}
+{5}
+{6}
+{7}'''.format(rowReq, rowDate, rowStartTime, rowEndTime, rowWage, rowaddr, rowApprove,
+              msg.messageLib.doYouLikeDelete.value),
+                                            reply_markup=menu.keyLib.kbCreateMenuDeleteShift(shiftId=shiftRow[9]))
+                elif spBtn[1] == 'DeleteShiftList':
+                    print(spBtn[1])
+                elif spBtn[1] == 'listSiftManager':
+                    allShift = mydb.get_all_shift_manager()
+                    if len(allShift) == 0:
+                        bot.sendMessage(message['chat']["id"], msg.messageLib.emptyList.value)
+                    else:
+                        for shiftRow in allShift:
+                            rowReq = 'درخواست دهنده: {}'.format(shiftRow[0])
+                            rowDate = 'تاریخ  : {}'.format(shiftRow[2])
+                            rowStartTime = 'ساعت شروع  : {}'.format(shiftRow[3])
+                            rowEndTime = 'ساعت پایان  : {}'.format(shiftRow[4])
+                            rowWage = 'حق الزحمه  : {}'.format(shiftRow[5])
+                            rowaddr = 'آدرس  : {}'.format(shiftRow[6])
+                            approveManager = None
+                            if int(shiftRow[7]) == 1:
+                                approveManager = 'ندارد'
+                            else:
+                                approveManager = 'دارد'
+                            rowApprove = 'تائید مدیر: {}'.format(approveManager)
+                            bot.sendMessage(message['chat']["id"], '''
+{0}
+{1}
+{2}
+{3}
+{4}
+{5}
+{6}
+{7}'''.format(rowReq, rowDate, rowStartTime, rowEndTime, rowWage, rowaddr, rowApprove,
+              msg.messageLib.doYouLikeDelete.value),
+                                            reply_markup=menu.keyLib.kbCreateMenuDeleteShift(shiftId=shiftRow[9]))
+                elif spBtn[1] == 'listSiftDisApprove':
+                    allShift = mydb.get_all_shift_managerForApprove()
+                    if len(allShift) == 0:
+                        bot.sendMessage(message['chat']["id"], msg.messageLib.emptyList.value)
+                    else:
+                        for shiftRow in allShift:
+                            rowReq = 'درخواست دهنده: {}'.format(shiftRow[0])
+                            rowDate = 'تاریخ  : {}'.format(shiftRow[2])
+                            rowStartTime = 'ساعت شروع  : {}'.format(shiftRow[3])
+                            rowEndTime = 'ساعت پایان  : {}'.format(shiftRow[4])
+                            rowWage = 'حق الزحمه  : {}'.format(shiftRow[5])
+                            rowaddr = 'آدرس  : {}'.format(shiftRow[6])
+                            approveManager = None
+                            if int(shiftRow[7]) == 1:
+                                approveManager = 'ندارد'
+                            else:
+                                approveManager = 'دارد'
+                            rowApprove = 'تائید مدیر: {}'.format(approveManager)
+                            bot.sendMessage(message['chat']["id"], '''
+{0}
+{1}
+{2}
+{3}
+{4}
+{5}
+{6}
+{7}'''.format(rowReq, rowDate, rowStartTime, rowEndTime, rowWage, rowaddr, rowApprove,
+              msg.messageLib.doYouLikeApprove.value),
+                                            reply_markup=menu.keyLib.kbCreateMenuShiftApproveManager(shiftId=shiftRow[9]))
+                elif spBtn[1] == 'approveShiftManager':
+                    print(spBtn)
+                    mydb.shift_update_by_id('progress', 2, spBtn[2])
+                    cr = mydb.get_shift_property('creator', spBtn[2])
+                    bot.sendMessage(cr, msg.messageLib.approvedByManager.value)
+                elif spBtn[1] == 'disApproveShiftManager':
+                    mydb.shift_update_by_id('progress', 3, spBtn[2])
+                    cr = mydb.get_shift_property('creator', spBtn[2])
+                    bot.sendMessage(cr, msg.messageLib.disApprovedByManager.value)
+                elif spBtn[1] == 'listFunderManager':
+                    resualt=mydb.get_all_member(tye=1)
+                    txtResualt = None
+                    if len(resualt) > 0:
+                        for item in resualt:
+                            itemRow1 = 'نام و نام خانوادگی:{}'.format(item[0])
+                            itemRow2 = 'نوع عضویت:{}'.format(item[1])
+                            itemRow3 = 'شماره همراه:{}'.format(item[2])
+                            bot.sendMessage(message['chat']['id'],'''
+{0}
+{1}
+{2}'''.format(itemRow1,itemRow2,itemRow3))
+                elif spBtn[1] == 'listresponsible':
+                    resualt = mydb.get_all_member(tye=2)
+                    txtResualt = None
+                    if len(resualt) > 0:
+                        for item in resualt:
+                            itemRow1 = 'نام و نام خانوادگی:{}'.format(item[0])
+                            itemRow2 = 'نوع عضویت:{}'.format(item[1])
+                            itemRow3 = 'شماره همراه:{}'.format(item[2])
+                            bot.sendMessage(message['chat']['id'], '''
+    {0}
+    {1}
+    {2}'''.format(itemRow1, itemRow2, itemRow3))
+                elif spBtn[1] == 'listStudent':
+                    resualt = mydb.get_all_member(tye=3)
+                    txtResualt = None
+                    if len(resualt) > 0:
+                        for item in resualt:
+                            itemRow1 = 'نام و نام خانوادگی:{}'.format(item[0])
+                            itemRow2 = 'نوع عضویت:{}'.format(item[1])
+                            itemRow3 = 'شماره همراه:{}'.format(item[2])
+                            bot.sendMessage(message['chat']['id'], '''
+    {0}
+    {1}
+    {2}'''.format(itemRow1, itemRow2, itemRow3))
             if btn == 'btnFounder':
                 tempMember.userName = update['callback_query']['from']['username']
                 tempMember.lastMessage = update['update_id']

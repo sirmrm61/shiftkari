@@ -52,3 +52,51 @@ class keyLib:
             [InlineKeyboardButton(text='تائید', callback_data='btn_Del_{}'.format(str(chat_id))),
              InlineKeyboardButton(text='عدم تائید', callback_data='btn_No_{}'.format(str(chat_id)))]
         ])
+    def kbCreateMenuFunder(self=None,chatId=None):
+        return InlineKeyboardMarkup(inline_keyboard=[
+            [InlineKeyboardButton(text='ساخت شیفت', callback_data='btn_createSift_{}'.format(str(chatId))),
+             InlineKeyboardButton(text='حذف شیفت', callback_data='btn_deleteShift_{}'.format(str(chatId)))]
+        ])
+    def kbCreateMenuResponsible(self=None,chatId=None):
+        return InlineKeyboardMarkup(inline_keyboard=[
+            [InlineKeyboardButton(text='ساخت شیفت', callback_data='btn_createSift_{}'.format(str(chatId))),
+             InlineKeyboardButton(text='حذف شیفت', callback_data='btn_deleteShift_{}'.format(str(chatId)))],
+            [InlineKeyboardButton(text='لیست شیفت', callback_data='btn_listSift_{}'.format(str(chatId))),
+             InlineKeyboardButton(text='کنسل کردن شیفت', callback_data='btn_cancelShift_{}'.format(str(chatId)))]
+        ])
+    def kbCreateMenuStudent(self=None,chatId=None):
+        return InlineKeyboardMarkup(inline_keyboard=[
+            [InlineKeyboardButton(text='لیست شیفت', callback_data='btn_listSift_{}'.format(str(chatId))),
+             InlineKeyboardButton(text='کنسل مردن شیفت', callback_data='btn_cancelShift_{}'.format(str(chatId)))]
+        ])
+
+    def kbCreateMenuManager(self=None, chatId=None):
+        return InlineKeyboardMarkup(inline_keyboard=[
+            [InlineKeyboardButton(text='لیست شیفت', callback_data='btn_listSiftManager_{}'.format(str(chatId))),
+             InlineKeyboardButton(text='نیازمند تائید', callback_data='btn_listSiftDisApprove_{}'.format(str(chatId))),
+             InlineKeyboardButton(text='تائید شده', callback_data='btn_listSiftApprove_{}'.format(str(chatId))),
+             ],
+            [InlineKeyboardButton(text='لیست موسسان', callback_data='btn_listFunderManager_{}'.format(str(chatId))),
+             InlineKeyboardButton(text='لیست مسئولان فنی', callback_data='btn_listresponsible_{}'.format(str(chatId))),
+             InlineKeyboardButton(text='لیست دانشجویان', callback_data='btn_listStudent_{}'.format(str(chatId)))]
+        ])
+    def kbCreateMenuYesNO(self=None, chatId=None):
+        return InlineKeyboardMarkup(inline_keyboard=[
+            [InlineKeyboardButton(text='بله', callback_data='btn_yes_{}'.format(str(chatId))),
+             InlineKeyboardButton(text='خیر', callback_data='btn_NO_{}'.format(str(chatId)))]
+        ])
+    def kbCreateMenuApproveShift(self=None, shiftId=None):
+        return InlineKeyboardMarkup(inline_keyboard=[
+            [InlineKeyboardButton(text='شیفت را می پذیرم', callback_data='btn_shiftApprove_{}'.format(str(shiftId)))]
+        ])
+    def kbCreateMenuDeleteShift(self=None, shiftId=None):
+        return InlineKeyboardMarkup(inline_keyboard=[
+            [InlineKeyboardButton(text='بله'
+                                       ' ', callback_data='btn_DeleteShiftList_{}'.format(str(shiftId)))]
+        ])
+    def kbCreateMenuShiftApproveManager(self=None, shiftId=None):
+        return InlineKeyboardMarkup(inline_keyboard=[
+            [InlineKeyboardButton(text='بله', callback_data='btn_approveShiftManager_{}'.format(str(shiftId))),
+             InlineKeyboardButton(text='خیر', callback_data='btn_disApproveShiftManager_{}'.format(str(shiftId)))
+              ]
+        ])
