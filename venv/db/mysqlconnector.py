@@ -389,7 +389,7 @@ class mysqlconnector:
         sqlQuery = '''SELECT concat(mem.name,mem.last_name) as fullname,creator,
                         DateShift,startTime,endTime,wage,pharmacyAddress,progress,approver,shi.idshift
                         FROM botshiftkari.shift shi inner join botshiftkari.membership mem on
-                         mem.chat_id = shi.Creator '''
+                         mem.chat_id = shi.Creator and shi.del=0 '''
         mycursor.execute(sqlQuery)
         resualt = mycursor.fetchall()
         return resualt;
@@ -400,10 +400,22 @@ class mysqlconnector:
         sqlQuery = '''SELECT concat(mem.name,mem.last_name) as fullname,creator,
                         DateShift,startTime,endTime,wage,pharmacyAddress,progress,approver,shi.idshift
                         FROM botshiftkari.shift shi inner join botshiftkari.membership mem on
-                         mem.chat_id = shi.Creator where progress = 1'''
+                         mem.chat_id = shi.Creator where progress = 1 and shi.del = 0'''
         mycursor.execute(sqlQuery)
         resualt = mycursor.fetchall()
         return resualt;
+    def get_all_shift_managerApproved(self=None):
+        mydb = self.connector()
+        mydb.autocommit = True
+        mycursor = mydb.cursor()
+        sqlQuery = '''SELECT concat(mem.name,mem.last_name) as fullname,creator,
+                        DateShift,startTime,endTime,wage,pharmacyAddress,progress,approver,shi.idshift
+                        FROM botshiftkari.shift shi inner join botshiftkari.membership mem on
+                         mem.chat_id = shi.Creator where progress = 2 and shi.del = 0'''
+        mycursor.execute(sqlQuery)
+        resualt = mycursor.fetchall()
+        return resualt;
+
     def get_all_member(self=None,tye=None):
         mydb = self.connector()
         mydb.autocommit = True
