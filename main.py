@@ -498,6 +498,12 @@ def handle_new_messages(user_id, userName):
 {7}'''.format(rowReq, rowDate, rowStartTime, rowEndTime, rowWage, rowaddr, rowApprove,
               msg.messageLib.doYouLikeDelete.value),
                                             reply_markup=menu.keyLib.kbCreateMenuDeleteShift(shiftId=shiftRow[9]))
+                elif spBtn[1] == 'listFunderManager':
+                    print('listFunderManager');
+                elif spBtn[1] == 'listresponsible':
+                    print('listresponsible');
+                elif spBtn[1] == 'listStudent':
+                    print('listStudent');
                 elif spBtn[1] == 'DeleteShiftList':
                    mydb.shift_update_by_id(fieldName='del',fieldValue='1' ,idshift= spBtn[2])
                    bot.sendMessage(message['chat']['id'],msg.messageLib.delShiftMessage.value);
