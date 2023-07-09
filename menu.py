@@ -49,8 +49,8 @@ class keyLib:
         ])
     def kbCreateDelKey(self=None, chat_id=None):
         return InlineKeyboardMarkup(inline_keyboard=[
-            [InlineKeyboardButton(text='تائید', callback_data='btn_Del_{}'.format(str(chat_id))),
-             InlineKeyboardButton(text='عدم تائید', callback_data='btn_No_{}'.format(str(chat_id)))]
+            [InlineKeyboardButton(text='بلی', callback_data='btn_Del_{}'.format(str(chat_id))),
+             InlineKeyboardButton(text='خیر', callback_data='btn_No_{}'.format(str(chat_id)))]
         ])
     def kbCreateMenuFunder(self=None,chatId=None):
         return InlineKeyboardMarkup(inline_keyboard=[
@@ -61,8 +61,9 @@ class keyLib:
         return InlineKeyboardMarkup(inline_keyboard=[
             [InlineKeyboardButton(text='ساخت شیفت', callback_data='btn_createSift_{}'.format(str(chatId))),
              InlineKeyboardButton(text='حذف شیفت', callback_data='btn_deleteShift_{}'.format(str(chatId)))],
-            [InlineKeyboardButton(text='لیست شیفت', callback_data='btn_listSift_{}'.format(str(chatId))),
-             InlineKeyboardButton(text='کنسل کردن شیفت', callback_data='btn_cancelShift_{}'.format(str(chatId)))]
+            [InlineKeyboardButton(text='شیفت های من', callback_data='btn_listSift_{}'.format(str(chatId))),
+             InlineKeyboardButton(text='کنسل کردن شیفت', callback_data='btn_cancelShift_{}'.format(str(chatId)))],
+            [InlineKeyboardButton(text='درخواست پر کردن شیفت', callback_data='btn_repShift_{}'.format(str(chatId)))]
         ])
     def kbCreateMenuStudent(self=None,chatId=None):
         return InlineKeyboardMarkup(inline_keyboard=[
@@ -98,5 +99,11 @@ class keyLib:
         return InlineKeyboardMarkup(inline_keyboard=[
             [InlineKeyboardButton(text='بله', callback_data='btn_approveShiftManager_{}'.format(str(shiftId))),
              InlineKeyboardButton(text='خیر', callback_data='btn_disApproveShiftManager_{}'.format(str(shiftId)))
+              ]
+        ])
+    def kbCreateMenuShiftApproveFunder(self=None, shiftId=None):
+        return InlineKeyboardMarkup(inline_keyboard=[
+            [InlineKeyboardButton(text='مورد تائید است', callback_data='btn_approveShiftFunder_{}'.format(str(shiftId))),
+             InlineKeyboardButton(text='مورد تائید نیست', callback_data='btn_disApproveShiftFunder_{}'.format(str(shiftId)))
               ]
         ])

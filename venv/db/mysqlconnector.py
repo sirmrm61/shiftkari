@@ -348,6 +348,15 @@ class mysqlconnector:
         mycursor.execute(sqlQuery)
         mycursor.reset()
         return None
+    def shift_reserve_by_id(self, idshift,chatid):
+        mydb = self.connector()
+        mydb.autocommit = True
+        mycursor = mydb.cursor()
+        sqlQuery = 'UPDATE `botshiftkari`.`shift` SET `progress` = 3,`approver`=\'{1}\'  where progress=2 and idshift = \'{0}\''.format(idshift,chatid)
+        print(sqlQuery)
+        mycursor.execute(sqlQuery)
+        mycursor.reset()
+        return None
     def get_shift_property(self,fieldName,idShift):
         mydb = self.connector()
         mydb.autocommit = True
@@ -367,6 +376,20 @@ class mysqlconnector:
                         DateShift,startTime,endTime,wage,pharmacyAddress,progress,approver,shi.idshift
                         FROM botshiftkari.shift shi inner join botshiftkari.membership mem on
                          mem.chat_id = shi.Creator where not shi.creator = '{0}' and shi.progress={1}'''.format(creator, progress)
+        mycursor.execute(sqlQuery)
+        resualt = mycursor.fetchall()
+        return resualt;
+
+    def get_shift_no_approve(self=None, progress=1, creator=0):
+        mydb = self.connector()
+        mydb.autocommit = True
+        mycursor = mydb.cursor()
+        sqlQuery = '''SELECT concat(mem.name,mem.last_name) as fullname,creator,
+                         DateShift,startTime,endTime,wage,pharmacyAddress,progress,approver,shi.idshift
+                         FROM botshiftkari.shift shi inner join botshiftkari.membership mem on
+                          mem.chat_id = shi.Creator where approver is null and not shi.creator = '{0}' and shi.progress={1}'''.format(
+            creator, progress)
+        print(sqlQuery)
         mycursor.execute(sqlQuery)
         resualt = mycursor.fetchall()
         return resualt;
