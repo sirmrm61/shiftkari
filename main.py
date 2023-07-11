@@ -336,6 +336,7 @@ def handle_new_messages(user_id, userName):
                     op = mydb.get_member_property_chatid('op', message['chat']['id'])
                     if op is not None:
                         if op == 0:
+
                             try:
                                 yearIn = int(str(message['text'])[0:3])
                                 monthIn = int(str(message['text'])[4:5])
