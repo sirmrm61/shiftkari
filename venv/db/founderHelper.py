@@ -77,3 +77,16 @@ class helperFunder:
             bot.sendPhoto(admin[0], open(img, 'rb'))
             bot.sendMessage(admin[0], msg.messageLib.messAdminApprove.value,
                             reply_markup=menu.keyLib.kbCreateMenuShiftApproveFunder(shiftId=chatid))
+    def send_operation(tempMember,bot,chatid):
+        if tempMember.membership_type == 1:
+            bot.sendMessage(chatid, msg.messageLib.yourOperation.value,
+                            reply_markup=menu.keyLib.kbCreateMenuFunder(chatId=chatid))
+        elif tempMember.membership_type == 2:
+            bot.sendMessage(chatid, msg.messageLib.yourOperation.value,
+                            reply_markup=menu.keyLib.kbCreateMenuResponsible(chatId=chatid))
+        elif tempMember.membership_type == 3:
+            bot.sendMessage(chatid, msg.messageLib.yourOperation.value,
+                            reply_markup=menu.keyLib.kbCreateMenuStudent(chatId=chatid))
+        elif tempMember.membership_type == 4:
+            bot.sendMessage(chatid, msg.messageLib.yourOperation.value,
+                            reply_markup=menu.keyLib.kbCreateMenuManager(chatId=chatid))

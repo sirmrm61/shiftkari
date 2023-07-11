@@ -50,7 +50,7 @@ class keyLib:
     def kbCreateDelKey(self=None, chat_id=None):
         return InlineKeyboardMarkup(inline_keyboard=[
             [InlineKeyboardButton(text='بلی', callback_data='btn_Del_{}'.format(str(chat_id))),
-             InlineKeyboardButton(text='خیر', callback_data='btn_No_{}'.format(str(chat_id)))]
+             InlineKeyboardButton(text='خیر', callback_data='btn_NoDel_{}'.format(str(chat_id)))]
         ])
     def kbCreateMenuFunder(self=None,chatId=None):
         return InlineKeyboardMarkup(inline_keyboard=[

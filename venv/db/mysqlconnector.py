@@ -400,8 +400,7 @@ class mysqlconnector:
         sqlQuery = '''SELECT concat(mem.name,mem.last_name) as fullname,creator,
                         DateShift,startTime,endTime,wage,pharmacyAddress,progress,approver,shi.idshift
                         FROM botshiftkari.shift shi inner join botshiftkari.membership mem on
-                         mem.chat_id = shi.Creator where  shi.creator = '{0}' and (shi.progress=1 or shi.progress=2)'''.format(creator)
-        print(sqlQuery)
+                         mem.chat_id = shi.Creator where  shi.creator = '{0}' and (shi.progress=1 or shi.progress=2) and shi.del=0'''.format(creator)
         mycursor.execute(sqlQuery)
         resualt = mycursor.fetchall()
         return resualt;

@@ -1,6 +1,9 @@
 import telepot
 import time
 from model.membership import Membership
+from persiantools.jdatetime import JalaliDate
+from dateutil.relativedelta import relativedelta
+import datetime
 import os
 from pprint import pprint
 import msg
@@ -16,7 +19,10 @@ MAX_IDLE_TIME = 600
 mydb = msc.mysqlconnector()
 idFromFile = None
 
-bot = telepot.Bot('6012649808:AAGXWUsZJBtvWsFlYuvqg18tgIwo7ildPUs')
+bot = telepot.Bot('409679224:AAHAWm_FaSNiuthByMxAESwqq4SFYR8CxZE')
+
+#
+# 6012649808:AAGXWUsZJBtvWsFlYuvqg18tgIwo7ildPUs
 
 
 # admins = mydb.getAdmins()
@@ -24,7 +30,11 @@ bot = telepot.Bot('6012649808:AAGXWUsZJBtvWsFlYuvqg18tgIwo7ildPUs')
 # pprint(admins)
 # for admin in admins:
 #     pprint(bot.sendPhoto(admin[0], open(image, 'rb')))
-# exit()
+# date1 = JalaliDate(1402, 4, 18).to_gregorian()
+# date2 = datetime.date.today()
+# diffDay = relativedelta(date1, date2)
+# print("{0} - {1} = {2} Day ".format(date1, date2, diffDay.days))
+# exit(0)
 
 
 def handle_new_messages(user_id, userName):
@@ -89,18 +99,7 @@ def handle_new_messages(user_id, userName):
                     bot.sendMessage(message['chat']['id'], msg.messageLib.yourOperation.value,
                                     reply_markup=menu.keyLib.kbCreateMenuManager(chatId=message['chat']['id']))
             elif 'text' in message and message['text'] == '/myoperation':
-                if tempMember.membership_type == 1:
-                    bot.sendMessage(message['chat']['id'], msg.messageLib.yourOperation.value,
-                                    reply_markup=menu.keyLib.kbCreateMenuFunder(chatId=message['chat']['id']))
-                elif tempMember.membership_type == 2:
-                    bot.sendMessage(message['chat']['id'], msg.messageLib.yourOperation.value,
-                                    reply_markup=menu.keyLib.kbCreateMenuResponsible(chatId=message['chat']['id']))
-                elif tempMember.membership_type == 3:
-                    bot.sendMessage(message['chat']['id'], msg.messageLib.yourOperation.value,
-                                    reply_markup=menu.keyLib.kbCreateMenuStudent(chatId=message['chat']['id']))
-                elif tempMember.membership_type == 4:
-                    bot.sendMessage(message['chat']['id'], msg.messageLib.yourOperation.value,
-                                    reply_markup=menu.keyLib.kbCreateMenuManager(chatId=message['chat']['id']))
+                fh.helperFunder.send_operation(tempMember=tempMember, bot=bot, chatid=message['chat']['id'])
             elif 'text' in message and tempMember.register_progress == 0 and message['text'] == '/start':
                 bot.sendMessage(message['chat']['id'], str(msg.messageLib.helloClient.value).format(
                     message['chat']['first_name']), reply_markup=menu.keyLib.kbWhoAreYou())
@@ -337,12 +336,26 @@ def handle_new_messages(user_id, userName):
                     op = mydb.get_member_property_chatid('op', message['chat']['id'])
                     if op is not None:
                         if op == 0:
-                            mydb.member_update('op', 1, message['chat']['id'])
-                            mydb.shift_update('DateShift', message['text'], message['chat']['id'])
-                            bot.sendMessage(message['chat']['id'],
-                                            'آیا {0} بعنوان تاریخ شیفت صحیح است؟'.format(message['text']),
-                                            reply_markup=menu.keyLib.kbCreateMenuYesNO(
-                                                chatId='{}'.format(message['chat']['id'])))
+                            try:
+                                yearIn = int(str(message['text'])[0:3])
+                                monthIn = int(str(message['text'])[4:5])
+                                dayIn = int(str(message['text'])[6:7])
+                                dateMiladiIn = JalaliDate(yearIn, monthIn, dayIn).to_gregorian()
+                                todayDate = datetime.date.today()
+                                diffDay = relativedelta(dateMiladiIn, todayDate).days
+                                if diffDay > 0:
+                                    mydb.member_update('op', 1, message['chat']['id'])
+                                    mydb.shift_update('DateShift', message['text'], message['chat']['id'])
+                                    bot.sendMessage(message['chat']['id'],
+                                                    'آیا {0} بعنوان تاریخ شیفت صحیح است؟'.format(message['text']),
+                                                    reply_markup=menu.keyLib.kbCreateMenuYesNO(
+                                                        chatId='{}'.format(message['chat']['id'])))
+                                else:
+                                    bot.sendMessage(message['chat']['id'], msg.messageLib.invalidDate.value)
+                                    bot.sendMessage(message['chat']['id'], msg.messageLib.dateShift.value)
+                            except:
+                                bot.sendMessage(message['chat']['id'], msg.messageLib.invalidDate.value)
+                                bot.sendMessage(message['chat']['id'], msg.messageLib.dateShift.value)
                         if op == 2:
                             mydb.member_update('op', 3, message['chat']['id'])
                             mydb.shift_update('startTime', message['text'], message['chat']['id'])
@@ -388,6 +401,8 @@ def handle_new_messages(user_id, userName):
                                     str(msg.messageLib.descDenyAdmin.value))
                     mydb.member_update_chatid('registration_progress', 15, spBtn[2])
                     mydb.member_update_chatid('adminChatId', message['chat']['id'], spBtn[2])
+                elif spBtn[1] == 'NoDel':
+                    fh.helperFunder.send_operation(tempMember=tempMember, bot=bot, chatid=message['chat']['id'])
                 elif spBtn[1] == 'Del':
                     mydb.del_member_chatid(message['chat']['id'])
                     bot.sendMessage(message['chat']['id'], msg.messageLib.afteDelete.value)
@@ -431,7 +446,6 @@ def handle_new_messages(user_id, userName):
                         mydb.shift_update('progress', 1, spBtn[2])
                 elif spBtn[1] == 'NO':
                     op = mydb.get_member_property_chatid('op', message['chat']['id'])
-                    print(op)
                     if int(op) == 1:
                         mydb.member_update('op', 0, message['chat']['id'])
                         bot.sendMessage(message['chat']['id'], msg.messageLib.dateShift.value)
@@ -449,7 +463,6 @@ def handle_new_messages(user_id, userName):
                         bot.sendMessage(message['chat']['id'], msg.messageLib.shiftWage.value)
                 elif spBtn[1] == 'listSift':
                     allShift = mydb.get_all_shift(creator=message['chat']["id"])
-
                     if len(allShift) == 0:
                         bot.sendMessage(message['chat']["id"], msg.messageLib.emptyList.value)
                     else:
@@ -471,14 +484,14 @@ def handle_new_messages(user_id, userName):
               msg.messageLib.doYouLike.value), reply_markup=menu.keyLib.kbCreateMenuApproveShift(shiftRow[9]))
                 # پذیرش شخصی که شیفت را رزرو کرده است
                 elif spBtn[1] == 'approveShiftFunder':
-                    requester=mydb.get_shift_property(fieldName='approver',idShift=spBtn[2])
-                    mydb.shift_update('progress',4,spBtn[2])
-                    bot.sendMessage(requester,msg.messageLib.acceptShift.value)
-                    rowDate = 'تاریخ  : {}'.format(mydb.get_shift_property('DateShift',spBtn[2]))
-                    rowStartTime = 'ساعت شروع  : {}'.format(mydb.get_shift_property('startTime',spBtn[2]))
-                    rowEndTime = 'ساعت پایان  : {}'.format(mydb.get_shift_property('endTime',spBtn[2]))
-                    rowWage = 'حق الزحمه  : {}'.format(mydb.get_shift_property('wage',spBtn[2]))
-                    rowaddr = 'آدرس  : {}'.format(mydb.get_shift_property('pharmacyAddress',spBtn[2]))
+                    requester = mydb.get_shift_property(fieldName='approver', idShift=spBtn[2])
+                    mydb.shift_update('progress', 4, spBtn[2])
+                    bot.sendMessage(requester, msg.messageLib.acceptShift.value)
+                    rowDate = 'تاریخ  : {}'.format(mydb.get_shift_property('DateShift', spBtn[2]))
+                    rowStartTime = 'ساعت شروع  : {}'.format(mydb.get_shift_property('startTime', spBtn[2]))
+                    rowEndTime = 'ساعت پایان  : {}'.format(mydb.get_shift_property('endTime', spBtn[2]))
+                    rowWage = 'حق الزحمه  : {}'.format(mydb.get_shift_property('wage', spBtn[2]))
+                    rowaddr = 'آدرس  : {}'.format(mydb.get_shift_property('pharmacyAddress', spBtn[2]))
                     bot.sendMessage(requester, '''
 {0}
 {1}
@@ -486,6 +499,9 @@ def handle_new_messages(user_id, userName):
 {3}
 {4}'''.format(rowDate, rowStartTime, rowEndTime, rowWage, rowaddr))
                     # آپدیت کردن شیف
+                elif spBtn[1] == 'cancelShift':
+                    print(spBtn)
+                #     cancel approved Shift
                 elif spBtn[1] == 'disApproveShiftFunder':
                     requester = mydb.get_shift_property(fieldName='approver', idShift=spBtn[2])
                     mydb.shift_update('progress', 4, spBtn[2])
@@ -501,13 +517,14 @@ def handle_new_messages(user_id, userName):
 {2}
 {3}
 {4}'''.format(rowDate, rowStartTime, rowEndTime, rowWage, rowaddr))
-    # آپدیت کردن شیفت
+                # آپدیت کردن شیفت
                 #             پس از فشردن کلید شیفت را می پذیرم اجرا می شود
                 elif spBtn[1] == 'shiftApprove':
                     mydb.shift_reserve_by_id(spBtn[2], message['chat']['id'])
                     bot.sendMessage(message['chat']['id'], msg.messageLib.reserveShift.value)
                     creator = mydb.get_shift_property('Creator', spBtn[2]);
-                    fh.helperFunder.send_info_funder(chatid=message['chat']["id"],funder_chatid=creator,shiftId=spBtn[2],bot=bot)
+                    fh.helperFunder.send_info_funder(chatid=message['chat']["id"], funder_chatid=creator,
+                                                     shiftId=spBtn[2], bot=bot)
                 elif spBtn[1] == 'deleteShift':
                     allShift = mydb.get_all_shift_by_creator(creator=message['chat']["id"])
                     if len(allShift) == 0:
