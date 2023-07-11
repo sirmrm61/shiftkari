@@ -536,9 +536,10 @@ def handle_new_messages(user_id, userName):
                     mydb.shift_update_by_id(fieldName='progress', fieldValue=2, idshift=spBtn[2])
                     creator = mydb.get_shift_property(fieldName='Creator', idShift=spBtn[2])
                     dateShift = mydb.get_shift_property(fieldName='DateShift', idShift=spBtn[2])
-                    fullName = mydb.get_member_property_chatid(fileName='concat(mem.name,mem.last_name) as fullname',
+                    fullName = mydb.get_member_property_chatid(fieldName='last_name',
                                                                chatid=message['chat']['id'])
-                    bot.sendMessage(message['chat']['id'], str(msg.messageLib.youCanceled.value).format(dateShift));
+                    bot.sendMessage(message['chat']['id'], str(msg.messageLib.youCanceled.value).format(dateShift))
+                    print(creator)
                     bot.sendMessage(creator, str(msg.messageLib.cancelShift.value).format(fullName, dateShift))
                 elif spBtn[1] == 'disApproveShiftFunder':
                     requester = mydb.get_shift_property(fieldName='approver', idShift=spBtn[2])
