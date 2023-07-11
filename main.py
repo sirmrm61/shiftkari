@@ -21,6 +21,7 @@ idFromFile = None
 
 bot = telepot.Bot('409679224:AAHAWm_FaSNiuthByMxAESwqq4SFYR8CxZE')
 
+
 #
 # 6012649808:AAGXWUsZJBtvWsFlYuvqg18tgIwo7ildPUs
 
@@ -358,19 +359,37 @@ def handle_new_messages(user_id, userName):
                                 bot.sendMessage(message['chat']['id'], msg.messageLib.invalidDate.value)
                                 bot.sendMessage(message['chat']['id'], msg.messageLib.dateShift.value)
                         if op == 2:
-                            mydb.member_update('op', 3, message['chat']['id'])
-                            mydb.shift_update('startTime', message['text'], message['chat']['id'])
-                            bot.sendMessage(message['chat']['id'],
-                                            'آیا {0} بعنوان ساعت شروع شیفت صحیح است؟'.format(message['text']),
-                                            reply_markup=menu.keyLib.kbCreateMenuYesNO(
-                                                chatId='{}_{}'.format(message['chat']['id'], message['text'])))
+                            try:
+                                hr, mi = map(int, str(message['text']).split(':'))
+                                if(0 <= hr <= 23) and (0 <= mi <= 59):
+                                    mydb.member_update('op', 3, message['chat']['id'])
+                                    mydb.shift_update('startTime', message['text'], message['chat']['id'])
+                                    bot.sendMessage(message['chat']['id'],
+                                                    'آیا {0} بعنوان ساعت شروع شیفت صحیح است؟'.format(message['text']),
+                                                    reply_markup=menu.keyLib.kbCreateMenuYesNO(
+                                                        chatId='{}_{}'.format(message['chat']['id'], message['text'])))
+                                else:
+                                    bot.sendMessage(message['chat']['id'], msg.messageLib.invalidTime.value)
+                                    bot.sendMessage(message['chat']['id'], msg.messageLib.shiftStartTime.value)
+                            except:
+                                bot.sendMessage(message['chat']['id'], msg.messageLib.invalidTime.value)
+                                bot.sendMessage(message['chat']['id'], msg.messageLib.shiftStartTime.value)
                         if op == 4:
-                            mydb.member_update('op', 5, message['chat']['id'])
-                            mydb.shift_update('endTime', message['text'], message['chat']['id'])
-                            bot.sendMessage(message['chat']['id'],
-                                            'آیا {0} بعنوان ساعت پایان شیفت صحیح است؟'.format(message['text']),
-                                            reply_markup=menu.keyLib.kbCreateMenuYesNO(
-                                                chatId='{}'.format(message['chat']['id'])))
+                            try:
+                                hr, mi = map(int, str(message['text']).split(':'))
+                                if (0 <= hr <= 23) and (0 <= mi <= 59):
+                                    mydb.member_update('op', 5, message['chat']['id'])
+                                    mydb.shift_update('endTime', message['text'], message['chat']['id'])
+                                    bot.sendMessage(message['chat']['id'],
+                                                    'آیا {0} بعنوان ساعت پایان شیفت صحیح است؟'.format(message['text']),
+                                                    reply_markup=menu.keyLib.kbCreateMenuYesNO(
+                                                        chatId='{}'.format(message['chat']['id'])))
+                                else:
+                                    bot.sendMessage(message['chat']['id'], msg.messageLib.invalidTime.value)
+                                    bot.sendMessage(message['chat']['id'], msg.messageLib.shiftEndTime.value)
+                            except:
+                                bot.sendMessage(message['chat']['id'], msg.messageLib.invalidTime.value)
+                                bot.sendMessage(message['chat']['id'], msg.messageLib.shiftEndTime.value)
                         if op == 6:
                             mydb.member_update('op', 7, message['chat']['id'])
                             mydb.shift_update('wage', message['text'], message['chat']['id'])
