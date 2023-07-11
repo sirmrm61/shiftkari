@@ -90,3 +90,25 @@ class helperFunder:
         elif tempMember.membership_type == 4:
             bot.sendMessage(chatid, msg.messageLib.yourOperation.value,
                             reply_markup=menu.keyLib.kbCreateMenuManager(chatId=chatid))
+    def send_list_shift_Cancel(chatId,bot,todayDate):
+        shifts = mydb.get_all_shift_by_approver(chatId,todayDate)
+        if len(shifts) == 0:
+            bot.sendMessage(chatId, msg.messageLib.emptyList.value)
+        else:
+            for shiftRow in shifts:
+                rowReq = 'درخواست دهنده: {}'.format(shiftRow[0])
+                rowDate = 'تاریخ  : {}'.format(shiftRow[2])
+                rowStartTime = 'ساعت شروع  : {}'.format(shiftRow[3])
+                rowEndTime = 'ساعت پایان  : {}'.format(shiftRow[4])
+                rowWage = 'حق الزحمه  : {}'.format(shiftRow[5])
+                rowaddr = 'آدرس  : {}'.format(shiftRow[6])
+                bot.sendMessage(chatId, '''
+{0}
+{1}
+{2}
+{3}
+{4}
+{5}
+{6}'''.format(rowReq, rowDate, rowStartTime, rowEndTime, rowWage, rowaddr,
+              msg.messageLib.doYouLike.value),
+                        reply_markup=menu.keyLib.kbCreateMenuCancelShift(shiftId=shiftRow[9]))

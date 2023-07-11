@@ -468,3 +468,15 @@ class mysqlconnector:
         mycursor.execute(sqlQuery)
         resualt = mycursor.fetchall()
         return resualt;
+    def get_all_shift_by_approver(self=None,creator='0',dateShift=''):
+        mydb = self.connector()
+        mydb.autocommit = True
+        mycursor = mydb.cursor()
+        sqlQuery = '''SELECT concat(mem.name,mem.last_name) as fullname,creator,
+                        DateShift,startTime,endTime,wage,pharmacyAddress,progress,approver,shi.idshift
+                        FROM botshiftkari.shift shi inner join botshiftkari.membership mem on
+                         mem.chat_id = shi.Creator where  shi.approver = '{0}' and shi.DateShift> '{1}'
+                          and (shi.progress=3 or shi.progress=4) and shi.del=0'''.format(creator,dateShift)
+        mycursor.execute(sqlQuery)
+        resualt = mycursor.fetchall()
+        return resualt;

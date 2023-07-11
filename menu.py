@@ -107,3 +107,8 @@ class keyLib:
              InlineKeyboardButton(text='مورد تائید نیست', callback_data='btn_disApproveShiftFunder_{}'.format(str(shiftId)))
               ]
         ])
+    def kbCreateMenuCancelShift(self=None, shiftId=None):
+        return InlineKeyboardMarkup(inline_keyboard=[
+            [InlineKeyboardButton(text='کنسل می کنم'
+                                       ' ', callback_data='btn_cancelShiftBtnList_{}'.format(str(shiftId)))]
+        ])

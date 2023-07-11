@@ -35,6 +35,10 @@ bot = telepot.Bot('409679224:AAHAWm_FaSNiuthByMxAESwqq4SFYR8CxZE')
 # date2 = datetime.date.today()
 # diffDay = relativedelta(date1, date2)
 # print("{0} - {1} = {2} Day ".format(date1, date2, diffDay.days))
+# todayDate=datetime.date.today()
+# jd=str(JalaliDate.to_jalali(todayDate.year,todayDate.month,todayDate.day)).split('-')
+# sjd= "{0}{1}{2}".format(jd[0],jd[1],jd[2])
+# print(sjd)
 # exit(0)
 
 
@@ -361,7 +365,7 @@ def handle_new_messages(user_id, userName):
                         if op == 2:
                             try:
                                 hr, mi = map(int, str(message['text']).split(':'))
-                                if(0 <= hr <= 23) and (0 <= mi <= 59):
+                                if (0 <= hr <= 23) and (0 <= mi <= 59):
                                     mydb.member_update('op', 3, message['chat']['id'])
                                     mydb.shift_update('startTime', message['text'], message['chat']['id'])
                                     bot.sendMessage(message['chat']['id'],
@@ -520,8 +524,22 @@ def handle_new_messages(user_id, userName):
 {4}'''.format(rowDate, rowStartTime, rowEndTime, rowWage, rowaddr))
                     # آپدیت کردن شیف
                 elif spBtn[1] == 'cancelShift':
-                    print(spBtn)
+                    # ارسال شیفت هایی که شخص قبول کرده و تاریخ آنها نرسیده
+                    todayDate = datetime.date.today()
+                    jd = str(JalaliDate.to_jalali(todayDate.year, todayDate.month, todayDate.day)).split('-')
+                    sjd = "{0}{1}{2}".format(jd[0], jd[1], jd[2])
+                    fh.helperFunder.send_list_shift_Cancel(chatId=message['chat']['id'], bot=bot, todayDate=sjd)
+
+                    print(sjd)
                 #     cancel approved Shift
+                elif spBtn[1] == 'cancelShiftBtnList':
+                    mydb.shift_update_by_id(fieldName='progress', fieldValue=2, idshift=spBtn[2])
+                    creator = mydb.get_shift_property(fieldName='Creator', idShift=spBtn[2])
+                    dateShift = mydb.get_shift_property(fieldName='DateShift', idShift=spBtn[2])
+                    fullName = mydb.get_member_property_chatid(fileName='concat(mem.name,mem.last_name) as fullname',
+                                                               chatid=message['chat']['id'])
+                    bot.sendMessage(message['chat']['id'], str(msg.messageLib.youCanceled.value).format(dateShift));
+                    bot.sendMessage(creator, str(msg.messageLib.cancelShift.value).format(fullName, dateShift))
                 elif spBtn[1] == 'disApproveShiftFunder':
                     requester = mydb.get_shift_property(fieldName='approver', idShift=spBtn[2])
                     mydb.shift_update('progress', 4, spBtn[2])
