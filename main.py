@@ -18,13 +18,10 @@ MAX_IDLE_TIME = 600
 
 mydb = msc.mysqlconnector()
 idFromFile = None
-
+# sirmrmco1
 bot = telepot.Bot('409679224:AAHAWm_FaSNiuthByMxAESwqq4SFYR8CxZE')
-
-
-#
-# 6012649808:AAGXWUsZJBtvWsFlYuvqg18tgIwo7ildPUs
-
+# shiftkari
+# bot = telepot.Bot('6012649808:AAGXWUsZJBtvWsFlYuvqg18tgIwo7ildPUs')
 
 # admins = mydb.getAdmins()
 # image = 'download/2c3809f7-8e48-4cbf-acb7-bc7b0c9d1cd4.jpg'
