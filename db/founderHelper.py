@@ -74,8 +74,8 @@ class helperFunder:
                             str(msg.messageLib.labelPermitPhoto.value))
             img = 'download/{}'.format(
                 mydb.get_student_property('overtime_license_photo', chatid))
-            bot.sendPhoto(admin[0], open(img, 'rb'))
-            bot.sendMessage(admin[0], msg.messageLib.messAdminApprove.value,
+            bot.sendPhoto(chatid, open(img, 'rb'))
+            bot.sendMessage(chatid, msg.messageLib.messAdminApprove.value,
                             reply_markup=menu.keyLib.kbCreateMenuShiftApproveFunder(shiftId=chatid))
     def send_operation(tempMember,bot,chatid):
         if tempMember.membership_type == 1:
@@ -111,4 +111,4 @@ class helperFunder:
 {5}
 {6}'''.format(rowReq, rowDate, rowStartTime, rowEndTime, rowWage, rowaddr,
               msg.messageLib.doYouLike.value),
-                        reply_markup=menu.keyLib.kbCreateMenuCancelShift(shiftId=shiftRow[9]))
+                                reply_markup=menu.keyLib.kbCreateMenuCancelShift(shiftId=shiftRow[9]))

@@ -19,9 +19,10 @@ MAX_IDLE_TIME = 600
 mydb = msc.mysqlconnector()
 idFromFile = None
 # sirmrmco1
-bot = telepot.Bot('409679224:AAHAWm_FaSNiuthByMxAESwqq4SFYR8CxZE')
+# bot = telepot.Bot('409679224:AAHAWm_FaSNiuthByMxAESwqq4SFYR8CxZE')
 # shiftkari
-# bot = telepot.Bot('6012649808:AAGXWUsZJBtvWsFlYuvqg18tgIwo7ildPUs')
+bot = telepot.Bot('6012649808:AAGXWUsZJBtvWsFlYuvqg18tgIwo7ildPUs')
+
 
 # admins = mydb.getAdmins()
 # image = 'download/2c3809f7-8e48-4cbf-acb7-bc7b0c9d1cd4.jpg'
@@ -115,9 +116,12 @@ def handle_new_messages(user_id, userName):
                     titlePos = 'دانشجو'
                 elif tempMember.membership_type == 4:
                     titlePos = 'مدیر'
-                bot.sendMessage(message['chat']['id'],
-                                str(msg.messageLib.duplicateregistration.value).format(titlePos),
-                                reply_markup=menu.keyLib.kbCreateDelKey(message['chat']['id']))
+                try:
+                    bot.sendMessage(message['chat']['id'],
+                                    str(msg.messageLib.duplicateregistration.value).format(titlePos),
+                                    reply_markup=menu.keyLib.kbCreateDelKey(message['chat']['id']))
+                except:
+                    bot.sendMessage('6274361322','{0}:{1}'.format(message['chat']['id'],message['text']))
             elif tempMember.register_progress == 1:
                 mydb.member_update_chatid('name', message['text'], message['chat']['id'])
                 bot.sendMessage(message['chat']['id'],
@@ -293,7 +297,7 @@ def handle_new_messages(user_id, userName):
                         image_path = 'download/{0}{1}'.format(ufid, fileExtention)
                         bot.download_file(file_id, image_path)
                         mydb.student_update('overtime_license_photo', '{0}{1}'.format(ufid, fileExtention),
-                                            message['chat']['username'])
+                                            userName)
                         mydb.member_update_chatid('registration_progress', 8, message['chat']['id'])
                         tempMember.register_progress = 8
                         bot.sendMessage(message['chat']['id'],
@@ -311,7 +315,7 @@ def handle_new_messages(user_id, userName):
                         image_path = 'download/{0}{1}'.format(ufid, fileExtention)
                         bot.download_file(file_id, image_path)
                         mydb.student_update('personal_photo', '{0}{1}'.format(ufid, fileExtention),
-                                            message['chat']['username'])
+                                            message['chat']['id'])
                         tempMember.register_progress = 9
                         bot.sendMessage(message['chat']['id'],
                                         str(msg.messageLib.enterPermitActivity.value),
@@ -340,9 +344,9 @@ def handle_new_messages(user_id, userName):
                         if op == 0:
 
                             try:
-                                yearIn = int(str(message['text'])[0:3])
-                                monthIn = int(str(message['text'])[4:5])
-                                dayIn = int(str(message['text'])[6:7])
+                                yearIn = int(str(message['text'])[0:4])
+                                monthIn = int(str(message['text'])[4:6])
+                                dayIn = int(str(message['text'])[6:])
                                 dateMiladiIn = JalaliDate(yearIn, monthIn, dayIn).to_gregorian()
                                 todayDate = datetime.date.today()
                                 diffDay = relativedelta(dateMiladiIn, todayDate).days
@@ -735,7 +739,7 @@ def handle_new_messages(user_id, userName):
                     else:
                         bot.sendMessage(message['chat']['id'], msg.messageLib.emptyList.value)
             if btn == 'btnFounder':
-                tempMember.userName = update['callback_query']['from']['username']
+                tempMember.userName = userName
                 tempMember.lastMessage = update['update_id']
                 tempMember.membership_type = 1
                 tempMember.chatId = update['callback_query']['chat_instance']
@@ -746,7 +750,7 @@ def handle_new_messages(user_id, userName):
                 bot.sendMessage(message['chat']['id'],
                                 str(msg.messageLib.enterName.value))
             if btn == 'btnTechnicalResponsible':
-                tempMember.userName = update['callback_query']['from']['username']
+                tempMember.userName = userName
                 tempMember.lastMessage = update['update_id']
                 tempMember.membership_type = 2
                 tempMember.chatId = update['callback_query']['chat_instance']
@@ -757,7 +761,7 @@ def handle_new_messages(user_id, userName):
                 bot.sendMessage(message['chat']['id'],
                                 str(msg.messageLib.enterName.value))
             if btn == 'btnStudent':
-                tempMember.userName = update['callback_query']['from']['username']
+                tempMember.userName = userName
                 tempMember.lastMessage = update['update_id']
                 tempMember.membership_type = 3
                 tempMember.chatId = update['callback_query']['chat_instance']
@@ -768,7 +772,7 @@ def handle_new_messages(user_id, userName):
                 bot.sendMessage(message['chat']['id'],
                                 str(msg.messageLib.enterName.value))
             if btn == 'btnMananger':
-                tempMember.userName = update['callback_query']['from']['username']
+                tempMember.userName = userName
                 tempMember.lastMessage = update['update_id']
                 tempMember.membership_type = 4
                 tempMember.chatId = update['callback_query']['chat_instance']
@@ -888,7 +892,7 @@ def handle_new_messages(user_id, userName):
                     bot.sendMessage(admin[0],
                                     str(msg.messageLib.labelDateStartPermit.value).format(
                                         mydb.get_student_property('start_date',
-                                                                  message['chat']['username'])))
+                                                                  message['chat']['id'])))
                     bot.sendMessage(admin[0],
                                     str(msg.messageLib.labelDateEndPermit.value).format(
                                         mydb.get_student_property('end_date', message['chat']['id'])))
@@ -928,7 +932,7 @@ def handle_new_messages(user_id, userName):
                     bot.sendMessage(admin[0],
                                     str(msg.messageLib.labelDateStartPermit.value).format(
                                         mydb.get_student_property('start_date',
-                                                                  message['chat']['username'])))
+                                                                  message['chat']['id'])))
                     bot.sendMessage(admin[0],
                                     str(msg.messageLib.labelDateEndPermit.value).format(
                                         mydb.get_student_property('end_date', message['chat']['id'])))
@@ -984,11 +988,15 @@ def handle_updates(updates):
 
 # شروع برنامه
 def main():
-    while True:
-        # دریافت تمامی پیام های دریافتی
-        updates = bot.getUpdates(timeout=10)
-        if updates:
-            handle_updates(updates)
+    # try:
+        while True:
+            # دریافت تمامی پیام های دریافتی
+            updates = bot.getUpdates(timeout=10)
+            if updates:
+                handle_updates(updates)
+    # except Exception as e:
+    #     # bot.sendMessage('6274361322',str(e))
+    #     main()
 
 
 if __name__ == '__main__':
