@@ -118,12 +118,13 @@ class mysqlconnector:
         return  resualt
 
     def load_member(self,chatid):
-        sqlQuery = 'select * from `botshiftkari`.`membership` where chat_id = \'{}\''.format(chatid)
+        sqlQuery = 'select * from `botshiftkari`.`membership` where  chat_id = \'{}\''.format(chatid)
         mydb = self.connector()
         mycursor = mydb.cursor()
         mycursor.execute(sqlQuery)
         resualt = mycursor.fetchone()
         mycursor.reset()
+        tempMember=Membership()
         tempMember=Membership()
         if resualt != None :
             tempMember.name=resualt[1]
@@ -135,6 +136,7 @@ class mysqlconnector:
             tempMember.userName = resualt[7]
             tempMember.chatId = resualt[8]
             tempMember.lastMessage = resualt[9]
+            tempMember.delf = resualt[14]
         else:
             tempMember = None
         return  tempMember
@@ -162,6 +164,25 @@ class mysqlconnector:
         resualt= mycursor.execute(sqlQuery)
         mycursor.reset()
         return  resualt
+
+    def reactive_member_chatid(self, chatid):
+        sqlQuery = 'select id from `botshiftkari`.`membership` where chat_id=\'{0}\''.format(chatid)
+        mydb = self.connector()
+        mydb.autocommit = True
+        mycursor = mydb.cursor()
+        mycursor.execute(sqlQuery)
+        resualt = mycursor.fetchone();
+        print(chatid)
+        print(resualt[0])
+        if resualt is None:
+            return None
+        else:
+            sqlQuery = '''update `botshiftkari`.`membership` set del=0 WHERE id={0};
+                            update `botshiftkari`.`founder` set del=0 WHERE idMember={0};
+                            update `botshiftkari`.`student` set del=0 WHERE idMember ={0};
+                            update `botshiftkari`.`technicalmanager` set del=0 WHERE idMember={0};'''.format(resualt[0])
+            mycursor.execute(sqlQuery)
+            return resualt[0]
     def del_member_chatid(self,chatid):
         sqlQuery = 'select id from `botshiftkari`.`membership` where chat_id=\'{0}\''.format(chatid)
         mydb = self.connector()
@@ -174,10 +195,10 @@ class mysqlconnector:
         if resualt is None:
             return None
         else:
-            sqlQuery = '''DELETE FROM `botshiftkari`.`membership` WHERE id={0};
-                          DELETE FROM `botshiftkari`.`founder`WHERE idMember={0};
-                          DELETE FROM `botshiftkari`.`student` WHERE idMember ={0};
-                          DELETE FROM `botshiftkari`.`technicalmanager` WHERE idMember={0};'''.format(resualt[0])
+            sqlQuery = '''update `botshiftkari`.`membership` set del=1 WHERE id={0};
+                          update `botshiftkari`.`founder` set del=1 WHERE idMember={0};
+                          update `botshiftkari`.`student` set del=1 WHERE idMember ={0};
+                          update `botshiftkari`.`technicalmanager` set del=1 WHERE idMember={0};'''.format(resualt[0])
             mycursor.execute(sqlQuery)
             return resualt[0]
     def get_member_property_Adminchatid(self,fieldName,chatid):
@@ -256,7 +277,7 @@ class mysqlconnector:
         mycursor.reset()
         return  resualt
     def get_student_property(self,fieldName,chatid):
-        sqlQuery = 'select id from `botshiftkari`.`membership` where  chatid = \'{0}\''.format(chat_id)
+        sqlQuery = 'select id from `botshiftkari`.`membership` where  chat_id = \'{0}\''.format(chatid)
         mydb = self.connector()
         mydb.autocommit = True
         mycursor = mydb.cursor()

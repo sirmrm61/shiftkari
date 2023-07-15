@@ -112,3 +112,7 @@ class keyLib:
             [InlineKeyboardButton(text='کنسل می کنم'
                                        ' ', callback_data='btn_cancelShiftBtnList_{}'.format(str(shiftId)))]
         ])
+    def kbCreateMenuReactive(self=None, memberId=None):
+        return InlineKeyboardMarkup(inline_keyboard=[
+            [InlineKeyboardButton(text='فعال کن', callback_data='btn_reactive_{}'.format(str(memberId)))]
+        ])

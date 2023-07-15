@@ -10,8 +10,16 @@ class Membership:
         self._chatId = chatid
         self._lastMessage = 0
         self._lastActivity = None
-        self._chatid =None
+        self._chatid = None
+        self._delf = 0
 
+    @property
+    def delf(self):
+        return int(self._delf)
+
+    @delf.setter
+    def delf(self, new_delf):
+        self._delf = int(new_delf)
 
     @property
     def name(self):
