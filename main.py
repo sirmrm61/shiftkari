@@ -20,11 +20,11 @@ MAX_IDLE_TIME = 600
 mydb = msc.mysqlconnector()
 idFromFile = None
 # sirmrmco1
-# bot = telepot.Bot('409679224:AAHAWm_FaSNiuthByMxAESwqq4SFYR8CxZE')
+bot = telepot.Bot('409679224:AAHAWm_FaSNiuthByMxAESwqq4SFYR8CxZE')
 
 
 # shiftkari
-bot = telepot.Bot('6012649808:AAGXWUsZJBtvWsFlYuvqg18tgIwo7ildPUs')
+# bot = telepot.Bot('6012649808:AAGXWUsZJBtvWsFlYuvqg18tgIwo7ildPUs')
 
 
 # admins = mydb.getAdmins()
@@ -149,6 +149,10 @@ def handle_new_messages(user_id, userName, update):
             mydb.member_update_chatid('registration_progress', 3, message['chat']['id'])
             tempMember.register_progress = 3
         elif tempMember.register_progress == 3:
+            phone = message['text']
+            if not fh.helperFunder.validate_IR_mobile_number(phone):
+                bot.sendMessage(message['chat']['id'], msg.messageLib.errorPhoneNumber.value)
+                return
             mydb.member_update_chatid('phone_number', message['text'], message['chat']['id'])
             tempMember.phone_number = message['text']
             if tempMember.membership_type == 1:
@@ -188,12 +192,20 @@ def handle_new_messages(user_id, userName, update):
                 mydb.member_update_chatid('registration_progress', 5, message['chat']['id'])
                 tempMember.register_progress = 5
             elif tempMember.membership_type == 2:
+                nationCode = message['text']
+                if not fh.helperFunder.validate_IR_national_id(nationCode):
+                    bot.sendMessage(message['chat']['id'],msg.messageLib.errrorNation.value)
+                    return
                 mydb.technicalManager_update('national_code', message['text'], message['chat']['id'])
                 bot.sendMessage(message['chat']['id'],
                                 str(msg.messageLib.enetrcodePharmaceutical.value))
                 mydb.member_update_chatid('registration_progress', 5, message['chat']['id'])
                 tempMember.register_progress = 5
             elif tempMember.membership_type == 3:
+                nationCode = message['text']
+                if not fh.helperFunder.validate_IR_national_id(nationCode):
+                    bot.sendMessage(message['chat']['id'],msg.messageLib.errrorNation.value)
+                    return
                 mydb.student_update('national_code', message['text'], message['chat']['id'])
                 bot.sendMessage(message['chat']['id'],
                                 str(msg.messageLib.enterLicenseStartDate.value))
