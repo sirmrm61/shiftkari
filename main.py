@@ -1029,18 +1029,16 @@ def handle_updates(updates):
 # شروع برنامه
 def main():
     lui = 0
-    # try:
-    while True:
+    try:
+     while True:
         # دریافت تمامی پیام های دریافتی
         updates = bot.getUpdates(timeout=10, offset=lui)
         if updates:
             lui = int(updates[-1]['update_id']) + 1
             handle_updates(updates)
-
-
-# except Exception as e:
-#     # bot.sendMessage('6274361322',str(e))
-#     main()
+    except Exception as e:
+     bot.sendMessage('6274361322',str(e))
+     main()
 
 
 if __name__ == '__main__':
