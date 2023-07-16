@@ -730,11 +730,11 @@ def handle_new_messages(user_id, userName, update):
                 print(spBtn)
                 mydb.shift_update_by_id('progress', 2, spBtn[2])
                 cr = mydb.get_shift_property('creator', spBtn[2])
-                bot.sendMessage(cr, msg.messageLib.approvedByManager.value)
+                bot.sendMessage(cr, msg.messageLib.shiftApprovedByManager.value)
             elif spBtn[1] == 'disApproveShiftManager':
                 mydb.shift_update_by_id('progress', 3, spBtn[2])
                 cr = mydb.get_shift_property('creator', spBtn[2])
-                bot.sendMessage(cr, msg.messageLib.disApprovedByManager.value)
+                bot.sendMessage(cr, msg.messageLib.shiftDisApprovedByManager.value)
             elif spBtn[1] == 'listFunderManager':
                 resualt = mydb.get_all_member(tye=1)
                 print(resualt);
