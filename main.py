@@ -70,7 +70,7 @@ def handle_new_messages(user_id, userName, update):
     # message = None
     # for update in updates:
     #     print(update)
-    message = None;
+    message = None
     if 'message' in update:
         print('tempMember.delf={}'.format(tempMember.delf))
         if tempMember.delf == 0:
@@ -116,11 +116,11 @@ def handle_new_messages(user_id, userName, update):
                                 reply_markup=menu.keyLib.kbCreateMenuManager(chatId=message['chat']['id']))
         elif 'text' in message and message['text'] == '/myoperation':
             fh.helperFunder.send_operation(tempMember=tempMember, bot=bot, chatid=message['chat']['id'])
+        # TODO: کد ملی تکراری چک شود
         elif 'text' in message and tempMember.register_progress == 0 and message['text'] == '/start':
             bot.sendMessage(message['chat']['id'], str(msg.messageLib.helloClient.value).format(
                 message['chat']['first_name']), reply_markup=menu.keyLib.kbWhoAreYou())
-        elif 'text' in message and tempMember.register_progress != 0 and message[
-            'text'] == '/start':
+        elif 'text' in message and tempMember.register_progress != 0 and message['text'] == '/start':
             titlePos = None
             if tempMember.membership_type == 1:
                 titlePos = 'موسس'
@@ -194,7 +194,7 @@ def handle_new_messages(user_id, userName, update):
             elif tempMember.membership_type == 2:
                 nationCode = message['text']
                 if not fh.helperFunder.validate_IR_national_id(nationCode):
-                    bot.sendMessage(message['chat']['id'],msg.messageLib.errrorNation.value)
+                    bot.sendMessage(message['chat']['id'], msg.messageLib.errrorNation.value)
                     return
                 mydb.technicalManager_update('national_code', message['text'], message['chat']['id'])
                 bot.sendMessage(message['chat']['id'],
@@ -204,7 +204,7 @@ def handle_new_messages(user_id, userName, update):
             elif tempMember.membership_type == 3:
                 nationCode = message['text']
                 if not fh.helperFunder.validate_IR_national_id(nationCode):
-                    bot.sendMessage(message['chat']['id'],msg.messageLib.errrorNation.value)
+                    bot.sendMessage(message['chat']['id'], msg.messageLib.errrorNation.value)
                     return
                 mydb.student_update('national_code', message['text'], message['chat']['id'])
                 bot.sendMessage(message['chat']['id'],
@@ -429,23 +429,34 @@ def handle_new_messages(user_id, userName, update):
                                             chatId='{}'.format(op)))
                     if op == 8:
                         mydb.member_update('op', 9, message['chat']['id'])
-                        mydb.shift_update('pharmacyAddress', message['text'], message['chat']['id'])
+                        rs = mydb.shift_update('pharmacyAddress', message['text'], message['chat']['id'])
                         bot.sendMessage(message['chat']['id'],
                                         'آیا آدرس {0} برای داروخانه صحیح است؟'.format(message['text']),
                                         reply_markup=menu.keyLib.kbCreateMenuYesNO(
-                                            chatId='{}'.format(op)))
+                                            chatId='{0}_{1}'.format(9, rs[0])))
 
     elif 'callback_query' in update:
         message = update['callback_query']['message']
         btn = update['callback_query']['data']
         spBtn = btn.split('_')
+        # TODO: Delete Command Print
         pprint(btn)
         if len(spBtn) > 1:
             if spBtn[1] == 'verify':
                 mydb.member_update_chatid('verifyAdmin', 1, spBtn[2])
                 bot.sendMessage(spBtn[2], msg.messageLib.congratulationsApproveAdmin.value)
+            elif spBtn[1] == 'hr':
+                #     todo: تغییر ساعت اطلاع رسای بهدانشجوین
+                bot.sendMessage(user_id, msg.messageLib.changeHour.value)
+                return None
+            elif spBtn[1] == 'minWage':
+                #     todo: تغییر حداقل دستمزد
+                return None
+            elif spBtn[1] == 'minWage':
+                #     todo:   پروانه تغییر حداقل دستمزد
+                return None
             elif spBtn[1] == 'repShift':
-                fh.helperFunder.msg_get_all_shift_approve(message=message, bot=bot);
+                fh.helperFunder.msg_get_all_shift_approve(message=message, bot=bot)
             elif spBtn[1] == 'reactive':
                 tempMember.delf = 0
                 mydb.member_update(fieldName='del', fieldValue=0, chatid=spBtn[2])
@@ -492,16 +503,19 @@ def handle_new_messages(user_id, userName, update):
                     addressPharmacy = None
                     if tempMember.membership_type == 1:
                         addressPharmacy = mydb.get_funder_property('pharmacy_address', message['chat']['id'])
-                        mydb.shift_update('pharmacyAddress', addressPharmacy, user_id)
+                        rs = mydb.shift_update('pharmacyAddress', addressPharmacy, user_id)
                     if addressPharmacy is not None:
                         bot.sendMessage(message['chat']['id'],
                                         'آیا آدرس {0} برای داروخانه صحیح است؟'.format(addressPharmacy),
                                         reply_markup=menu.keyLib.kbCreateMenuYesNO(
-                                            chatId='{}'.format(9)))
+                                            chatId='{0}_{1}'.format(9, rs[0])))
                         mydb.member_update('op', 9, message['chat']['id'])
                     else:
                         mydb.member_update('op', 8, message['chat']['id'])
-                if int(op) == 9:
+                if int(op) == 9:  # TODO: delete print command
+                    print(spBtn[3])
+                    # Send Shift to All Technical Responsible
+                    fh.helperFunder.send_shift_to_technicalResponsible(spBtn[3], bot)
                     bot.sendMessage(message['chat']['id'], msg.messageLib.endRegisterShift.value)
                     mydb.member_update('op', 0, message['chat']['id'])
                     # mydb.shift_update('pharmacyAddress', spBtn[3], spBtn[2])
@@ -723,9 +737,7 @@ def handle_new_messages(user_id, userName, update):
 {5}
 {6}
 {7}'''.format(rowReq, rowDate, rowStartTime, rowEndTime, rowWage, rowaddr, rowApprove,
-              msg.messageLib.doYouLikeApprove.value),
-                                        reply_markup=menu.keyLib.kbCreateMenuShiftApproveManager(
-                                            shiftId=shiftRow[9]))
+              msg.messageLib.doYouLikeApprove.value))
             elif spBtn[1] == 'approveShiftManager':
                 print(spBtn)
                 mydb.shift_update_by_id('progress', 2, spBtn[2])
@@ -1030,15 +1042,20 @@ def handle_updates(updates):
 def main():
     lui = 0
     try:
-     while True:
-        # دریافت تمامی پیام های دریافتی
-        updates = bot.getUpdates(timeout=10, offset=lui)
-        if updates:
-            lui = int(updates[-1]['update_id']) + 1
-            handle_updates(updates)
+        while True:
+            # todo: بررسی کردن شیفت ها آیا برای دانشجویان شیفتی ارسال شود؟
+            # todo: ثبت اطلاعات فاصله ساعت ارسال برای مسئولان فنی و دانشجویان
+            # todo:شیفت ها فقط یک بار تائید بشه
+            # todo: تائیدیه پاک کردن شیفت
+            # دریافت تمامی پیام های دریافتی
+            updates = bot.getUpdates(timeout=10, offset=lui)
+            if updates:
+                lui = int(updates[-1]['update_id']) + 1
+                handle_updates(updates)
     except Exception as e:
-     bot.sendMessage('6274361322',str(e))
-     main()
+        lui = lui + 1
+        bot.sendMessage('6274361322', str(e))
+        main()
 
 
 if __name__ == '__main__':

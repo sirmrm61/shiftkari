@@ -127,26 +127,10 @@ class helperFunder:
         # Check if all characters in the national id are digits
         if not national_id.isdigit():
             return False
-
-        # Calculate the tenth digit
-        if int(national_id[3:5]) > 12:
-            birth_year = "13" + national_id[0:2]
-        else:
-            birth_year = "14" + national_id[0:2]
-        if int(birth_year) >= 1340:
-            base = 3
-        else:
-            base = 2
-        check_sum = 0
-        for i in range(9):
-            check_sum += int(national_id[i]) * (base + i)
-        check_digit = (check_sum % 11)
-        if check_digit < 2:
-            return int(national_id[9]) == check_digit
-        else:
-            return int(national_id[9]) == 11 - check_digit
+        return True
 
     def validate_IR_mobile_number(mobile_number):
+
         # Check if mobile number has exactly 11 digits
         if not len(mobile_number) == 11:
             return False
@@ -161,3 +145,24 @@ class helperFunder:
 
         # If all conditions are met, return True
         return True
+
+    def send_shift_to_technicalResponsible(idshift, bot):
+        shiftRow = mydb.get_all_property_shift_byId(idshift)
+        ts = mydb.get_all_ts_chatid()
+        for t in ts:
+            rowReq = 'درخواست دهنده: {}'.format(shiftRow[0])
+            rowDate = 'تاریخ  : {}'.format(shiftRow[2])
+            rowStartTime = 'ساعت شروع  : {}'.format(shiftRow[3])
+            rowEndTime = 'ساعت پایان  : {}'.format(shiftRow[4])
+            rowWage = 'حق الزحمه  : {}'.format(shiftRow[5])
+            rowaddr = 'آدرس  : {}'.format(shiftRow[6])
+            bot.sendMessage(t[0], '''
+{0}
+{1}
+{2}
+{3}
+{4}
+{5}
+{6}'''.format(rowReq, rowDate, rowStartTime, rowEndTime, rowWage, rowaddr,
+              msg.messageLib.doYouLike.value),
+                            reply_markup=menu.keyLib.kbCreateMenuCancelShift(shiftId=shiftRow[9]))
