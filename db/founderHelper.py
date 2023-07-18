@@ -166,3 +166,25 @@ class helperFunder:
 {6}'''.format(rowReq, rowDate, rowStartTime, rowEndTime, rowWage, rowaddr,
               msg.messageLib.doYouLike.value),
                             reply_markup=menu.keyLib.kbCreateMenuCancelShift(shiftId=shiftRow[9]))
+
+    def send_shift_to_student(idshift, bot):
+        shiftRows = mydb.get_list_shift_for_student()  # shift's for student
+        students = mydb.get_all_student_chatid() # 3 is tpe of student
+        for shiftRow in shiftRows:
+            for st in students:
+                rowReq = 'درخواست دهنده: {}'.format(shiftRow[0])
+                rowDate = 'تاریخ  : {}'.format(shiftRow[2])
+                rowStartTime = 'ساعت شروع  : {}'.format(shiftRow[3])
+                rowEndTime = 'ساعت پایان  : {}'.format(shiftRow[4])
+                rowWage = 'حق الزحمه  : {}'.format(shiftRow[5])
+                rowaddr = 'آدرس  : {}'.format(shiftRow[6])
+                bot.sendMessage(st[0], '''
+{0}
+{1}
+{2}
+{3}
+{4}
+{5}
+{6}'''.format(rowReq, rowDate, rowStartTime, rowEndTime, rowWage, rowaddr,
+              msg.messageLib.doYouLike.value),
+                            reply_markup=menu.keyLib.kbCreateMenuApproveShift(shiftId=shiftRow[9]))

@@ -475,7 +475,7 @@ class mysqlconnector:
                          mem.chat_id = shi.Creator and shi.del=0 '''
         mycursor.execute(sqlQuery)
         resualt = mycursor.fetchall()
-        return resualt;
+        return resualt
 
     def get_all_shift_managerForApprove(self=None):
         mydb = self.connector()
@@ -563,7 +563,7 @@ class mysqlconnector:
         mydb.autocommit = True
         mycursor = mydb.cursor()
         sqlQuery = '''SELECT mem.chat_id from botshiftkari.membership as mem where mem.del=0 and 
-        mem.membership_type=4 '''
+        mem.membership_type=2 '''
         mycursor.execute(sqlQuery)
         resualt = mycursor.fetchall()
         return resualt
@@ -572,17 +572,61 @@ class mysqlconnector:
         mydb = self.connector()
         mydb.autocommit = True
         myCursor = mydb.cursor()
-        sqlQuery = '''SELECT value from frameshift.domain where key = \'{0}\''''.format(key)
+        sqlQuery = '''SELECT value from `botshiftkari`.`domain` where `key` = \'{0}\''''.format(key)
         myCursor.execute(sqlQuery)
         resualt = myCursor.fetchone()
-        return resualt
+        return resualt[0]
 
-    def shift_reserve_by_id(self, key, value):
+    def domain_update_by_key(self, key, value):
         mydb = self.connector()
         mydb.autocommit = True
         myCursor = mydb.cursor()
-        sqlQuery = 'UPDATE `botshiftkari`.`domain` SET `value` = \'{0}\'  where key = \'{1}\''.format(value, key)
+        sqlQuery = 'UPDATE `botshiftkari`.`domain` SET `value` = \'{0}\'  where `key` = \'{1}\''.format(value, key)
         print(sqlQuery)
         myCursor.execute(sqlQuery)
         myCursor.reset()
         return None
+
+    def rep_nation_code(self, nationCode):
+        mydb = self.connector()
+        mydb.autocommit = True
+        myCursor = mydb.cursor()
+        sqlQuery = 'select count(*) from `botshiftkari`.`technicalmanager` where `national_code` = \'{0}\''.format(
+            nationCode)
+        myCursor.execute(sqlQuery)
+        resualt = myCursor.fetchone()
+        if int(resualt[0]) > 0:
+            return True
+        sqlQuery = 'select count(*) from `botshiftkari`.`student` where `national_code` = \'{0}\''.format(
+            nationCode)
+        myCursor.execute(sqlQuery)
+        resualt = myCursor.fetchone()
+        if int(resualt[0]) > 0:
+            return True
+        return False
+
+    def get_list_shift_for_student(self):
+        mydb = self.connector()
+        mydb.autocommit = True
+        myCursor = mydb.cursor()
+        sqlQuery = 'select `value` from `botshiftkari`.`domain` where `key` = \'wage\''
+        myCursor.execute(sqlQuery)
+        resualt = myCursor.fetchone()
+        sqlQuery = '''SELECT concat(mem.name,' ',mem.last_name) as fullname,creator,
+                        DateShift,startTime,endTime,wage,pharmacyAddress,progress,approver,shi.idshift
+                        FROM botshiftkari.shift shi inner join botshiftkari.membership mem on
+                         mem.chat_id = shi.Creator where `progress` > '0'  and    `progress` < '3'  and 
+                         `send` = 0 and  date_add(shi.dateRegiter,interval {0} HOUR)<now()'''.format(
+            resualt[0])
+        myCursor.execute(sqlQuery)
+        resualt = myCursor.fetchall()
+        return resualt
+        return resualt
+
+    def get_all_student_chatid(self):
+        mydb = self.connector()
+        mycursor = mydb.cursor()
+        sqlQuery = 'SELECT mem.chat_id from botshiftkari.membership as mem where mem.del=0 and mem.membership_type=3 '
+        mycursor.execute(sqlQuery)
+        resualt = mycursor.fetchall()
+        return resualt
