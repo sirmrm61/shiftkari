@@ -1085,7 +1085,7 @@ def main():
             # todo:شیفت ها فقط یک بار تائید بشه
             # todo: تائیدیه پاک کردن شیفت
             # دریافت تمامی پیام های دریافتی
-
+            fh.helperFunder.send_shift_to_student(bot=bot)
             updates = bot.getUpdates(timeout=10, offset=lui)
             if updates:
                 lui = int(updates[-1]['update_id']) + 1

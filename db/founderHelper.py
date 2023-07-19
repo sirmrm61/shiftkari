@@ -167,11 +167,13 @@ class helperFunder:
               msg.messageLib.doYouLike.value),
                             reply_markup=menu.keyLib.kbCreateMenuCancelShift(shiftId=shiftRow[9]))
 
-    def send_shift_to_student(idshift, bot):
+    def send_shift_to_student(self=None, bot=None):
         shiftRows = mydb.get_list_shift_for_student()  # shift's for student
         students = mydb.get_all_student_chatid() # 3 is tpe of student
         for shiftRow in shiftRows:
             for st in students:
+                print('student ={0}'.format(st[0]))
+                mydb.shift_update_by_id(fieldName='send',fieldValue=1,idshift=shiftRow[9])
                 rowReq = 'درخواست دهنده: {}'.format(shiftRow[0])
                 rowDate = 'تاریخ  : {}'.format(shiftRow[2])
                 rowStartTime = 'ساعت شروع  : {}'.format(shiftRow[3])
