@@ -89,3 +89,4 @@ class messageLib(Enum):
     changeLicenssSuccess = 'حداقل اجاره پروانه به {0} ریال تغییر پیدا کرد'
     repNationCode = 'کد ملی تکراریست'
     confirmDeleteShift = 'آیا از حذف کردن شیفت مطمئن هستید؟'
+    enterDateEnd = 'تاریخ پایان شیفت را انتخاب کنید'

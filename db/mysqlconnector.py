@@ -384,6 +384,7 @@ class mysqlconnector:
             sqlQuery = 'insert into `botshiftkari`.`shift` (Creator,{0}) values (\'{1}\',\'{2}\')'.format(fieldName,
                                                                                                           chatid,
                                                                                                           fieldValue)
+            resualt = mycursor.lastrowid
         else:
             sqlQuery = 'UPDATE `botshiftkari`.`shift` SET `{0}` = \'{1}\'  where progress=0 and Creator = \'{2}\''.format(
                 fieldName, fieldValue, chatid)
@@ -553,7 +554,7 @@ class mysqlconnector:
         sqlQuery = '''SELECT concat(mem.name,mem.last_name) as fullname,creator,
                         DateShift,startTime,endTime,wage,pharmacyAddress,progress,approver,shi.idshift
                         FROM botshiftkari.shift shi inner join botshiftkari.membership mem on
-                         mem.chat_id = shi.Creator where  shi.shift={0}'''.format(idshift)
+                         mem.chat_id = shi.Creator where  shi.idshift={0}'''.format(idshift)
         mycursor.execute(sqlQuery)
         resualt = mycursor.fetchone()
         return resualt

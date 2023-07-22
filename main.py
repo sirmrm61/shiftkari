@@ -515,16 +515,90 @@ def handle_new_messages(user_id, userName, update):
             elif spBtn[1] == 'createSift':
                 if tempMember.membership_type == 1 or tempMember.membership_type == 2:
                     bot.sendMessage(message['chat']['id'], msg.messageLib.dateShift.value)
+                    bot.sendMessage(chat_id=user_id, parse_mode='HTML', text='سال را کنید',
+                                    reply_markup=menu.keyLib.kbCreateMenuYear(tag=1))
                     mydb.member_update('op', 0, message['chat']['id'])
                 else:
                     bot.sendMessage(message['chat']['id'], msg.messageLib.notAccess.value)
+            elif spBtn[1] == 'year':
+                if spBtn[3] == '1':
+                    rowid = mydb.shift_update('DateShift', spBtn[2], user_id)
+                    # todo: delete print Command
+                    print('rowid = {}'.format(rowid[0]))
+                    bot.sendMessage(chat_id=user_id, parse_mode='HTML', text='ماه انتخاب کنید',
+                                    reply_markup=menu.keyLib.kbCreateMenuMonthInYear(tag='1_{}'.format(rowid[0])))
+                elif spBtn[3] == '2':
+                    mydb.shift_update_by_id('dateEndShift', spBtn[2], spBtn[4])
+                    bot.sendMessage(chat_id=user_id, parse_mode='HTML', text='ماه انتخاب کنید',
+                                    reply_markup=menu.keyLib.kbCreateMenuMonthInYear(tag='2_{}'.format(spBtn[4])))
+            elif spBtn[1] == 'month':
+                if spBtn[3] == '1':
+                    year = mydb.get_shift_property(fieldName='DateShift', idShift=spBtn[4])
+                    mydb.shift_update_by_id('DateShift', '{0}-{1}'.format(year, spBtn[2]), spBtn[4])
+                    bot.sendMessage(chat_id=user_id, parse_mode='HTML', text='روز انتخاب کنید',
+                                    reply_markup=menu.keyLib.kbCreateMenuDayInMonth(tag='1_{}'.format(spBtn[4])))
+                elif spBtn[3] == '2':
+                    year = mydb.get_shift_property(fieldName='dateEndShift', idShift=spBtn[4])
+                    mydb.shift_update_by_id('dateEndShift', '{0}-{1}'.format(year, spBtn[2]), spBtn[4])
+                    bot.sendMessage(chat_id=user_id, parse_mode='HTML', text='روز انتخاب کنید',
+                                    reply_markup=menu.keyLib.kbCreateMenuDayInMonth(tag='2_{}'.format(spBtn[4])))
+            elif spBtn[1] == 'day':
+                if spBtn[3] == '1':
+                    year = mydb.get_shift_property(fieldName='DateShift', idShift=spBtn[4])
+                    mydb.shift_update('DateShift', '{0}-{1}'.format(year, spBtn[2]), user_id)
+                    yearIn = int(str(year)[0:4])
+                    monthIn = int(str(year)[5:7])
+                    dayIn = int(str(spBtn[2]))
+                    dateMiladiIn = JalaliDate(yearIn, monthIn, dayIn).to_gregorian()
+                    todayDate = datetime.date.today()
+                    diffDay = relativedelta(dateMiladiIn, todayDate).days
+                    if diffDay > 0:
+                        mydb.member_update('op', 1, message['chat']['id'])
+                        mydb.shift_update('DateShift', '{0}-{1}'.format(year, spBtn[2]), message['chat']['id'])
+                        bot.sendMessage(message['chat']['id'],
+                                        'آیا {0} بعنوان تاریخ آغاز شیفت صحیح است؟'.format(
+                                            '{0}-{1}'.format(year, spBtn[2])),
+                                        reply_markup=menu.keyLib.kbCreateMenuYesNO(
+                                            chatId='{}'.format(spBtn[4])))
+                    else:
+                        bot.sendMessage(message['chat']['id'], msg.messageLib.invalidDate.value)
+                        bot.sendMessage(message['chat']['id'], msg.messageLib.dateShift.value)
+                        bot.sendMessage(chat_id=user_id, parse_mode='HTML', text='سال را کنید',
+                                        reply_markup=menu.keyLib.kbCreateMenuYear(tag=1))
+                elif spBtn[3] == '2':
+                    year = mydb.get_shift_property(fieldName='dateEndShift', idShift=spBtn[4])
+                    mydb.shift_update_by_id('dateEndShift', '{0}-{1}'.format(year, spBtn[2]), spBtn[4])
+                    yearIn = int(str(year)[0:4])
+                    monthIn = int(str(year)[5:7])
+                    dayIn = int(str(spBtn[2]))
+                    dateMiladiIn = JalaliDate(yearIn, monthIn, dayIn).to_gregorian()
+                    todayDate = datetime.date.today()
+                    diffDay = relativedelta(dateMiladiIn, todayDate).days
+                    if diffDay > 0:
+                        mydb.member_update('op', 11, message['chat']['id'])
+                        mydb.shift_update('dateEndShift', '{0}-{1}'.format(year, spBtn[2]), message['chat']['id'])
+                        bot.sendMessage(message['chat']['id'],
+                                        'آیا {0} بعنوان تاریخ پایان شیفت صحیح است؟'.format(
+                                            '{0}-{1}'.format(year, spBtn[2])),
+                                        reply_markup=menu.keyLib.kbCreateMenuYesNO(
+                                            chatId='{}'.format(spBtn[4])))
+                    else:
+                        bot.sendMessage(message['chat']['id'], msg.messageLib.invalidDate.value)
+                        bot.sendMessage(message['chat']['id'], msg.messageLib.dateShift.value)
+                        bot.sendMessage(chat_id=user_id, parse_mode='HTML', text='سال را کنید',
+                                        reply_markup=menu.keyLib.kbCreateMenuYear(tag=2))
             elif spBtn[1] == 'yes':
                 opBtn = int(spBtn[2])
                 op = mydb.get_member_property_chatid('op', message['chat']['id'])
                 print('{0} - {1} = {2}'.format(int(op), int(opBtn), int(op) - int(opBtn)))
                 if (int(op) - int(opBtn)) > 1:
                     bot.sendMessage(user_id, msg.messageLib.erroOnBack.value)
-                if int(op) == 1:
+                if int(op) == 1:  # تاریخ پایان شیفت بعدا اضافه شد
+                    bot.sendMessage(message['chat']['id'], msg.messageLib.enterDateEnd.value)
+                    bot.sendMessage(chat_id=user_id, parse_mode='HTML', text='سال را کنید',
+                                    reply_markup=menu.keyLib.kbCreateMenuYear(tag='2_{}'.format(spBtn[2])))
+                    mydb.member_update('op', 11, message['chat']['id'])
+                if int(op) == 11:
                     bot.sendMessage(message['chat']['id'], msg.messageLib.shiftStartTime.value)
                     mydb.member_update('op', 2, message['chat']['id'])
                 if int(op) == 3:
@@ -550,12 +624,10 @@ def handle_new_messages(user_id, userName, update):
                     else:
                         mydb.member_update('op', 8, message['chat']['id'])
                 if int(op) == 9:  # TODO: delete print command
-                    print(spBtn[3])
                     # Send Shift to All Technical Responsible
-                    fh.helperFunder.send_shift_to_technicalResponsible(spBtn[3], bot)
                     bot.sendMessage(message['chat']['id'], msg.messageLib.endRegisterShift.value)
+                    fh.helperFunder.send_shift_to_technicalResponsible(spBtn[3], bot)
                     mydb.member_update('op', 0, message['chat']['id'])
-                    # mydb.shift_update('pharmacyAddress', spBtn[3], spBtn[2])
                     mydb.shift_update('progress', 1, message['chat']['id'])
             elif spBtn[1] == 'NO':
                 opBtn = int(spBtn[2])
@@ -566,6 +638,8 @@ def handle_new_messages(user_id, userName, update):
                 if int(op) == 1:
                     mydb.member_update('op', 0, message['chat']['id'])
                     bot.sendMessage(message['chat']['id'], msg.messageLib.dateShift.value)
+                    bot.sendMessage(chat_id=user_id, parse_mode='HTML', text='سال را کنید',
+                                    reply_markup=menu.keyLib.kbCreateMenuYear(tag=1))
                 if int(op) == 3:
                     mydb.member_update('op', 2, message['chat']['id'])
                     bot.sendMessage(message['chat']['id'], msg.messageLib.shiftStartTime.value)
@@ -684,10 +758,10 @@ def handle_new_messages(user_id, userName, update):
 {7}'''.format(rowReq, rowDate, rowStartTime, rowEndTime, rowWage, rowaddr, rowApprove,
               msg.messageLib.doYouLikeDelete.value),
                                         reply_markup=menu.keyLib.kbCreateMenuDeleteShift(shiftId=shiftRow[9]))
-            elif spBtn[1] == 'DeleteShiftList': # فشردن دکمه حذف شیفت
+            elif spBtn[1] == 'DeleteShiftList':  # فشردن دکمه حذف شیفت
                 bot.sendMessage(user_id, msg.messageLib.confirmDeleteShift.value,
                                 reply_markup=menu.keyLib.kbCreateMenuConfirmDelete(spBtn[2]))
-            elif spBtn[1] == 'confirmDelete': #  تائیدیه پاک کردن شیفت توسط مدیر سیستم
+            elif spBtn[1] == 'confirmDelete':  # تائیدیه پاک کردن شیفت توسط مدیر سیستم
                 mydb.shift_update_by_id(fieldName='del', fieldValue='1', idshift=spBtn[2])
                 bot.sendMessage(message['chat']['id'], msg.messageLib.delShiftMessage.value)
             elif spBtn[1] == 'listSiftManager':
@@ -713,65 +787,65 @@ def handle_new_messages(user_id, userName, update):
 {6}'''.format(rowReq, rowDate, rowStartTime, rowEndTime, rowWage, rowaddr,
               msg.messageLib.doYouLikeDelete.value),
                                         reply_markup=menu.keyLib.kbCreateMenuDeleteShift(shiftId=shiftRow[9]))
-#  این کلیدها به درخواست کارفرما حذف گردید
-#             elif spBtn[1] == 'listSiftDisApprove':
-#                 allShift = mydb.get_all_shift_managerForApprove()
-#                 if len(allShift) == 0:
-#                     bot.sendMessage(message['chat']["id"], msg.messageLib.emptyList.value)
-#                 else:
-#                     for shiftRow in allShift:
-#                         rowReq = 'درخواست دهنده: {}'.format(shiftRow[0])
-#                         rowDate = 'تاریخ  : {}'.format(shiftRow[2])
-#                         rowStartTime = 'ساعت شروع  : {}'.format(shiftRow[3])
-#                         rowEndTime = 'ساعت پایان  : {}'.format(shiftRow[4])
-#                         rowWage = 'حق الزحمه  : {}'.format(shiftRow[5])
-#                         rowaddr = 'آدرس  : {}'.format(shiftRow[6])
-#                         approveManager = None
-#                         if int(shiftRow[7]) == 1:
-#                             approveManager = 'ندارد'
-#                         else:
-#                             approveManager = 'دارد'
-#                         rowApprove = 'تائید مدیر: {}'.format(approveManager)
-#                         bot.sendMessage(message['chat']["id"], '''
-# {0}
-# {1}
-# {2}
-# {3}
-# {4}
-# {5}
-# {6}
-# {7}'''.format(rowReq, rowDate, rowStartTime, rowEndTime, rowWage, rowaddr, rowApprove,
-#               msg.messageLib.doYouLikeApprove.value),
-#                                         reply_markup=menu.keyLib.kbCreateMenuShiftApproveManager(
-#                                             shiftId=shiftRow[9]))
-#             elif spBtn[1] == 'listSiftApprove':
-#                 allShift = mydb.get_all_shift_managerApproved()
-#                 if len(allShift) == 0:
-#                     bot.sendMessage(message['chat']["id"], msg.messageLib.emptyList.value)
-#                 else:
-#                     for shiftRow in allShift:
-#                         rowReq = 'درخواست دهنده: {}'.format(shiftRow[0])
-#                         rowDate = 'تاریخ  : {}'.format(shiftRow[2])
-#                         rowStartTime = 'ساعت شروع  : {}'.format(shiftRow[3])
-#                         rowEndTime = 'ساعت پایان  : {}'.format(shiftRow[4])
-#                         rowWage = 'حق الزحمه  : {}'.format(shiftRow[5])
-#                         rowaddr = 'آدرس  : {}'.format(shiftRow[6])
-#                         approveManager = None
-#                         if int(shiftRow[7]) == 1:
-#                             approveManager = 'ندارد'
-#                         else:
-#                             approveManager = 'دارد'
-#                         rowApprove = 'تائید مدیر: {}'.format(approveManager)
-#                         bot.sendMessage(message['chat']["id"], '''
-# {0}
-# {1}
-# {2}
-# {3}
-# {4}
-# {5}
-# {6}
-# {7}'''.format(rowReq, rowDate, rowStartTime, rowEndTime, rowWage, rowaddr, rowApprove,
-#               msg.messageLib.doYouLikeApprove.value))
+            #  این کلیدها به درخواست کارفرما حذف گردید
+            #             elif spBtn[1] == 'listSiftDisApprove':
+            #                 allShift = mydb.get_all_shift_managerForApprove()
+            #                 if len(allShift) == 0:
+            #                     bot.sendMessage(message['chat']["id"], msg.messageLib.emptyList.value)
+            #                 else:
+            #                     for shiftRow in allShift:
+            #                         rowReq = 'درخواست دهنده: {}'.format(shiftRow[0])
+            #                         rowDate = 'تاریخ  : {}'.format(shiftRow[2])
+            #                         rowStartTime = 'ساعت شروع  : {}'.format(shiftRow[3])
+            #                         rowEndTime = 'ساعت پایان  : {}'.format(shiftRow[4])
+            #                         rowWage = 'حق الزحمه  : {}'.format(shiftRow[5])
+            #                         rowaddr = 'آدرس  : {}'.format(shiftRow[6])
+            #                         approveManager = None
+            #                         if int(shiftRow[7]) == 1:
+            #                             approveManager = 'ندارد'
+            #                         else:
+            #                             approveManager = 'دارد'
+            #                         rowApprove = 'تائید مدیر: {}'.format(approveManager)
+            #                         bot.sendMessage(message['chat']["id"], '''
+            # {0}
+            # {1}
+            # {2}
+            # {3}
+            # {4}
+            # {5}
+            # {6}
+            # {7}'''.format(rowReq, rowDate, rowStartTime, rowEndTime, rowWage, rowaddr, rowApprove,
+            #               msg.messageLib.doYouLikeApprove.value),
+            #                                         reply_markup=menu.keyLib.kbCreateMenuShiftApproveManager(
+            #                                             shiftId=shiftRow[9]))
+            #             elif spBtn[1] == 'listSiftApprove':
+            #                 allShift = mydb.get_all_shift_managerApproved()
+            #                 if len(allShift) == 0:
+            #                     bot.sendMessage(message['chat']["id"], msg.messageLib.emptyList.value)
+            #                 else:
+            #                     for shiftRow in allShift:
+            #                         rowReq = 'درخواست دهنده: {}'.format(shiftRow[0])
+            #                         rowDate = 'تاریخ  : {}'.format(shiftRow[2])
+            #                         rowStartTime = 'ساعت شروع  : {}'.format(shiftRow[3])
+            #                         rowEndTime = 'ساعت پایان  : {}'.format(shiftRow[4])
+            #                         rowWage = 'حق الزحمه  : {}'.format(shiftRow[5])
+            #                         rowaddr = 'آدرس  : {}'.format(shiftRow[6])
+            #                         approveManager = None
+            #                         if int(shiftRow[7]) == 1:
+            #                             approveManager = 'ندارد'
+            #                         else:
+            #                             approveManager = 'دارد'
+            #                         rowApprove = 'تائید مدیر: {}'.format(approveManager)
+            #                         bot.sendMessage(message['chat']["id"], '''
+            # {0}
+            # {1}
+            # {2}
+            # {3}
+            # {4}
+            # {5}
+            # {6}
+            # {7}'''.format(rowReq, rowDate, rowStartTime, rowEndTime, rowWage, rowaddr, rowApprove,
+            #               msg.messageLib.doYouLikeApprove.value))
             elif spBtn[1] == 'approveShiftManager':
                 print(spBtn)
                 mydb.shift_update_by_id('progress', 2, spBtn[2])
@@ -1077,7 +1151,6 @@ def main():
     lui = 0
     # HTML کد پیام
     # html_message = '<table><tr><th>نام</th><th>سن</th></tr><tr><td>علی</td><td>30</td></tr><tr><td>محمد</td><td>25</td></tr></table>'
-    # bot.sendMessage(chat_id='6274361322',parse_mode='HTML',text= html_message)
     try:
         while True:
             # todo: بررسی کردن شیفت ها آیا برای دانشجویان شیفتی ارسال شود؟
@@ -1091,6 +1164,7 @@ def main():
                 lui = int(updates[-1]['update_id']) + 1
                 handle_updates(updates)
     except Exception as e:
+        print(e)
         lui = lui + 1
         bot.sendMessage('6274361322', str(e))
         main()
