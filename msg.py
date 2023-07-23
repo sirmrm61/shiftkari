@@ -90,3 +90,4 @@ class messageLib(Enum):
     repNationCode = 'کد ملی تکراریست'
     confirmDeleteShift = 'آیا از حذف کردن شیفت مطمئن هستید؟'
     enterDateEnd = 'تاریخ پایان شیفت را انتخاب کنید'
+    hrPermitTotal= 'میزان ساعت فعالیت براساس مجوز را وارد نمائید'

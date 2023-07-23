@@ -72,7 +72,6 @@ def handle_new_messages(user_id, userName, update):
     #     print(update)
     message = None
     if 'message' in update:
-        print('tempMember.delf={}'.format(tempMember.delf))
         if tempMember.delf == 0:
             last_update_id = tempMember.lastMessage
         elif tempMember.delf == 1 or tempMember.delf == 3:
@@ -244,6 +243,8 @@ def handle_new_messages(user_id, userName, update):
                 mydb.student_update('national_code', message['text'], message['chat']['id'])
                 bot.sendMessage(message['chat']['id'],
                                 str(msg.messageLib.enterLicenseStartDate.value))
+                bot.sendMessage(chat_id=user_id, parse_mode='HTML', text='سال را انتخاب کنید',
+                                reply_markup=menu.keyLib.kbCreateMenuYear(tag=4))
                 mydb.member_update_chatid('registration_progress', 5, message['chat']['id'])
                 tempMember.register_progress = 5
         elif tempMember.register_progress == 5:
@@ -286,11 +287,11 @@ def handle_new_messages(user_id, userName, update):
                     bot.sendMessage(message['chat']['id'],
                                     str(msg.messageLib.errorSendFile.value))
             elif tempMember.membership_type == 3:
-                mydb.student_update('start_date', message['text'], message['chat']['id'])
+                mydb.student_update('hourPermit', message['text'], user_id)
                 bot.sendMessage(message['chat']['id'],
-                                str(msg.messageLib.enterLicenseEndDate.value))
-                mydb.member_update_chatid('registration_progress', 6, message['chat']['id'])
-                tempMember.register_progress = 6
+                                str(msg.messageLib.enterWorkoverPermitPhoto.value))
+                mydb.member_update_chatid('registration_progress', 7, message['chat']['id'])
+                tempMember.register_progress = 7
         elif tempMember.register_progress == 6:
             if tempMember.membership_type == 1:
                 mydb.founder_update('pharmacy_address', message['text'], message['chat']['id'])
@@ -474,7 +475,6 @@ def handle_new_messages(user_id, userName, update):
         message = update['callback_query']['message']
         btn = update['callback_query']['data']
         spBtn = btn.split('_')
-        # TODO: Delete Command Print
         pprint(btn)
         if len(spBtn) > 1:
             if spBtn[1] == 'verify':
@@ -515,22 +515,37 @@ def handle_new_messages(user_id, userName, update):
             elif spBtn[1] == 'createSift':
                 if tempMember.membership_type == 1 or tempMember.membership_type == 2:
                     bot.sendMessage(message['chat']['id'], msg.messageLib.dateShift.value)
-                    bot.sendMessage(chat_id=user_id, parse_mode='HTML', text='سال را کنید',
+                    bot.sendMessage(chat_id=user_id, parse_mode='HTML', text='سال را انتخاب کنید',
                                     reply_markup=menu.keyLib.kbCreateMenuYear(tag=1))
                     mydb.member_update('op', 0, message['chat']['id'])
                 else:
                     bot.sendMessage(message['chat']['id'], msg.messageLib.notAccess.value)
             elif spBtn[1] == 'year':
+                yearTemp = None
+                todayDate = datetime.date.today()
+                jd = str(JalaliDate.to_jalali(todayDate.year, todayDate.month, todayDate.day)).split('-')
+                if spBtn[2] == 'currntYear':
+                    yearTemp = int(jd[0])
+                else:
+                    yearTemp = int(jd[0]) + 1
                 if spBtn[3] == '1':
-                    rowid = mydb.shift_update('DateShift', spBtn[2], user_id)
+                    rowid = mydb.shift_update('DateShift', yearTemp, user_id)
                     # todo: delete print Command
                     print('rowid = {}'.format(rowid[0]))
                     bot.sendMessage(chat_id=user_id, parse_mode='HTML', text='ماه انتخاب کنید',
                                     reply_markup=menu.keyLib.kbCreateMenuMonthInYear(tag='1_{}'.format(rowid[0])))
                 elif spBtn[3] == '2':
-                    mydb.shift_update_by_id('dateEndShift', spBtn[2], spBtn[4])
+                    mydb.shift_update_by_id('dateEndShift', yearTemp, spBtn[4])
                     bot.sendMessage(chat_id=user_id, parse_mode='HTML', text='ماه انتخاب کنید',
                                     reply_markup=menu.keyLib.kbCreateMenuMonthInYear(tag='2_{}'.format(spBtn[4])))
+                elif spBtn[3] == '4':
+                    mydb.student_update('start_date', yearTemp, user_id)
+                    bot.sendMessage(chat_id=user_id, parse_mode='HTML', text='ماه انتخاب کنید',
+                                    reply_markup=menu.keyLib.kbCreateMenuMonthInYear(tag='4_{}'.format(user_id)))
+                elif spBtn[3] == '5':
+                    mydb.student_update('end_date', yearTemp, user_id)
+                    bot.sendMessage(chat_id=user_id, parse_mode='HTML', text='ماه انتخاب کنید',
+                                    reply_markup=menu.keyLib.kbCreateMenuMonthInYear(tag='5_{}'.format(user_id)))
             elif spBtn[1] == 'month':
                 if spBtn[3] == '1':
                     year = mydb.get_shift_property(fieldName='DateShift', idShift=spBtn[4])
@@ -542,6 +557,16 @@ def handle_new_messages(user_id, userName, update):
                     mydb.shift_update_by_id('dateEndShift', '{0}-{1}'.format(year, spBtn[2]), spBtn[4])
                     bot.sendMessage(chat_id=user_id, parse_mode='HTML', text='روز انتخاب کنید',
                                     reply_markup=menu.keyLib.kbCreateMenuDayInMonth(tag='2_{}'.format(spBtn[4])))
+                elif spBtn[3] == '4':
+                    year = mydb.get_student_property(fieldName='start_date', chatid=user_id)
+                    mydb.student_update('start_date', '{0}{1}'.format(year, spBtn[2]), user_id)
+                    bot.sendMessage(chat_id=user_id, parse_mode='HTML', text='روز انتخاب کنید',
+                                    reply_markup=menu.keyLib.kbCreateMenuDayInMonth(tag='4_{}'.format(user_id)))
+                elif spBtn[3] == '5':
+                    year = mydb.get_student_property(fieldName='end_date', chatid=user_id)
+                    mydb.student_update('end_date', '{0}{1}'.format(year, spBtn[2]), user_id)
+                    bot.sendMessage(chat_id=user_id, parse_mode='HTML', text='روز انتخاب کنید',
+                                    reply_markup=menu.keyLib.kbCreateMenuDayInMonth(tag='5_{}'.format(user_id)))
             elif spBtn[1] == 'day':
                 if spBtn[3] == '1':
                     year = mydb.get_shift_property(fieldName='DateShift', idShift=spBtn[4])
@@ -587,6 +612,23 @@ def handle_new_messages(user_id, userName, update):
                         bot.sendMessage(message['chat']['id'], msg.messageLib.dateShift.value)
                         bot.sendMessage(chat_id=user_id, parse_mode='HTML', text='سال را کنید',
                                         reply_markup=menu.keyLib.kbCreateMenuYear(tag=2))
+                elif spBtn[3] == '4':
+                    year = mydb.get_student_property(fieldName='start_date', chatid=user_id)
+                    mydb.student_update('start_date', '{0}{1}'.format(year, spBtn[2]), user_id)
+                    bot.sendMessage(message['chat']['id'],
+                                    str(msg.messageLib.enterLicenseEndDate.value))
+                    bot.sendMessage(chat_id=user_id, parse_mode='HTML', text='سال را انتخاب کنید',
+                                    reply_markup=menu.keyLib.kbCreateMenuYear(tag=5))
+                    mydb.member_update_chatid('registration_progress', 5, user_id)
+                    tempMember.register_progress = 5
+                elif spBtn[3] == '5':
+                    year = mydb.get_student_property(fieldName='end_date', chatid=user_id)
+                    mydb.student_update('end_date', '{0}{1}'.format(year, spBtn[2]), user_id)
+                    # bot.sendMessage(message['chat']['id'],
+                    #                 str(msg.messageLib.enterWorkoverPermitPhoto.value))
+                    bot.sendMessage(user_id,msg.messageLib.hrPermitTotal.value)
+                    mydb.member_update_chatid('registration_progress', 5, user_id)
+                    tempMember.register_progress = 5
             elif spBtn[1] == 'yes':
                 opBtn = int(spBtn[2])
                 op = mydb.get_member_property_chatid('op', message['chat']['id'])

@@ -301,7 +301,7 @@ class mysqlconnector:
         mydb.autocommit = True
         mycursor = mydb.cursor()
         mycursor.execute(sqlQuery)
-        resualt = mycursor.fetchone();
+        resualt = mycursor.fetchone()
         idMember = resualt[0]
         sqlQuery = 'select {0} from `botshiftkari`.`student` where idMember={1}'.format(fieldName, idMember)
         mycursor.execute(sqlQuery)

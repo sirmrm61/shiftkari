@@ -191,7 +191,6 @@ class keyLib:
 
     def kbCreateMenuYear(tag):
         return InlineKeyboardMarkup(inline_keyboard=[
-            [InlineKeyboardButton(text='1401', callback_data='btn_year_1401_{}'.format(str(tag))),
-             InlineKeyboardButton(text='1402', callback_data='btn_year_1402_{}'.format(str(tag))),
-             InlineKeyboardButton(text='1403', callback_data='btn_year_1403_{}'.format(str(tag)))],
+            [InlineKeyboardButton(text='سال جاری', callback_data='btn_year_currntYear_{}'.format(str(tag))),
+             InlineKeyboardButton(text='سال بعد', callback_data='btn_year_nextYear_{}'.format(str(tag))),],
         ])
