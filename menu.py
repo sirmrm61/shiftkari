@@ -71,8 +71,11 @@ class keyLib:
 
     def kbCreateMenuStudent(self=None, chatId=None):
         return InlineKeyboardMarkup(inline_keyboard=[
+            [InlineKeyboardButton(text='ویرایش پروفایل', callback_data='btn_editProfile_{}'.format(str(chatId))),
+             InlineKeyboardButton(text='حذف پروفایل', callback_data='btn_removeProfile_{}'.format(str(chatId))),
+             InlineKeyboardButton(text='تغییر نوع کاربری', callback_data='btn_changeType_{}'.format(str(chatId)))],
             [InlineKeyboardButton(text='لیست شیفت', callback_data='btn_listSift_{}'.format(str(chatId))),
-             InlineKeyboardButton(text='کنسل مردن شیفت', callback_data='btn_cancelShift_{}'.format(str(chatId)))]
+             InlineKeyboardButton(text='کنسل کردن شیفت', callback_data='btn_cancelShift_{}'.format(str(chatId)))],
         ])
 
     def kbCreateMenuManager(self=None, chatId=None):
@@ -193,4 +196,9 @@ class keyLib:
         return InlineKeyboardMarkup(inline_keyboard=[
             [InlineKeyboardButton(text='سال جاری', callback_data='btn_year_currntYear_{}'.format(str(tag))),
              InlineKeyboardButton(text='سال بعد', callback_data='btn_year_nextYear_{}'.format(str(tag))),],
+        ])
+    def kbVerifyEditProfile(self,tag):
+        return InlineKeyboardMarkup(inline_keyboard=[
+            [InlineKeyboardButton(text='ویرایش میکنم', callback_data='btn_yesEditProfile_{}'.format(str(tag))),
+             InlineKeyboardButton(text='بازگشت', callback_data='btn_noBack_{}'.format(str(tag))), ],
         ])

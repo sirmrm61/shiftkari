@@ -6,7 +6,9 @@ mydb = msc.mysqlconnector()
 
 
 class helperFunder:
-    def msg_get_all_shift_approve(self=None, message=None, bot=None):
+    def __init__(self):
+        return
+
         allShift = mydb.get_shift_no_approve(progress=2, creator=message['chat']["id"])
         if len(allShift) == 0:
             bot.sendMessage(message['chat']["id"], msg.messageLib.emptyList.value)
@@ -169,11 +171,12 @@ class helperFunder:
 
     def send_shift_to_student(self=None, bot=None):
         shiftRows = mydb.get_list_shift_for_student()  # shift's for student
-        students = mydb.get_all_student_chatid() # 3 is tpe of student
+        students = mydb.get_all_student_chatid()  # 3 is tpe of student
         for shiftRow in shiftRows:
             for st in students:
+                # todo: delete print
                 print('student ={0}'.format(st[0]))
-                mydb.shift_update_by_id(fieldName='send',fieldValue=1,idshift=shiftRow[9])
+                mydb.shift_update_by_id(fieldName='send', fieldValue=1, idshift=shiftRow[9])
                 rowReq = 'درخواست دهنده: {}'.format(shiftRow[0])
                 rowDate = 'تاریخ  : {}'.format(shiftRow[2])
                 rowStartTime = 'ساعت شروع  : {}'.format(shiftRow[3])
@@ -189,4 +192,48 @@ class helperFunder:
 {5}
 {6}'''.format(rowReq, rowDate, rowStartTime, rowEndTime, rowWage, rowaddr,
               msg.messageLib.doYouLike.value),
-                            reply_markup=menu.keyLib.kbCreateMenuApproveShift(shiftId=shiftRow[9]))
+                                reply_markup=menu.keyLib.kbCreateMenuApproveShift(shiftId=shiftRow[9]))
+
+    def send_profile(self=None, chatid=None, bot=None):
+        mem = mydb.load_member(chatid=chatid)
+        profileInfo = 'نام:\t{0}\n'.format(mem.name)
+        profileInfo += 'نام خانوادگی:\t{0}\n'.format(mem.last_name)
+        profileInfo += 'تلفن همراه:\t{0}\n'.format(mem.phone_number)
+        if mem.membership_type == 1:
+            profileInfo += 'نوع کاربری:\t{0}\n'.format('موسس')
+            profileInfo += 'نام داروخانه:\t{0}\n'.format(
+                mydb.get_funder_property(fieldName='pharmacy_name', chatid=chatid))
+            profileInfo += 'نوع  داروخانه:\t{0}\n'.format(
+                mydb.get_funder_property(fieldName='pharmacy_type', chatid=chatid))
+            profileInfo += 'تصویر مجوز داروخانه:\t{0}\n'
+            img = 'download/{}'.format(mydb.get_student_property('personal_photo', chatid))
+            bot.sendMessage(chatid, profileInfo)
+            bot.sendPhoto(chatid, open(img, 'rb'))
+        elif mem.membership_type == 2:
+            profileInfo += 'نوع کاربری:\t{0}\n'.format('مسئول فنی')
+            profileInfo += 'کد ملی:\t{0}\n'.format(
+                mydb.get_technical_property(fieldName='national_code', chatid=chatid))
+            profileInfo += 'تصویر مجوز نظام پزشکی:\t{0}\n'
+            img = 'download/{}'.format(mydb.get_technical_property('membership_card_photo', chatid))
+            bot.sendMessage(chatid, profileInfo)
+            bot.sendPhoto(chatid, open(img, 'rb'))
+        elif mem.membership_type == 3:
+            profileInfo += 'نوع کاربری:\t{0}\n'.format('دانشجو')
+            profileInfo += 'کد ملی:\t{0}\n'.format(mydb.get_student_property(fieldName='national_code', chatid=chatid))
+            profileInfo += 'تاریخ شروع مجوز:\t{0}\n'.format(
+                mydb.get_student_property(fieldName='start_date', chatid=chatid))
+            profileInfo += 'تاریخ پایان مجوز:\t{0}\n'.format(
+                mydb.get_student_property(fieldName='end_date', chatid=chatid))
+            profileInfo += 'شیفت مجوز:\t{0}\n'.format(
+                mydb.get_student_property(fieldName='shift_access', chatid=chatid))
+            profileInfo += 'میزان ساعت مجوز:\t{0}\n'.format(
+                mydb.get_student_property(fieldName='shift_access', chatid=chatid))
+            profileInfo += 'تصویر مجوز نظام پزشکی:'
+            img = 'download/{}'.format(mydb.get_student_property('overtime_license_photo', chatid))
+            bot.sendMessage(chatid, profileInfo)
+            bot.sendPhoto(chatid, open(img, 'rb'))
+            bot.sendMessage(chatid, 'تصویر پروفایل')
+            img = 'download/{}'.format(mydb.get_student_property('personal_photo', chatid))
+            bot.sendPhoto(chatid, open(img, 'rb'))
+        elif mem.membership_type == 4:
+            profileInfo += 'نوع کاربری:\t{0}\n'.format('ادمین')

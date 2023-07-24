@@ -480,6 +480,10 @@ def handle_new_messages(user_id, userName, update):
             if spBtn[1] == 'verify':
                 mydb.member_update_chatid('verifyAdmin', 1, spBtn[2])
                 bot.sendMessage(spBtn[2], msg.messageLib.congratulationsApproveAdmin.value)
+                mem = mydb.load_member(chatid=spBtn[2])
+                fh.helperFunder.send_operation(tempMember=mem, bot=bot, chatid=spBtn[2])
+                mem = mydb.load_member(spBtn[2])
+                bot.sendMessage(user_id, str(msg.messageLib.verifyMsg.value).format(mem.name + " " + mem.last_name))
             elif spBtn[1] == 'hr':
                 hr = mydb.get_property_domain('hrStudent')
                 bot.sendMessage(user_id, str(msg.messageLib.changeHour.value).format(hr))
@@ -626,7 +630,7 @@ def handle_new_messages(user_id, userName, update):
                     mydb.student_update('end_date', '{0}{1}'.format(year, spBtn[2]), user_id)
                     # bot.sendMessage(message['chat']['id'],
                     #                 str(msg.messageLib.enterWorkoverPermitPhoto.value))
-                    bot.sendMessage(user_id,msg.messageLib.hrPermitTotal.value)
+                    bot.sendMessage(user_id, msg.messageLib.hrPermitTotal.value)
                     mydb.member_update_chatid('registration_progress', 5, user_id)
                     tempMember.register_progress = 5
             elif spBtn[1] == 'yes':
@@ -715,6 +719,11 @@ def handle_new_messages(user_id, userName, update):
 {5}
 {6}'''.format(rowReq, rowDate, rowStartTime, rowEndTime, rowWage, rowaddr,
               msg.messageLib.doYouLike.value), reply_markup=menu.keyLib.kbCreateMenuApproveShift(shiftRow[9]))
+            elif spBtn[1] == 'editProfile':
+                bot.sendMessage(user_id, msg.messageLib.editMessag.value)
+                fh.helperFunder.send_profile(chatid=user_id, bot=bot)
+                bot.sendMessage(user_id, msg.messageLib.confirmEdit.value,
+                                reply_markup=menu.keyLib.kbVerifyEditProfile(self=None, tag=user_id))
             # پذیرش شخصی که شیفت را رزرو کرده است
             elif spBtn[1] == 'approveShiftFunder':
                 requester = mydb.get_shift_property(fieldName='approver', idShift=spBtn[2])
@@ -1025,6 +1034,7 @@ def handle_new_messages(user_id, userName, update):
                 bot.sendMessage(admin[0],
                                 str(msg.messageLib.labelSelfiPhoto.value))
                 img = 'download/{}'.format(mydb.get_student_property('personal_photo', message['chat']['id']))
+                # todo: print delete command
                 print(
                     'download/{}'.format(mydb.get_student_property('personal_photo', message['chat']['id'])))
                 bot.sendPhoto(admin[0], open(img, 'rb'))
