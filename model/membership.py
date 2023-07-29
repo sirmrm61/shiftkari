@@ -1,5 +1,8 @@
+from datetime import datetime as DT
+
+
 class Membership:
-    def __init__(self, name = None, last_name = None, phone_number = None, userName = None,chatid=None):
+    def __init__(self, name=None, last_name=None, phone_number=None, userName=None, chatid=None, opTime=None):
         self._name = None
         self._last_name = None
         self._phone_number = phone_number
@@ -12,6 +15,15 @@ class Membership:
         self._lastActivity = None
         self._chatid = None
         self._delf = 0
+        self._opTime = opTime
+
+    @property
+    def opTime(self):
+        return self._opTime
+
+    @opTime.setter
+    def opTime(self, new_opTime):
+        self._opTime = DT.strptime(str(new_opTime), '%Y-%m-%d %H:%M:%S')
 
     @property
     def delf(self):
@@ -83,7 +95,7 @@ class Membership:
 
     @chatId.setter
     def chatId(self, new_chatId):
-        self._chatId=new_chatId
+        self._chatId = new_chatId
 
     @property
     def lastMessage(self):
@@ -91,7 +103,7 @@ class Membership:
 
     @lastMessage.setter
     def lastMessage(self, new_lastMessage):
-        self._lastMessage=new_lastMessage
+        self._lastMessage = new_lastMessage
 
     @property
     def lastActivity(self):
@@ -99,13 +111,14 @@ class Membership:
 
     @lastActivity.setter
     def lastActivity(self, new_lastActivity):
-        self._lastActivity=new_lastActivity
+        self._lastActivity = new_lastActivity
+
 
 class Founder(Membership):
-    def __init__(self,name = None, last_name = None, phone_number = None,  membership_fee_paid = None,userName = None,
-                 pharmacy_name = None, pharmacy_type = None, pharmacy_address = None, license_photo = None):
-        super().__init__(name = name, last_name = last_name, phone_number = phone_number, membership_type = 1,
-                         membership_fee_paid = membership_fee_paid,userName = userName)
+    def __init__(self, name=None, last_name=None, phone_number=None, membership_fee_paid=None, userName=None,
+                 pharmacy_name=None, pharmacy_type=None, pharmacy_address=None, license_photo=None):
+        super().__init__(name=name, last_name=last_name, phone_number=phone_number, membership_type=1,
+                         membership_fee_paid=membership_fee_paid, userName=userName)
         self._pharmacy_name = pharmacy_name
         self._pharmacy_type = pharmacy_type
         self._pharmacy_address = pharmacy_address
@@ -145,8 +158,10 @@ class Founder(Membership):
 
 
 class TechnicalManager(Membership):
-    def __init__(self, name = None, last_name = None, phone_number = None,  membership_fee_paid = None, national_id = None, pharmacy_membership_card_photo = None):
-        super().__init__(name = None, last_name = None, phone_number = None, membership_type = 2, membership_fee_paid = None,userName = None)
+    def __init__(self, name=None, last_name=None, phone_number=None, membership_fee_paid=None, national_id=None,
+                 pharmacy_membership_card_photo=None):
+        super().__init__(name=None, last_name=None, phone_number=None, membership_type=2, membership_fee_paid=None,
+                         userName=None)
         self._national_id = national_id
         self._pharmacy_membership_card_photo = pharmacy_membership_card_photo
 
@@ -167,12 +182,12 @@ class TechnicalManager(Membership):
         self._pharmacy_membership_card_photo = new_pharmacy_membership_card_photo
 
 
-
 class Student(Membership):
-    def __init__(self, name = None, last_name = None, phone_number = None,
-                  membership_fee_paid = None, national_id = None, permit_start_date = None, permit_end_date = None,
-                 overtime_permit_photo = None, personal_photo = None, shift_permission = None, shift_fee_paid = None):
-        super().__init__(name = None, last_name = None, phone_number = None, membership_type = 3, membership_fee_paid = None,userName = None)
+    def __init__(self, name=None, last_name=None, phone_number=None,
+                 membership_fee_paid=None, national_id=None, permit_start_date=None, permit_end_date=None,
+                 overtime_permit_photo=None, personal_photo=None, shift_permission=None, shift_fee_paid=None):
+        super().__init__(name=None, last_name=None, phone_number=None, membership_type=3, membership_fee_paid=None,
+                         userName=None)
         self._national_id = national_id
         self._permit_start_date = permit_start_date
         self._permit_end_date = permit_end_date
@@ -202,7 +217,7 @@ class Student(Membership):
         return self._permit_end_date
 
     @permit_end_date.setter
-    def permit_end_date(self,new_permit_end_date):
+    def permit_end_date(self, new_permit_end_date):
         self._permit_end_date = new_permit_end_date
 
     @property
@@ -210,7 +225,7 @@ class Student(Membership):
         return self._permit_end_date
 
     @permit_end_date.setter
-    def permit_end_date(self,new_permit_end_date):
+    def permit_end_date(self, new_permit_end_date):
         self._permit_end_date = new_permit_end_date
 
     @property
@@ -218,7 +233,7 @@ class Student(Membership):
         return self._overtime_permit_photo
 
     @overtime_permit_photo.setter
-    def overtime_permit_photo(self,new_overtime_permit_photo):
+    def overtime_permit_photo(self, new_overtime_permit_photo):
         self._overtime_permit_photo = new_overtime_permit_photo
 
     @property
@@ -226,7 +241,7 @@ class Student(Membership):
         return self._personal_photo
 
     @permit_end_date.setter
-    def personal_photo(self,new_personal_photo):
+    def personal_photo(self, new_personal_photo):
         self._personal_photo = new_personal_photo
 
     @property
@@ -234,7 +249,7 @@ class Student(Membership):
         return self._shift_permission
 
     @shift_permission.setter
-    def shift_permission(self,new_shift_permission):
+    def shift_permission(self, new_shift_permission):
         self._shift_permission = new_shift_permission
 
     @property

@@ -2,7 +2,7 @@ import mysql.connector
 import db.env as helper
 from pprint import pprint
 from model.membership import Founder, Membership, Student, TechnicalManager
-
+from datetime import datetime as DT
 
 class mysqlconnector:
     def __init__(self):
@@ -108,7 +108,8 @@ class mysqlconnector:
         mydb.close();
 
     def getAdmins(self):
-        sqlQuery = 'select chat_id from `botshiftkari`.`membership` where membership_type = 4 and verifyAdmin =1'
+        sqlQuery = '''select chat_id from `botshiftkari`.`membership` 
+                            where membership_type = 4 and verifyAdmin =1 and del=0'''
         mydb = self.connector()
         mycursor = mydb.cursor()
         mycursor.execute(sqlQuery)
@@ -124,7 +125,6 @@ class mysqlconnector:
         resualt = mycursor.fetchone()
         mycursor.reset()
         tempMember = Membership()
-        tempMember = Membership()
         if resualt != None:
             tempMember.name = resualt[1]
             tempMember.last_name = resualt[2]
@@ -136,6 +136,7 @@ class mysqlconnector:
             tempMember.chatId = resualt[8]
             tempMember.lastMessage = resualt[9]
             tempMember.delf = resualt[14]
+            tempMember.opTime = DT.strptime(str(resualt[15]), '%Y-%m-%d %H:%M:%S')
         else:
             tempMember = None
         return tempMember

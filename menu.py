@@ -1,5 +1,8 @@
 from telepot.namedtuple import InlineKeyboardMarkup, InlineKeyboardButton
+import db.mysqlconnector as msc
 from enum import Enum
+
+mydb = msc.mysqlconnector()
 
 
 class keyLib:
@@ -56,13 +59,15 @@ class keyLib:
 
     def kbCreateMenuFunder(self=None, chatId=None):
         return InlineKeyboardMarkup(inline_keyboard=[
-            [InlineKeyboardButton(text='ساخت شیفت', callback_data='btn_createSift_{}'.format(str(chatId))),
+            [InlineKeyboardButton(text='ویرایش پروفایل', callback_data='btn_epf_{}'.format(str(chatId))),
+             InlineKeyboardButton(text='ساخت شیفت', callback_data='btn_createSift_{}'.format(str(chatId))),
              InlineKeyboardButton(text='حذف شیفت', callback_data='btn_deleteShift_{}'.format(str(chatId)))]
         ])
 
     def kbCreateMenuResponsible(self=None, chatId=None):
         return InlineKeyboardMarkup(inline_keyboard=[
-            [InlineKeyboardButton(text='ساخت شیفت', callback_data='btn_createSift_{}'.format(str(chatId))),
+            [InlineKeyboardButton(text='ویرایش پروفایل', callback_data='btn_epf_{}'.format(str(chatId))),
+             InlineKeyboardButton(text='ساخت شیفت', callback_data='btn_createSift_{}'.format(str(chatId))),
              InlineKeyboardButton(text='حذف شیفت', callback_data='btn_deleteShift_{}'.format(str(chatId)))],
             [InlineKeyboardButton(text='شیفت های من', callback_data='btn_listSift_{}'.format(str(chatId))),
              InlineKeyboardButton(text='کنسل کردن شیفت', callback_data='btn_cancelShift_{}'.format(str(chatId)))],
@@ -71,7 +76,7 @@ class keyLib:
 
     def kbCreateMenuStudent(self=None, chatId=None):
         return InlineKeyboardMarkup(inline_keyboard=[
-            [InlineKeyboardButton(text='ویرایش پروفایل', callback_data='btn_editProfile_{}'.format(str(chatId))),
+            [InlineKeyboardButton(text='ویرایش پروفایل', callback_data='btn_epf_{}'.format(str(chatId))),
              InlineKeyboardButton(text='حذف پروفایل', callback_data='btn_removeProfile_{}'.format(str(chatId))),
              InlineKeyboardButton(text='تغییر نوع کاربری', callback_data='btn_changeType_{}'.format(str(chatId)))],
             [InlineKeyboardButton(text='لیست شیفت', callback_data='btn_listSift_{}'.format(str(chatId))),
@@ -80,7 +85,8 @@ class keyLib:
 
     def kbCreateMenuManager(self=None, chatId=None):
         return InlineKeyboardMarkup(inline_keyboard=[
-            [InlineKeyboardButton(text='لیست شیفت', callback_data='btn_listSiftManager_{}'.format(str(chatId))),
+            [InlineKeyboardButton(text='ویرایش پروفایل', callback_data='btn_epf_{}'.format(str(chatId))),
+             InlineKeyboardButton(text='لیست شیفت', callback_data='btn_listSiftManager_{}'.format(str(chatId))),
              # InlineKeyboardButton(text='نیازمند تائید', callback_data='btn_listSiftDisApprove_{}'.format(str(chatId))),
              # InlineKeyboardButton(text='تائید شده', callback_data='btn_listSiftApprove_{}'.format(str(chatId))),
              ],
@@ -177,7 +183,7 @@ class keyLib:
             [InlineKeyboardButton(text='31', callback_data='btn_day_31_{}'.format(str(tag)))]
         ])
 
-    def kbCreateMenuMonthInYear( tag):
+    def kbCreateMenuMonthInYear(tag):
         return InlineKeyboardMarkup(inline_keyboard=[
             [InlineKeyboardButton(text='فروردین', callback_data='btn_month_01_{}'.format(str(tag))),
              InlineKeyboardButton(text='اردیبهشت', callback_data='btn_month_02_{}'.format(str(tag))),
@@ -195,10 +201,64 @@ class keyLib:
     def kbCreateMenuYear(tag):
         return InlineKeyboardMarkup(inline_keyboard=[
             [InlineKeyboardButton(text='سال جاری', callback_data='btn_year_currntYear_{}'.format(str(tag))),
-             InlineKeyboardButton(text='سال بعد', callback_data='btn_year_nextYear_{}'.format(str(tag))),],
+             InlineKeyboardButton(text='سال بعد', callback_data='btn_year_nextYear_{}'.format(str(tag))), ],
         ])
-    def kbVerifyEditProfile(self,tag):
+
+    def kbVerifyEditProfile(self, tag):
         return InlineKeyboardMarkup(inline_keyboard=[
             [InlineKeyboardButton(text='ویرایش میکنم', callback_data='btn_yesEditProfile_{}'.format(str(tag))),
              InlineKeyboardButton(text='بازگشت', callback_data='btn_noBack_{}'.format(str(tag))), ],
         ])
+
+    def kbEditProfile(self=None, chatId=None):
+        mem = mydb.load_member(chatid=chatId)
+        if mem.membership_type == 1:
+            return InlineKeyboardMarkup(inline_keyboard=[
+                [InlineKeyboardButton(text='نام', callback_data='btn_editProfile_nameEdit_{}'.format(str(chatId))),
+                 InlineKeyboardButton(text='نام خانوادگی', callback_data='btn_editProfile_familyEdit_{}'.format(str(chatId))),
+                 InlineKeyboardButton(text='نوع کاربری', callback_data='btn_editProfile_typeEdit_{}'.format(str(chatId))),
+                 InlineKeyboardButton(text='شماره تلفن', callback_data='btn_editProfile_phoneEdit_{}'.format(str(chatId))), ],
+                [InlineKeyboardButton(text='نام داروخانه', callback_data='btn_editProfile_pharmacyNameEdit_{}'.format(str(chatId))),
+                 InlineKeyboardButton(text='نوع داروخانه', callback_data='btn_editProfile_pharmacyTypeEdit_{}'.format(str(chatId))),
+                 InlineKeyboardButton(text='آدرس داوخانه',
+                                      callback_data='btn_editProfile_pharmacyAddressEdit_{}'.format(str(chatId))),
+                 InlineKeyboardButton(text='تصویر مجوز',
+                                      callback_data='btn_editProfile_licensePhotoEdit_{}'.format(str(chatId))), ],
+                [InlineKeyboardButton(text='حذف کاربر', callback_data='btn_editProfile_deactiveUser_{}'.format(str(chatId))), ]
+            ])
+        elif mem.membership_type == 2:
+            return InlineKeyboardMarkup(inline_keyboard=[
+                [InlineKeyboardButton(text='نام', callback_data='btn_editProfile_nameEdit_{}'.format(str(chatId))),
+                 InlineKeyboardButton(text='نام خانوادگی', callback_data='btn_editProfile_familyEdit_{}'.format(str(chatId))),
+                 InlineKeyboardButton(text='نوع کاربری', callback_data='btn_editProfile_typeEdit_{}'.format(str(chatId))),
+                 InlineKeyboardButton(text='شماره تلفن', callback_data='btn_editProfile_phoneEdit_{}'.format(str(chatId))), ],
+                [InlineKeyboardButton(text='کد ملی', callback_data='btn_editProfile_nationCodeEdit_{}'.format(str(chatId))),
+                 InlineKeyboardButton(text='تصویر نظام پزشکی',
+                                      callback_data='btn_editProfile_membershipCardPhotoEdit_{}'.format(str(chatId))),
+                 InlineKeyboardButton(text='حذف کاربر', callback_data='btn_editProfile_deactiveUser_{}'.format(str(chatId))), ]
+            ])
+        elif mem.membership_type == 3:
+            return InlineKeyboardMarkup(inline_keyboard=[
+                [InlineKeyboardButton(text='نام', callback_data='btn_editProfile_nameEdit_{}'.format(str(chatId))),
+                 InlineKeyboardButton(text='نام خانوادگی', callback_data='btn_editProfile_familyEdit_{}'.format(str(chatId))),
+                 InlineKeyboardButton(text='نوع کاربری', callback_data='btn_editProfile_typeEdit_{}'.format(str(chatId))),
+                 InlineKeyboardButton(text='شماره تلفن', callback_data='btn_editProfile_phoneEdit_{}'.format(str(chatId))), ],
+                [InlineKeyboardButton(text='کد ملی', callback_data='btn_editProfile_nationCodeEdit_{}'.format(str(chatId))),
+                 InlineKeyboardButton(text='شروع مجوز', callback_data='btn_editProfile_dateStartEdit_{}'.format(str(chatId))),
+                 InlineKeyboardButton(text='پایان مجوز', callback_data='btn_editProfile_dateEndEdit_{}'.format(str(chatId))),
+                 InlineKeyboardButton(text='ساعت مجوز', callback_data='btn_editProfile_hrPermitEdit_{}'.format(str(chatId))), ],
+                [InlineKeyboardButton(text='شیف مجوز', callback_data='btn_editProfile_shiftAccessEdit_{}'.format(str(chatId))),
+                 InlineKeyboardButton(text='تصویر مجوز',
+                                      callback_data='btn_editProfile_overTimeLiccenssEdit_{}'.format(str(chatId))),
+                 InlineKeyboardButton(text='عکس پرسنلی',
+                                      callback_data='btn_editProfile_personalPhotoEdit_{}'.format(str(chatId))),
+                 InlineKeyboardButton(text='حذف کاربر', callback_data='btn_editProfile_deactiveUser_{}'.format(str(chatId))), ],
+            ])
+        elif mem.membership_type == 3:
+            return InlineKeyboardMarkup(inline_keyboard=[
+                [InlineKeyboardButton(text='نام', callback_data='btn_editProfile_nameEdit_{}'.format(str(chatId))),
+                 InlineKeyboardButton(text='نام خانوادگی', callback_data='btn_editProfile_familyEdit_{}'.format(str(chatId))),
+                 InlineKeyboardButton(text='نوع کاربری', callback_data='btn_editProfile_typeEdit_{}'.format(str(chatId))),
+                 InlineKeyboardButton(text='شماره تلفن', callback_data='btn_editProfile_phoneEdit_{}'.format(str(chatId))), ],
+                [InlineKeyboardButton(text='حذف کاربر', callback_data='btn_editProfile_deactiveUser_{}'.format(str(chatId))), ],
+            ])

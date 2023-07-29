@@ -1,6 +1,11 @@
 import db.mysqlconnector as msc
 import msg
 import menu
+from datetime import datetime as DT
+from dateutil.relativedelta import relativedelta
+from model.membership import Membership
+import uuid
+import os
 
 mydb = msc.mysqlconnector()
 
@@ -194,7 +199,12 @@ class helperFunder:
               msg.messageLib.doYouLike.value),
                                 reply_markup=menu.keyLib.kbCreateMenuApproveShift(shiftId=shiftRow[9]))
 
-    def send_profile(self=None, chatid=None, bot=None):
+    def send_profile(self=None, chatid=None, bot=None, forUser=None):
+        fuser = None
+        if forUser is None:
+            fuser = chatid
+        else:
+            fuser = forUser
         mem = mydb.load_member(chatid=chatid)
         profileInfo = 'نام:\t{0}\n'.format(mem.name)
         profileInfo += 'نام خانوادگی:\t{0}\n'.format(mem.last_name)
@@ -207,7 +217,7 @@ class helperFunder:
                 mydb.get_funder_property(fieldName='pharmacy_type', chatid=chatid))
             profileInfo += 'تصویر مجوز داروخانه:\t{0}\n'
             img = 'download/{}'.format(mydb.get_student_property('personal_photo', chatid))
-            bot.sendMessage(chatid, profileInfo)
+            bot.sendMessage(fuser, profileInfo)
             bot.sendPhoto(chatid, open(img, 'rb'))
         elif mem.membership_type == 2:
             profileInfo += 'نوع کاربری:\t{0}\n'.format('مسئول فنی')
@@ -215,7 +225,7 @@ class helperFunder:
                 mydb.get_technical_property(fieldName='national_code', chatid=chatid))
             profileInfo += 'تصویر مجوز نظام پزشکی:\t{0}\n'
             img = 'download/{}'.format(mydb.get_technical_property('membership_card_photo', chatid))
-            bot.sendMessage(chatid, profileInfo)
+            bot.sendMessage(fuser, profileInfo)
             bot.sendPhoto(chatid, open(img, 'rb'))
         elif mem.membership_type == 3:
             profileInfo += 'نوع کاربری:\t{0}\n'.format('دانشجو')
@@ -230,10 +240,157 @@ class helperFunder:
                 mydb.get_student_property(fieldName='shift_access', chatid=chatid))
             profileInfo += 'تصویر مجوز نظام پزشکی:'
             img = 'download/{}'.format(mydb.get_student_property('overtime_license_photo', chatid))
-            bot.sendMessage(chatid, profileInfo)
+            bot.sendMessage(fuser, profileInfo)
             bot.sendPhoto(chatid, open(img, 'rb'))
-            bot.sendMessage(chatid, 'تصویر پروفایل')
+            bot.sendMessage(fuser, 'تصویر پروفایل')
             img = 'download/{}'.format(mydb.get_student_property('personal_photo', chatid))
             bot.sendPhoto(chatid, open(img, 'rb'))
         elif mem.membership_type == 4:
             profileInfo += 'نوع کاربری:\t{0}\n'.format('ادمین')
+            bot.sendMessage(fuser, profileInfo)
+
+    def editProfile(self=None, bot=None, spBtn=None, mem=None):
+        userId = mem.chatId
+        mydb.member_update_chatid('opTime', DT.now(), userId)
+        mydb.member_update_chatid('registration_progress', 18, userId)
+        if spBtn[2] == 'nameEdit':  # edit registration_progress==18 && op==1
+            mydb.member_update_chatid('op', 1, userId)
+            bot.sendMessage(userId, msg.messageLib.enterName.value)
+        elif spBtn[2] == 'familyEdit':
+            mydb.member_update_chatid('op', 2, userId)
+            bot.sendMessage(userId, msg.messageLib.enterLastName.value)
+        elif spBtn[2] == 'phoneEdit':
+            mydb.member_update_chatid('op', 4, userId)
+            bot.sendMessage(userId, msg.messageLib.enterPhoneNumber.value)
+        elif spBtn[2] == 'nationCodeEdit':
+            mydb.member_update_chatid('op', 5, userId)
+            bot.sendMessage(userId, msg.messageLib.enterPhoneNumber.value)
+        elif spBtn[2] == 'pharmacyNameEdit':
+            mydb.member_update_chatid('op', 5, userId)
+            bot.sendMessage(userId, msg.messageLib.enterPhoneNumber.value)
+        elif spBtn[2] == 'pharmacyTypeEdit':
+            mydb.member_update_chatid('op', 6, userId)
+            bot.sendMessage(userId, msg.messageLib.enterPharmacyType.value, reply_markup=menu.keyLib.kbTypePharmacy())
+        elif spBtn[2] == 'pharmacyAddressEdit':
+            mydb.member_update_chatid('op', 7, userId)
+            bot.sendMessage(userId, msg.messageLib.enterPharmacyAddress.value)
+        elif spBtn[2] == 'licensePhotoEdit':
+            mydb.member_update_chatid('op', 8, userId)
+            bot.sendMessage(userId, msg.messageLib.enterPharmacyLicensePhoto.value)
+        elif spBtn[2] == 'membershipCardPhotoEdit':
+            mydb.member_update_chatid('op', 9, userId)
+            bot.sendMessage(userId, msg.messageLib.labelMembershipCardPhoto.value)
+        elif spBtn[2] == 'dateStartEdit':
+            mydb.member_update_chatid('op', 10, userId)
+            bot.sendMessage(userId, msg.messageLib.enterLicenseStartDate.value)
+            bot.sendMessage(chat_id=userId, text='سال را انتخاب کنید',
+                            reply_markup=menu.keyLib.kbCreateMenuYear(tag=4))
+        elif spBtn[2] == 'dateStartEdit':
+            mydb.member_update_chatid('op', 11, userId)
+            bot.sendMessage(userId, msg.messageLib.enterLicenseEndDate.value)
+            bot.sendMessage(chat_id=userId, text='سال را انتخاب کنید',
+                            reply_markup=menu.keyLib.kbCreateMenuYear(tag=5))
+        elif spBtn[2] == 'hrPermitEdit':
+            mydb.member_update_chatid('op', 12, userId)
+            bot.sendMessage(userId, msg.messageLib.hrPermitTotal.value)
+        elif spBtn[2] == 'shiftAccessEdit':
+            mydb.member_update_chatid('op', 13, userId)
+            bot.sendMessage(userId, str(msg.messageLib.enterPermitActivity.value),
+                            reply_markup=menu.keyLib.kbTypeShift())
+        elif spBtn[2] == 'overTimeLiccenssEdit':
+            mydb.member_update_chatid('op', 14, userId)
+            bot.sendMessage(userId, str(msg.messageLib.enterWorkoverPermitPhoto.value))
+        elif spBtn[2] == 'personalPhotoEdit':
+            mydb.member_update_chatid('op', 15, userId)
+            bot.sendMessage(userId, str(msg.messageLib.enterSelfiPhoto.value))
+        return None
+
+    def regEditItem(self=None, mem: Membership = None, bot=None, newValue=None):
+        userId = mem.chatId
+        date1 = mem.opTime
+        date2 = DT.now()
+        diffDay = relativedelta(date2, date1)
+        op = int(mydb.get_member_property_chatid('op', userId))
+        # دریافت حداکثر زمان انتخاب مشخص تا تغییر مشخصه
+        timeDiff = int(mydb.get_property_domain('timeDiff'))
+        if diffDay.minutes > timeDiff:
+            # return to end step registration & ready To register shift
+            mydb.member_update_chatid('registration_progress', 10, userId)
+            # return to end step register shift
+            mydb.member_update_chatid('registration_progress', 0, userId)
+            bot.sendMessage(userId, msg.messageLib.errorTimeEdit.value)
+            return
+        elif op == 1:
+            mydb.member_update_chatid(fieldName='name', fieldValue=newValue['text'], chatid=userId)
+        elif op == 2:
+            mydb.member_update_chatid(fieldName='last_name', fieldValue=newValue['text'], chatid=userId)
+        elif op == 4:
+            mydb.member_update_chatid(fieldName='phoneEdit', fieldValue=newValue['text'], chatid=userId)
+        elif op == 5:
+            if mem.membership_type == 2:
+                mydb.technicalManager_update(fieldName='national_code', fieldValue=newValue['text'], chatid=userId)
+            elif mem.membership_type == 3:
+                mydb.student_update(fieldName='national_code', fieldValue=newValue['text'], chatid=userId)
+            else:
+                mydb.founder_update(fieldName='pharmacy_name', fieldValue=newValue['text'], chatid=userId)
+        elif op == 7:
+            mydb.founder_update(fieldName='pharmacy_address', fieldValue=newValue['text'], chatid=userId)
+        elif op == 8:
+            if 'photo' in newValue:
+                file_id = newValue['photo'][-1]['file_id']
+                file_path = bot.getFile(file_id)['file_path']
+                fileName, fileExtention = os.path.splitext(file_path)
+                ufid = uuid.uuid4()
+                image_path = 'download/{0}{1}'.format(ufid, fileExtention)
+                bot.download_file(file_id, image_path)
+                mydb.founder_update('license_photo', '{0}{1}'.format(ufid, fileExtention),
+                                    userId)
+            else:
+                bot.sendMessage(userId,
+                                str(msg.messageLib.errorSendFile.value))
+        elif op == 9:
+            if 'photo' in newValue:
+                file_id = newValue['photo'][-1]['file_id']
+                file_path = bot.getFile(file_id)['file_path']
+                fileName, fileExtention = os.path.splitext(file_path)
+                ufid = uuid.uuid4()
+                image_path = 'download/{0}{1}'.format(ufid, fileExtention)
+                bot.download_file(file_id, image_path)
+                mydb.technicalManager_update('membership_card_photo', '{0}{1}'.format(ufid, fileExtention),
+                                             userId)
+            else:
+                bot.sendMessage(userId,
+                                str(msg.messageLib.errorSendFile.value))
+        elif op == 12:
+            mydb.student_update(fieldName='hourPermit', fieldValue=newValue['text'], chatid=userId)
+        elif op == 14:
+            if 'photo' in newValue:
+                file_id = newValue['photo'][-1]['file_id']
+                file_path = bot.getFile(file_id)['file_path']
+                fileName, fileExtention = os.path.splitext(file_path)
+                ufid = uuid.uuid4()
+                image_path = 'download/{0}{1}'.format(ufid, fileExtention)
+                bot.download_file(file_id, image_path)
+                mydb.student_update('overtime_license_photo', '{0}{1}'.format(ufid, fileExtention),
+                                             userId)
+            else:
+                bot.sendMessage(userId,
+                                str(msg.messageLib.errorSendFile.value))
+        elif op == 15:
+            if 'photo' in newValue:
+                file_id = newValue['photo'][-1]['file_id']
+                file_path = bot.getFile(file_id)['file_path']
+                fileName, fileExtention = os.path.splitext(file_path)
+                ufid = uuid.uuid4()
+                image_path = 'download/{0}{1}'.format(ufid, fileExtention)
+                bot.download_file(file_id, image_path)
+                mydb.student_update('personal_photo', '{0}{1}'.format(ufid, fileExtention),
+                                             userId)
+            else:
+                bot.sendMessage(userId,
+                                str(msg.messageLib.errorSendFile.value))
+
+        mydb.member_update_chatid(fieldName='verifyAdmin', fieldValue=0, chatid=userId)
+        # send message to user
+        bot.sendMessage(userId, msg.messageLib.afterEdit.value,
+                        reply_markup=menu.keyLib.kbVerifyEditProfile(self=None, tag=userId))

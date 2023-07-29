@@ -43,24 +43,14 @@ bot = telepot.Bot('409679224:AAHAWm_FaSNiuthByMxAESwqq4SFYR8CxZE')
 # exit(0)
 
 def handle_new_messages(user_id, userName, update):
-    global last_update_ids
-    # دریافت آخرین شناسه update_id برای کاربر
-    # tempMember, last_update_time = last_update_ids.get(user_id, (Membership, 0))
-    tempV = last_update_ids.get(user_id)
-    tempMember = None if tempV is None else tempV[0]
-    last_update_time = 0 if tempV is None else tempV[1]
-    # If the user is not in the list, it will be loaded from the database, if it is not there, it will be created
+    tempMember = mydb.load_member(user_id)
     if tempMember is None:
-        tempMember = mydb.load_member(user_id)
-        if tempMember is None:
-            tempMember = mydb.create_member(Membership(userName=userName, chatid=user_id))
-            last_update_id = 0
+        tempMember = mydb.create_member(Membership(userName=userName, chatid=user_id))
+        last_update_id = 0
     else:
         last_update_id = int(tempMember.lastMessage)
     # **********************************************************************************************************
-
     # محاسبه زمان گذشته از آخرین پیام دریافتی
-    elapsed_time = time.time() - last_update_time
     # اگر زمان گذشته بیشتر از حداکثر زمان مجاز باشد، آخرین شناسه update_id برای کاربر حذف می شود
     # if elapsed_time > MAX_IDLE_TIME and last_update_time > 0:
     #     del last_update_ids[user_id]
@@ -160,7 +150,7 @@ def handle_new_messages(user_id, userName, update):
                 bot.sendMessage(message['chat']['id'],
                                 str(msg.messageLib.duplicateregistration.value).format(titlePos),
                                 reply_markup=menu.keyLib.kbCreateDelKey(message['chat']['id']))
-            except:
+            except:  # TODO: عوض کردن کد admin
                 bot.sendMessage('6274361322', '{0}:{1}'.format(message['chat']['id'], message['text']))
         elif tempMember.register_progress == 1:
             mydb.member_update_chatid('name', message['text'], message['chat']['id'])
@@ -470,6 +460,9 @@ def handle_new_messages(user_id, userName, update):
                                         'آیا آدرس {0} برای داروخانه صحیح است؟'.format(message['text']),
                                         reply_markup=menu.keyLib.kbCreateMenuYesNO(
                                             chatId='{0}_{1}'.format(9, rs[0])))
+        elif tempMember.register_progress == 18:
+            print('test')
+            fh.helperFunder.regEditItem(mem=tempMember, bot=bot, newValue=message)
 
     elif 'callback_query' in update:
         message = update['callback_query']['message']
@@ -484,6 +477,25 @@ def handle_new_messages(user_id, userName, update):
                 fh.helperFunder.send_operation(tempMember=mem, bot=bot, chatid=spBtn[2])
                 mem = mydb.load_member(spBtn[2])
                 bot.sendMessage(user_id, str(msg.messageLib.verifyMsg.value).format(mem.name + " " + mem.last_name))
+            elif spBtn[1] == 'editProfile':
+                # آماده‌سازی دریافت اطلاعات کاربر جهت ویرایش
+                fh.helperFunder.editProfile(bot=bot, spBtn=spBtn, mem=tempMember)
+            elif spBtn[1] == 'yesEditProfile':
+                bot.sendMessage(user_id, msg.messageLib.selectPropertyForEdit.value,
+                                reply_markup=menu.keyLib.kbEditProfile(chatId=user_id))
+            elif spBtn[1] == 'noBack':
+                # return to end step registration & ready To register shift
+                mydb.member_update_chatid('registration_progress', 10, user_id)
+                # return to end step register shift
+                mydb.member_update_chatid('registration_progress', 0, user_id)
+                admins = mydb.getAdmins()
+                for admin in admins:
+                    # senf profile For Admin
+                    fh.helperFunder.send_profile(chatid=user_id, bot=bot, forUser=admin)
+                    # send info for verify Admin
+                    bot.sendMessage(admin, msg.messageLib.sendAdminAfterEdit.value,
+                                    reply_markup=menu.keyLib.kbCreateApproveKey(chat_id=user_id))
+                # todo: send To Admin
             elif spBtn[1] == 'hr':
                 hr = mydb.get_property_domain('hrStudent')
                 bot.sendMessage(user_id, str(msg.messageLib.changeHour.value).format(hr))
@@ -619,20 +631,34 @@ def handle_new_messages(user_id, userName, update):
                 elif spBtn[3] == '4':
                     year = mydb.get_student_property(fieldName='start_date', chatid=user_id)
                     mydb.student_update('start_date', '{0}{1}'.format(year, spBtn[2]), user_id)
-                    bot.sendMessage(message['chat']['id'],
-                                    str(msg.messageLib.enterLicenseEndDate.value))
-                    bot.sendMessage(chat_id=user_id, parse_mode='HTML', text='سال را انتخاب کنید',
-                                    reply_markup=menu.keyLib.kbCreateMenuYear(tag=5))
-                    mydb.member_update_chatid('registration_progress', 5, user_id)
-                    tempMember.register_progress = 5
+                    if tempMember.register_progress != 18:  # 18 is Edit Mode
+                        bot.sendMessage(message['chat']['id'],
+                                        str(msg.messageLib.enterLicenseEndDate.value))
+                        bot.sendMessage(chat_id=user_id, parse_mode='HTML', text='سال را انتخاب کنید',
+                                        reply_markup=menu.keyLib.kbCreateMenuYear(tag=5))
+                        mydb.member_update_chatid('registration_progress', 5, user_id)
+                        tempMember.register_progress = 5
+                    else:
+                        mydb.member_update_chatid(fieldName='verifyAdmin', fieldValue=0, chatid=user_id)
+                        # send message to user
+                        bot.sendMessage(user_id, msg.messageLib.afterEdit.value,
+                                        reply_markup=menu.keyLib.kbVerifyEditProfile(self=None, tag=user_id))
+
                 elif spBtn[3] == '5':
                     year = mydb.get_student_property(fieldName='end_date', chatid=user_id)
                     mydb.student_update('end_date', '{0}{1}'.format(year, spBtn[2]), user_id)
                     # bot.sendMessage(message['chat']['id'],
                     #                 str(msg.messageLib.enterWorkoverPermitPhoto.value))
-                    bot.sendMessage(user_id, msg.messageLib.hrPermitTotal.value)
-                    mydb.member_update_chatid('registration_progress', 5, user_id)
-                    tempMember.register_progress = 5
+
+                    if tempMember.register_progress != 18:  # 18 is Edit Mode
+                        bot.sendMessage(user_id, msg.messageLib.hrPermitTotal.value)
+                        mydb.member_update_chatid('registration_progress', 5, user_id)
+                        tempMember.register_progress = 5
+                    else:
+                        mydb.member_update_chatid(fieldName='verifyAdmin', fieldValue=0, chatid=user_id)
+                        # send message to user
+                        bot.sendMessage(user_id, msg.messageLib.afterEdit.value,
+                                        reply_markup=menu.keyLib.kbVerifyEditProfile(self=None, tag=user_id))
             elif spBtn[1] == 'yes':
                 opBtn = int(spBtn[2])
                 op = mydb.get_member_property_chatid('op', message['chat']['id'])
@@ -719,11 +745,11 @@ def handle_new_messages(user_id, userName, update):
 {5}
 {6}'''.format(rowReq, rowDate, rowStartTime, rowEndTime, rowWage, rowaddr,
               msg.messageLib.doYouLike.value), reply_markup=menu.keyLib.kbCreateMenuApproveShift(shiftRow[9]))
-            elif spBtn[1] == 'editProfile':
+            elif spBtn[1] == 'epf':
                 bot.sendMessage(user_id, msg.messageLib.editMessag.value)
                 fh.helperFunder.send_profile(chatid=user_id, bot=bot)
                 bot.sendMessage(user_id, msg.messageLib.confirmEdit.value,
-                                reply_markup=menu.keyLib.kbVerifyEditProfile(self=None, tag=user_id))
+                                reply_markup=menu.keyLib.kbEditProfile(self=None, chatId=user_id))
             # پذیرش شخصی که شیفت را رزرو کرده است
             elif spBtn[1] == 'approveShiftFunder':
                 requester = mydb.get_shift_property(fieldName='approver', idShift=spBtn[2])
@@ -994,11 +1020,17 @@ def handle_new_messages(user_id, userName, update):
             bot.sendMessage(message['chat']['id'],
                             str(msg.messageLib.enterName.value))
         if btn == 'btNightDay':
-            mydb.founder_update('pharmacy_type', 'شبانه روزی', message['chat']['id'])
-            bot.sendMessage(message['chat']['id'],
-                            str(msg.messageLib.enterPharmacyAddress.value))
-            mydb.member_update_chatid('registration_progress', 6, message['chat']['id'])
-            tempMember.register_progress = 6
+            if tempMember.register_progress == 18:
+                mydb.founder_update('pharmacy_type', 'شبانه روزی', message['chat']['id'])
+                mydb.member_update_chatid(fieldName='verifyAdmin', fieldValue=0, chatid=user_id)
+                bot.sendMessage(user_id, msg.messageLib.afterEdit.value,
+                                reply_markup=menu.keyLib.kbVerifyEditProfile(self=None, tag=user_id))
+            else:
+                mydb.founder_update('pharmacy_type', 'شبانه روزی', message['chat']['id'])
+                bot.sendMessage(message['chat']['id'],
+                                str(msg.messageLib.enterPharmacyAddress.value))
+                mydb.member_update_chatid('registration_progress', 6, message['chat']['id'])
+                tempMember.register_progress = 6
         if btn == 'btnNormal':
             mydb.founder_update('pharmacy_type', 'عادی', message['chat']['id'])
             bot.sendMessage(message['chat']['id'],
@@ -1007,8 +1039,15 @@ def handle_new_messages(user_id, userName, update):
             tempMember.register_progress = 6
         if btn == 'btShiftMorning':
             mydb.student_update('shift_access', 'صبح', message['chat']['id'])
-            bot.sendMessage(message['chat']['id'],
-                            str(msg.messageLib.endRegisteration.value))
+            if tempMember.register_progress != 18:
+                bot.sendMessage(message['chat']['id'],
+                                str(msg.messageLib.endRegisteration.value))
+            else:
+                mydb.member_update_chatid(fieldName='verifyAdmin', fieldValue=0, chatid=user_id)
+                # send message to user
+                bot.sendMessage(user_id, msg.messageLib.afterEdit.value,
+                                reply_markup=menu.keyLib.kbVerifyEditProfile(self=None, tag=user_id))
+                return
 
             admins = mydb.getAdmins()
             for admin in admins:
@@ -1049,8 +1088,15 @@ def handle_new_messages(user_id, userName, update):
             tempMember.register_progress = 10
         if btn == 'btShiftEvening':
             mydb.student_update('shift_access', 'عصر', message['chat']['id'])
-            bot.sendMessage(message['chat']['id'],
-                            str(msg.messageLib.endRegisteration.value))
+            if tempMember.register_progress != 18:
+                bot.sendMessage(message['chat']['id'],
+                                str(msg.messageLib.endRegisteration.value))
+            else:
+                mydb.member_update_chatid(fieldName='verifyAdmin', fieldValue=0, chatid=user_id)
+                # send message to user
+                bot.sendMessage(user_id, msg.messageLib.afterEdit.value,
+                                reply_markup=menu.keyLib.kbVerifyEditProfile(self=None, tag=user_id))
+                return
             admins = mydb.getAdmins()
             for admin in admins:
                 bot.sendMessage(admin[0],
@@ -1088,8 +1134,15 @@ def handle_new_messages(user_id, userName, update):
             tempMember.register_progress = 10
         if btn == 'btShiftEveningNight':
             mydb.student_update('shift_access', 'عصر و شب', message['chat']['id'])
-            bot.sendMessage(message['chat']['id'],
-                            str(msg.messageLib.endRegisteration.value))
+            if tempMember.register_progress != 18:
+                bot.sendMessage(message['chat']['id'],
+                                str(msg.messageLib.endRegisteration.value))
+            else:
+                mydb.member_update_chatid(fieldName='verifyAdmin', fieldValue=0, chatid=user_id)
+                # send message to user
+                bot.sendMessage(user_id, msg.messageLib.afterEdit.value,
+                                reply_markup=menu.keyLib.kbVerifyEditProfile(self=None, tag=user_id))
+                return
             admins = mydb.getAdmins()
             for admin in admins:
                 bot.sendMessage(admin[0],
@@ -1128,8 +1181,15 @@ def handle_new_messages(user_id, userName, update):
             tempMember.register_progress = 10
         if btn == 'btShiftMorningEvening':
             mydb.student_update('shift_access', 'صبح و عصر', message['chat']['id'])
-            bot.sendMessage(message['chat']['id'],
-                            str(msg.messageLib.endRegisteration.value))
+            if tempMember.register_progress != 18:
+                bot.sendMessage(message['chat']['id'],
+                                str(msg.messageLib.endRegisteration.value))
+            else:
+                mydb.member_update_chatid(fieldName='verifyAdmin', fieldValue=0, chatid=user_id)
+                # send message to user
+                bot.sendMessage(user_id, msg.messageLib.afterEdit.value,
+                                reply_markup=menu.keyLib.kbVerifyEditProfile(self=None, tag=user_id))
+                return
             admins = mydb.getAdmins()
             for admin in admins:
                 bot.sendMessage(admin[0],
