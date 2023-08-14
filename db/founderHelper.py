@@ -8,34 +8,34 @@ import uuid
 import os
 
 mydb = msc.mysqlconnector()
+listDenyOP = [
+    {"pr": 10, "op": 0, "msg": "عملیات نامعتبر است"},
+    {"pr": 18, "op": 0, "msg": "عملیات نامعتبر است"},
+    {"pr": 18, "op": 16, "msg": "عملیات نامعتبر است"}
+]
+listCommand = ['/myoperation', '/start', '/myinfo']
 
 
-class helperFunder:
-    def __init__(self):
-        return
+class HelperFunder:
+    def __init__(self, op=0):
+        self._op = op
 
-        allShift = mydb.get_shift_no_approve(progress=2, creator=message['chat']["id"])
-        if len(allShift) == 0:
-            bot.sendMessage(message['chat']["id"], msg.messageLib.emptyList.value)
-        else:
-            for shiftRow in allShift:
-                rowReq = 'درخواست دهنده: {}'.format(shiftRow[0])
-                rowDate = 'تاریخ  : {}'.format(shiftRow[2])
-                rowStartTime = 'ساعت شروع  : {}'.format(shiftRow[3])
-                rowEndTime = 'ساعت پایان  : {}'.format(shiftRow[4])
-                rowWage = 'حق الزحمه  : {}'.format(shiftRow[5])
-                rowaddr = 'آدرس  : {}'.format(shiftRow[6])
-                bot.sendMessage(message['chat']["id"], '''
-{0}
-{1}
-{2}
-{3}
-{4}
-{5}
-{6}'''.format(rowReq, rowDate, rowStartTime, rowEndTime, rowWage, rowaddr,
-              msg.messageLib.doYouLike.value), reply_markup=menu.keyLib.kbCreateMenuApproveShift(shiftId=shiftRow[9]))
+    def checkStatus(self, bot, mem: Membership, update=None):
+        if mem.register_progress >= 10:
+            if mem.verifyAdmin == 0:
+                bot.sendMessage(mem.chatId, msg.messageLib.notVerifyAdmin.value)
+                return
+            txtMessage = None
+            if 'message' in update:
+                txtMessage = update['message']['text']
+            if not txtMessage in listCommand and not'callback_query' in update:
+                for item in listDenyOP:
+                    if mem.register_progress == int(item["pr"]) and mem.op == int(item["op"]):
+                        bot.sendMessage(mem.chatId, item["msg"])
+                        return False
+        return True
 
-    def send_info_funder(chatid, funder_chatid, shiftId, bot):
+    def send_info_funder(self, chatid, funder_chatid, shiftId, bot):
         tempMember = mydb.load_member(chatid)
         if tempMember.membership_type == 2:
             bot.sendMessage(funder_chatid,
@@ -89,7 +89,7 @@ class helperFunder:
             bot.sendMessage(chatid, msg.messageLib.messAdminApprove.value,
                             reply_markup=menu.keyLib.kbCreateMenuShiftApproveFunder(shiftId=chatid))
 
-    def send_operation(tempMember, bot, chatid):
+    def send_operation(self, tempMember, bot, chatid):
         if tempMember.membership_type == 1:
             bot.sendMessage(chatid, msg.messageLib.yourOperation.value,
                             reply_markup=menu.keyLib.kbCreateMenuFunder(chatId=chatid))
@@ -103,7 +103,7 @@ class helperFunder:
             bot.sendMessage(chatid, msg.messageLib.yourOperation.value,
                             reply_markup=menu.keyLib.kbCreateMenuManager(chatId=chatid))
 
-    def send_list_shift_Cancel(chatId, bot, todayDate):
+    def send_list_shift_Cancel(self, chatId, bot, todayDate):
         shifts = mydb.get_all_shift_by_approver(chatId, todayDate)
         if len(shifts) == 0:
             bot.sendMessage(chatId, msg.messageLib.emptyList.value)
@@ -126,7 +126,7 @@ class helperFunder:
               msg.messageLib.doYouLike.value),
                                 reply_markup=menu.keyLib.kbCreateMenuCancelShift(shiftId=shiftRow[9]))
 
-    def validate_IR_national_id(national_id):
+    def validate_IR_national_id(self, national_id):
         # Check if national id has exactly 10 digits
         if not len(national_id) == 10:
             return False
@@ -136,7 +136,7 @@ class helperFunder:
             return False
         return True
 
-    def validate_IR_mobile_number(mobile_number):
+    def validate_IR_mobile_number(self=None, mobile_number=None):
 
         # Check if mobile number has exactly 11 digits
         if not len(mobile_number) == 11:
@@ -153,7 +153,7 @@ class helperFunder:
         # If all conditions are met, return True
         return True
 
-    def send_shift_to_technicalResponsible(idshift, bot):
+    def send_shift_to_technicalResponsible(self, idshift, bot):
         shiftRow = mydb.get_all_property_shift_byId(idshift)
         ts = mydb.get_all_ts_chatid()
         for t in ts:
@@ -174,7 +174,7 @@ class helperFunder:
               msg.messageLib.doYouLike.value),
                             reply_markup=menu.keyLib.kbCreateMenuCancelShift(shiftId=shiftRow[9]))
 
-    def send_shift_to_student(self=None, bot=None):
+    def send_shift_to_student(self, bot):
         shiftRows = mydb.get_list_shift_for_student()  # shift's for student
         students = mydb.get_all_student_chatid()  # 3 is tpe of student
         for shiftRow in shiftRows:
@@ -199,7 +199,7 @@ class helperFunder:
               msg.messageLib.doYouLike.value),
                                 reply_markup=menu.keyLib.kbCreateMenuApproveShift(shiftId=shiftRow[9]))
 
-    def send_profile(self=None, chatid=None, bot=None, forUser=None):
+    def send_profile(self, chatid, bot, forUser=None):
         fuser = None
         if forUser is None:
             fuser = chatid
@@ -240,22 +240,24 @@ class helperFunder:
                 mydb.get_student_property(fieldName='shift_access', chatid=chatid))
             profileInfo += 'تصویر مجوز نظام پزشکی:'
             img = 'download/{}'.format(mydb.get_student_property('overtime_license_photo', chatid))
+            print(fuser)
             bot.sendMessage(fuser, profileInfo)
-            bot.sendPhoto(chatid, open(img, 'rb'))
+            bot.sendPhoto(fuser, open(img, 'rb'))
             bot.sendMessage(fuser, 'تصویر پروفایل')
             img = 'download/{}'.format(mydb.get_student_property('personal_photo', chatid))
-            bot.sendPhoto(chatid, open(img, 'rb'))
+            bot.sendPhoto(fuser, open(img, 'rb'))
         elif mem.membership_type == 4:
             profileInfo += 'نوع کاربری:\t{0}\n'.format('ادمین')
             bot.sendMessage(fuser, profileInfo)
 
-    def editProfile(self=None, bot=None, spBtn=None, mem=None):
+    def editProfile(self, bot, spBtn, mem:Membership):
         userId = mem.chatId
         mydb.member_update_chatid('opTime', DT.now(), userId)
         mydb.member_update_chatid('registration_progress', 18, userId)
         if spBtn[2] == 'nameEdit':  # edit registration_progress==18 && op==1
             mydb.member_update_chatid('op', 1, userId)
             bot.sendMessage(userId, msg.messageLib.enterName.value)
+
         elif spBtn[2] == 'familyEdit':
             mydb.member_update_chatid('op', 2, userId)
             bot.sendMessage(userId, msg.messageLib.enterLastName.value)
@@ -303,9 +305,16 @@ class helperFunder:
         elif spBtn[2] == 'personalPhotoEdit':
             mydb.member_update_chatid('op', 15, userId)
             bot.sendMessage(userId, str(msg.messageLib.enterSelfiPhoto.value))
+        elif spBtn[2] == 'typeEdit':
+            mydb.member_update_chatid('op', 16, userId)
+            bot.sendMessage(userId,f'نوع کاربری جاری شما '
+                                   f' <strong><u>{ mem.getTextType() }</u></strong> '
+                                   f'  می باشد برای تغییر آن روی یکی از کلید های زیر کلیک کنید.',parse_mode='html',
+                            reply_markup=menu.keyLib.kbWhoAreYou(exclude=mem.membership_type))
+
         return None
 
-    def regEditItem(self=None, mem: Membership = None, bot=None, newValue=None):
+    def regEditItem(self, mem: Membership, bot, newValue):
         userId = mem.chatId
         date1 = mem.opTime
         date2 = DT.now()
@@ -317,7 +326,7 @@ class helperFunder:
             # return to end step registration & ready To register shift
             mydb.member_update_chatid('registration_progress', 10, userId)
             # return to end step register shift
-            mydb.member_update_chatid('registration_progress', 0, userId)
+            mydb.member_update_chatid('op', 0, userId)
             bot.sendMessage(userId, msg.messageLib.errorTimeEdit.value)
             return
         elif op == 1:
@@ -325,7 +334,12 @@ class helperFunder:
         elif op == 2:
             mydb.member_update_chatid(fieldName='last_name', fieldValue=newValue['text'], chatid=userId)
         elif op == 4:
-            mydb.member_update_chatid(fieldName='phoneEdit', fieldValue=newValue['text'], chatid=userId)
+            print(f'phoneNumber:{newValue["text"]}')
+            if self.validate_IR_mobile_number(mobile_number=newValue['text']):
+                mydb.member_update_chatid(fieldName='phone_number', fieldValue=newValue['text'], chatid=userId)
+            else:
+                bot.sendMessage(userId, msg.messageLib.errorPhoneNumber)
+                return
         elif op == 5:
             if mem.membership_type == 2:
                 mydb.technicalManager_update(fieldName='national_code', fieldValue=newValue['text'], chatid=userId)
@@ -372,7 +386,7 @@ class helperFunder:
                 image_path = 'download/{0}{1}'.format(ufid, fileExtention)
                 bot.download_file(file_id, image_path)
                 mydb.student_update('overtime_license_photo', '{0}{1}'.format(ufid, fileExtention),
-                                             userId)
+                                    userId)
             else:
                 bot.sendMessage(userId,
                                 str(msg.messageLib.errorSendFile.value))
@@ -385,10 +399,12 @@ class helperFunder:
                 image_path = 'download/{0}{1}'.format(ufid, fileExtention)
                 bot.download_file(file_id, image_path)
                 mydb.student_update('personal_photo', '{0}{1}'.format(ufid, fileExtention),
-                                             userId)
+                                    userId)
             else:
                 bot.sendMessage(userId,
                                 str(msg.messageLib.errorSendFile.value))
+        else:
+            bot.sendMessage(userId,)
 
         mydb.member_update_chatid(fieldName='verifyAdmin', fieldValue=0, chatid=userId)
         # send message to user

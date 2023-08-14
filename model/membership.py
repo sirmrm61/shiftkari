@@ -2,7 +2,9 @@ from datetime import datetime as DT
 
 
 class Membership:
-    def __init__(self, name=None, last_name=None, phone_number=None, userName=None, chatid=None, opTime=None):
+    def __init__(self, name=None, last_name=None, phone_number=None, userName=None, chatid=None, opTime=None,
+                 verifyAdmin=0):
+        self._verifyAdmin = None
         self._name = None
         self._last_name = None
         self._phone_number = phone_number
@@ -16,6 +18,23 @@ class Membership:
         self._chatid = None
         self._delf = 0
         self._opTime = opTime
+        self._op = 0
+
+    @property
+    def verifyAdmin(self):
+        return int(self._verifyAdmin)
+
+    @verifyAdmin.setter
+    def verifyAdmin(self, new_verifyAdmin):
+        self._verifyAdmin = new_verifyAdmin
+
+    @property
+    def op(self):
+        return int(self._op)
+
+    @op.setter
+    def op(self, new_op):
+        self._op = new_op
 
     @property
     def opTime(self):
@@ -112,6 +131,17 @@ class Membership:
     @lastActivity.setter
     def lastActivity(self, new_lastActivity):
         self._lastActivity = new_lastActivity
+
+
+    def getTextType(self):
+        if self.membership_type == 1:
+            return 'موسس'
+        elif self.membership_type == 2:
+            return 'مسئول فنی'
+        elif self.membership_type == 3:
+            return 'دانشجو'
+        else:
+            return 'مدیر سیستم'
 
 
 class Founder(Membership):

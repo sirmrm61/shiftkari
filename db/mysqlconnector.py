@@ -4,6 +4,7 @@ from pprint import pprint
 from model.membership import Founder, Membership, Student, TechnicalManager
 from datetime import datetime as DT
 
+
 class mysqlconnector:
     def __init__(self):
         self._ipDb = helper.ipServer
@@ -101,11 +102,9 @@ class mysqlconnector:
             if len(updateExp) > 0:
                 updateExp += ' WHERE `chat_id` = \'{0}\';'.format(member.chatId)
                 sql += updateExp
-                pprint(sql)
                 resualt = mycursor.execute(sql)
-        pprint(resualt)
         mycursor.reset()
-        mydb.close();
+        mydb.close()
 
     def getAdmins(self):
         sqlQuery = '''select chat_id from `botshiftkari`.`membership` 
@@ -135,8 +134,11 @@ class mysqlconnector:
             tempMember.userName = resualt[7]
             tempMember.chatId = resualt[8]
             tempMember.lastMessage = resualt[9]
+            tempMember.verifyAdmin = resualt[10]
+            tempMember.op = resualt[13]
             tempMember.delf = resualt[14]
             tempMember.opTime = DT.strptime(str(resualt[15]), '%Y-%m-%d %H:%M:%S')
+
         else:
             tempMember = None
         return tempMember
@@ -291,7 +293,6 @@ class mysqlconnector:
             sqlQuery = 'UPDATE `botshiftkari`.`founder` SET `{0}` = \'{1}\'  where idMember = \'{2}\''.format(fieldName,
                                                                                                               fieldValue,
                                                                                                               idMember)
-        pprint(sqlQuery)
         mycursor.execute(sqlQuery)
         mycursor.reset()
         return resualt
@@ -331,7 +332,6 @@ class mysqlconnector:
             sqlQuery = 'UPDATE `botshiftkari`.`student` SET `{0}` = \'{1}\'  where idMember = \'{2}\''.format(fieldName,
                                                                                                               fieldValue,
                                                                                                               idMember)
-        pprint(sqlQuery)
         mycursor.execute(sqlQuery)
         mycursor.reset()
         return resualt
@@ -369,7 +369,6 @@ class mysqlconnector:
         else:
             sqlQuery = 'UPDATE `botshiftkari`.`technicalmanager` SET `{0}` = \'{1}\'  where idMember = \'{2}\''.format(
                 fieldName, fieldValue, idMember)
-        pprint(sqlQuery)
         mycursor.execute(sqlQuery)
         mycursor.reset()
         return resualt
@@ -623,7 +622,6 @@ class mysqlconnector:
         myCursor.execute(sqlQuery)
         resualt = myCursor.fetchall()
         return resualt
-        return resualt
 
     def get_all_student_chatid(self):
         mydb = self.connector()
@@ -632,3 +630,27 @@ class mysqlconnector:
         mycursor.execute(sqlQuery)
         resualt = mycursor.fetchall()
         return resualt
+
+    def checkExsistDetail(self, mem: Membership, newType):
+        mydb = self.connector()
+        myCursor = mydb.cursor()
+        sqlQuery = f'select id from botshiftkari.membership where chat_id = {mem.chatId}'
+        myCursor.execute(sqlQuery)
+        resualt = myCursor.fetchone()
+        idMember = resualt[0]
+        if newType == 1:
+            sqlQuery = f'select count(*) from botshiftkari.founder where idMember = {idMember}'
+        elif newType == 2:
+            sqlQuery = f'select count(*) from botshiftkari.technicalmanager where idMember = {idMember}'
+        elif newType == 3:
+            sqlQuery = f'select count(*) from botshiftkari.student where idMember = {idMember}'
+        else:
+            return False
+        myCursor.execute(sqlQuery)
+        resualt = myCursor.fetchone()
+        count = int(resualt[0])
+        print(f'Count={count}')
+        if count == 1:
+            return True
+        else:
+            return False
