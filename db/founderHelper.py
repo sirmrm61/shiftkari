@@ -22,11 +22,11 @@ class HelperFunder:
 
     def checkStatus(self, bot, mem: Membership, update=None):
         if mem.register_progress >= 10:
-            if mem.verifyAdmin == 0:
+            if mem.verifyAdmin == 0 and mem.register_progress != 18:
                 bot.sendMessage(mem.chatId, msg.messageLib.notVerifyAdmin.value)
                 return
             txtMessage = None
-            if 'message' in update:
+            if 'message' in update and 'text' in update['message']:
                 txtMessage = update['message']['text']
             if not txtMessage in listCommand and not'callback_query' in update:
                 for item in listDenyOP:
@@ -215,18 +215,26 @@ class HelperFunder:
                 mydb.get_funder_property(fieldName='pharmacy_name', chatid=chatid))
             profileInfo += 'نوع  داروخانه:\t{0}\n'.format(
                 mydb.get_funder_property(fieldName='pharmacy_type', chatid=chatid))
-            profileInfo += 'تصویر مجوز داروخانه:\t{0}\n'
-            img = 'download/{}'.format(mydb.get_student_property('personal_photo', chatid))
+            profileInfo += 'تصویر مجوز داروخانه:\t\n'
+            img = 'download/{}'.format(mydb.get_funder_property('license_photo', chatid))
             bot.sendMessage(fuser, profileInfo)
-            bot.sendPhoto(chatid, open(img, 'rb'))
+            isExisting = os.path.exists(img)
+            if isExisting:
+                bot.sendPhoto(chatid, open(img, 'rb'))
+            else:
+                bot.sendMessage(fuser, 'فایل تصویر پیدا نشد')
         elif mem.membership_type == 2:
             profileInfo += 'نوع کاربری:\t{0}\n'.format('مسئول فنی')
             profileInfo += 'کد ملی:\t{0}\n'.format(
                 mydb.get_technical_property(fieldName='national_code', chatid=chatid))
-            profileInfo += 'تصویر مجوز نظام پزشکی:\t{0}\n'
+            profileInfo += 'تصویر مجوز نظام پزشکی:\t\n'
             img = 'download/{}'.format(mydb.get_technical_property('membership_card_photo', chatid))
             bot.sendMessage(fuser, profileInfo)
-            bot.sendPhoto(chatid, open(img, 'rb'))
+            isExisting = os.path.exists(img)
+            if isExisting:
+                bot.sendPhoto(chatid, open(img, 'rb'))
+            else:
+                bot.sendMessage(fuser, 'فایل تصویر پیدا نشد')
         elif mem.membership_type == 3:
             profileInfo += 'نوع کاربری:\t{0}\n'.format('دانشجو')
             profileInfo += 'کد ملی:\t{0}\n'.format(mydb.get_student_property(fieldName='national_code', chatid=chatid))
@@ -240,12 +248,20 @@ class HelperFunder:
                 mydb.get_student_property(fieldName='shift_access', chatid=chatid))
             profileInfo += 'تصویر مجوز نظام پزشکی:'
             img = 'download/{}'.format(mydb.get_student_property('overtime_license_photo', chatid))
-            print(fuser)
+
             bot.sendMessage(fuser, profileInfo)
-            bot.sendPhoto(fuser, open(img, 'rb'))
-            bot.sendMessage(fuser, 'تصویر پروفایل')
+            isExisting = os.path.exists(img)
+            if isExisting:
+                bot.sendPhoto(chatid, open(img, 'rb'))
+            else:
+                bot.sendMessage(fuser, 'فایل تصویر پیدا نشد')
+            bot.sendMessage(fuser, ':تصویر پروفایل')
             img = 'download/{}'.format(mydb.get_student_property('personal_photo', chatid))
-            bot.sendPhoto(fuser, open(img, 'rb'))
+            isExisting = os.path.exists(img)
+            if isExisting:
+                bot.sendPhoto(chatid, open(img, 'rb'))
+            else:
+                bot.sendMessage(fuser, 'فایل تصویر پیدا نشد')
         elif mem.membership_type == 4:
             profileInfo += 'نوع کاربری:\t{0}\n'.format('ادمین')
             bot.sendMessage(fuser, profileInfo)
@@ -266,10 +282,10 @@ class HelperFunder:
             bot.sendMessage(userId, msg.messageLib.enterPhoneNumber.value)
         elif spBtn[2] == 'nationCodeEdit':
             mydb.member_update_chatid('op', 5, userId)
-            bot.sendMessage(userId, msg.messageLib.enterPhoneNumber.value)
+            bot.sendMessage(userId, msg.messageLib.enterNationCode.value)
         elif spBtn[2] == 'pharmacyNameEdit':
             mydb.member_update_chatid('op', 5, userId)
-            bot.sendMessage(userId, msg.messageLib.enterPhoneNumber.value)
+            bot.sendMessage(userId, msg.messageLib.enterPharmacyName.value)
         elif spBtn[2] == 'pharmacyTypeEdit':
             mydb.member_update_chatid('op', 6, userId)
             bot.sendMessage(userId, msg.messageLib.enterPharmacyType.value, reply_markup=menu.keyLib.kbTypePharmacy())
@@ -311,7 +327,9 @@ class HelperFunder:
                                    f' <strong><u>{ mem.getTextType() }</u></strong> '
                                    f'  می باشد برای تغییر آن روی یکی از کلید های زیر کلیک کنید.',parse_mode='html',
                             reply_markup=menu.keyLib.kbWhoAreYou(exclude=mem.membership_type))
-
+        elif spBtn[2] == 'deactiveUser':
+            mydb.member_update_chatid('del', 1, userId)
+            bot.sendMessage(userId,f'نام کاربری شما غیر فعال گردید.')
         return None
 
     def regEditItem(self, mem: Membership, bot, newValue):
