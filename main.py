@@ -506,10 +506,7 @@ def handle_new_messages(user_id, userName, update):
                 bot.sendMessage(user_id, str(msg.messageLib.changeLicenss.value).format(licenss))
                 return None
             elif spBtn[1] == 'repShift':
-<<<<<<< HEAD
-=======
                 # todo: write function
->>>>>>> 558fe5e4e3cb5ab59828253a35b1a10aabab2fd5
                 helper.msg_get_all_shift_approve(user_id, bot)
             elif spBtn[1] == 'reactive':
                 tempMember.delf = 0
@@ -1262,6 +1259,7 @@ def handle_updates(updates):
             user_name = ' کاربر '
         # پردازش پیام جدید
         handle_new_messages(user_id, user_name, update)
+
 
 # شروع برنامه
 def main():
