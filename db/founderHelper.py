@@ -28,7 +28,7 @@ class HelperFunder:
             txtMessage = None
             if 'message' in update and 'text' in update['message']:
                 txtMessage = update['message']['text']
-            if not txtMessage in listCommand and not'callback_query' in update:
+            if not txtMessage in listCommand and not 'callback_query' in update:
                 for item in listDenyOP:
                     if mem.register_progress == int(item["pr"]) and mem.op == int(item["op"]):
                         bot.sendMessage(mem.chatId, item["msg"])
@@ -264,7 +264,7 @@ class HelperFunder:
             profileInfo += 'نوع کاربری:\t{0}\n'.format('ادمین')
             bot.sendMessage(fuser, profileInfo)
 
-    def editProfile(self, bot, spBtn, mem:Membership):
+    def editProfile(self, bot, spBtn, mem: Membership):
         userId = mem.chatId
         mydb.member_update_chatid('opTime', DT.now(), userId)
         mydb.member_update_chatid('registration_progress', 18, userId)
@@ -321,13 +321,13 @@ class HelperFunder:
             bot.sendMessage(userId, str(msg.messageLib.enterSelfiPhoto.value))
         elif spBtn[2] == 'typeEdit':
             mydb.member_update_chatid('op', 16, userId)
-            bot.sendMessage(userId,f'نوع کاربری جاری شما '
-                                   f' <strong><u>{ mem.getTextType() }</u></strong> '
-                                   f'  می باشد برای تغییر آن روی یکی از کلید های زیر کلیک کنید.',parse_mode='html',
+            bot.sendMessage(userId, f'نوع کاربری جاری شما '
+                                    f' <strong><u>{mem.getTextType()}</u></strong> '
+                                    f'  می باشد برای تغییر آن روی یکی از کلید های زیر کلیک کنید.', parse_mode='html',
                             reply_markup=menu.keyLib.kbWhoAreYou(exclude=mem.membership_type))
         elif spBtn[2] == 'deactiveUser':
             mydb.member_update_chatid('del', 1, userId)
-            bot.sendMessage(userId,f'نام کاربری شما غیر فعال گردید.')
+            bot.sendMessage(userId, f'نام کاربری شما غیر فعال گردید.')
         return None
 
     def regEditItem(self, mem: Membership, bot, newValue):
@@ -420,15 +420,16 @@ class HelperFunder:
                 bot.sendMessage(userId,
                                 str(msg.messageLib.errorSendFile.value))
         else:
-            bot.sendMessage(userId,)
+            bot.sendMessage(userId, )
 
         mydb.member_update_chatid(fieldName='verifyAdmin', fieldValue=0, chatid=userId)
         # send message to user
         bot.sendMessage(userId, msg.messageLib.afterEdit.value,
                         reply_markup=menu.keyLib.kbVerifyEditProfile(self=None, tag=userId))
-    def msg_get_all_shift_approve(self,chatId,bot):
+
+    def msg_get_all_shift_approve(self, chatId, bot):
         shiftRows = mydb.get_all_shift_managerApproved()
-        if len(shiftRows) >0:
+        if len(shiftRows) > 0:
             for shiftRow in shiftRows:
                 rowReq = 'درخواست دهنده: {}'.format(shiftRow[0])
                 rowDate = 'تاریخ  : {}'.format(shiftRow[2])
@@ -444,7 +445,7 @@ class HelperFunder:
 {4}
 {5}
 {6}'''.format(rowReq, rowDate, rowStartTime, rowEndTime, rowWage, rowaddr,
-                  msg.messageLib.doYouLike.value),
-                    reply_markup=menu.keyLib.kbCreateMenuApproveShift(shiftId=shiftRow[9]))
+              msg.messageLib.doYouLike.value),
+                                reply_markup=menu.keyLib.kbCreateMenuApproveShift(shiftId=shiftRow[9]))
         else:
-            bot.sendMessage(chatId,msg.messageLib.noShift.value)
+            bot.sendMessage(chatId, msg.messageLib.noShift.value)
