@@ -428,14 +428,15 @@ class HelperFunder:
                         reply_markup=menu.keyLib.kbVerifyEditProfile(self=None, tag=userId))
     def msg_get_all_shift_approve(self,chatId,bot):
         shiftRows = mydb.get_all_shift_managerApproved()
-        for shiftRow in shiftRows:
-            rowReq = 'درخواست دهنده: {}'.format(shiftRow[0])
-            rowDate = 'تاریخ  : {}'.format(shiftRow[2])
-            rowStartTime = 'ساعت شروع  : {}'.format(shiftRow[3])
-            rowEndTime = 'ساعت پایان  : {}'.format(shiftRow[4])
-            rowWage = 'حق الزحمه  : {}'.format(shiftRow[5])
-            rowaddr = 'آدرس  : {}'.format(shiftRow[6])
-            bot.sendMessage(chatId, '''
+        if len(shiftRows) >0:
+            for shiftRow in shiftRows:
+                rowReq = 'درخواست دهنده: {}'.format(shiftRow[0])
+                rowDate = 'تاریخ  : {}'.format(shiftRow[2])
+                rowStartTime = 'ساعت شروع  : {}'.format(shiftRow[3])
+                rowEndTime = 'ساعت پایان  : {}'.format(shiftRow[4])
+                rowWage = 'حق الزحمه  : {}'.format(shiftRow[5])
+                rowaddr = 'آدرس  : {}'.format(shiftRow[6])
+                bot.sendMessage(chatId, '''
 {0}
 {1}
 {2}
@@ -443,5 +444,7 @@ class HelperFunder:
 {4}
 {5}
 {6}'''.format(rowReq, rowDate, rowStartTime, rowEndTime, rowWage, rowaddr,
-              msg.messageLib.doYouLike.value),
-                reply_markup=menu.keyLib.kbCreateMenuApproveShift(shiftId=shiftRow[9]))
+                  msg.messageLib.doYouLike.value),
+                    reply_markup=menu.keyLib.kbCreateMenuApproveShift(shiftId=shiftRow[9]))
+        else:
+            bot.sendMessage(chatId,msg.messageLib.noShift.value)
