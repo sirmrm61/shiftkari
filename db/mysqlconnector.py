@@ -431,7 +431,8 @@ class mysqlconnector:
         mydb.autocommit = True
         mycursor = mydb.cursor()
         sqlQuery = '''SELECT concat(mem.name,mem.last_name) as fullname,creator,
-                        DateShift,startTime,endTime,wage,pharmacyAddress,progress,approver,shi.idshift
+                        DateShift,startTime,endTime,wage,pharmacyAddress,progress,approver,shi.idshift,
+                        shi.dateEndShift
                         FROM botshiftkari.shift shi inner join botshiftkari.membership mem on
                          mem.chat_id = shi.Creator where not shi.creator = '{0}' and shi.progress={1}'''.format(creator,
                                                                                                                 progress)
@@ -458,7 +459,8 @@ class mysqlconnector:
         mydb.autocommit = True
         mycursor = mydb.cursor()
         sqlQuery = '''SELECT concat(mem.name,mem.last_name) as fullname,creator,
-                        DateShift,startTime,endTime,wage,pharmacyAddress,progress,approver,shi.idshift
+                        DateShift,startTime,endTime,wage,pharmacyAddress,progress,approver,shi.idshift,
+                        shi.dateEndShift
                         FROM botshiftkari.shift shi inner join botshiftkari.membership mem on
                          mem.chat_id = shi.Creator where  shi.creator = '{0}' and (shi.progress=1 or shi.progress=2) and shi.del=0'''.format(
             creator)
@@ -471,7 +473,8 @@ class mysqlconnector:
         mydb.autocommit = True
         mycursor = mydb.cursor()
         sqlQuery = '''SELECT concat(mem.name,mem.last_name) as fullname,creator,
-                        DateShift,startTime,endTime,wage,pharmacyAddress,progress,approver,shi.idshift
+                        DateShift,startTime,endTime,wage,pharmacyAddress,progress,approver,shi.idshift,
+                        shi.dateEndShift
                         FROM botshiftkari.shift shi inner join botshiftkari.membership mem on
                          mem.chat_id = shi.Creator and shi.del=0 '''
         mycursor.execute(sqlQuery)
@@ -495,7 +498,8 @@ class mysqlconnector:
         mydb.autocommit = True
         mycursor = mydb.cursor()
         sqlQuery = '''SELECT concat(mem.name,mem.last_name) as fullname,creator,
-                        DateShift,startTime,endTime,wage,pharmacyAddress,progress,approver,shi.idshift
+                        DateShift,startTime,endTime,wage,pharmacyAddress,progress,approver,shi.idshift,
+                        shi.dateEndShift
                         FROM botshiftkari.shift shi inner join botshiftkari.membership mem on
                          mem.chat_id = shi.Creator where progress = 2 and shi.del = 0'''
         mycursor.execute(sqlQuery)
@@ -540,6 +544,7 @@ class mysqlconnector:
         mycursor = mydb.cursor()
         sqlQuery = '''SELECT concat(mem.name,mem.last_name) as fullname,creator,
                         DateShift,startTime,endTime,wage,pharmacyAddress,progress,approver,shi.idshift
+                        shi.dateEndShift
                         FROM botshiftkari.shift shi inner join botshiftkari.membership mem on
                          mem.chat_id = shi.Creator where  shi.approver = '{0}' and shi.DateShift> '{1}'
                           and (shi.progress=3 or shi.progress=4) and shi.del=0'''.format(creator, dateShift)
@@ -552,7 +557,8 @@ class mysqlconnector:
         mydb.autocommit = True
         mycursor = mydb.cursor()
         sqlQuery = '''SELECT concat(mem.name,mem.last_name) as fullname,creator,
-                        DateShift,startTime,endTime,wage,pharmacyAddress,progress,approver,shi.idshift
+                        DateShift,startTime,endTime,wage,pharmacyAddress,progress,approver,shi.idshift,
+                        shi.dateEndShift
                         FROM botshiftkari.shift shi inner join botshiftkari.membership mem on
                          mem.chat_id = shi.Creator where  shi.idshift={0}'''.format(idshift)
         mycursor.execute(sqlQuery)
@@ -614,7 +620,8 @@ class mysqlconnector:
         myCursor.execute(sqlQuery)
         resualt = myCursor.fetchone()
         sqlQuery = '''SELECT concat(mem.name,' ',mem.last_name) as fullname,creator,
-                        DateShift,startTime,endTime,wage,pharmacyAddress,progress,approver,shi.idshift
+                        DateShift,startTime,endTime,wage,pharmacyAddress,progress,approver,shi.idshift,
+                        shi.dateEndShift
                         FROM botshiftkari.shift shi inner join botshiftkari.membership mem on
                          mem.chat_id = shi.Creator where `progress` > '0'  and    `progress` < '3'  and 
                          `send` = 0 and  date_add(shi.dateRegiter,interval {0} HOUR)<now()'''.format(
