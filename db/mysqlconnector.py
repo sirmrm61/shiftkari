@@ -495,7 +495,8 @@ class mysqlconnector:
         mydb.autocommit = True
         mycursor = mydb.cursor()
         sqlQuery = '''SELECT concat(mem.name,mem.last_name) as fullname,creator,
-                        DateShift,startTime,endTime,wage,pharmacyAddress,progress,approver,shi.idshift
+                        DateShift,startTime,endTime,wage,pharmacyAddress,progress,approver,shi.idshift,
+                        shi.dateEndShift
                         FROM botshiftkari.shift shi inner join botshiftkari.membership mem on
                          mem.chat_id = shi.Creator where progress = 2 and shi.del = 0'''
         mycursor.execute(sqlQuery)
@@ -614,7 +615,8 @@ class mysqlconnector:
         myCursor.execute(sqlQuery)
         resualt = myCursor.fetchone()
         sqlQuery = '''SELECT concat(mem.name,' ',mem.last_name) as fullname,creator,
-                        DateShift,startTime,endTime,wage,pharmacyAddress,progress,approver,shi.idshift
+                        DateShift,startTime,endTime,wage,pharmacyAddress,progress,approver,shi.idshift,
+                        shi.dateEndShift
                         FROM botshiftkari.shift shi inner join botshiftkari.membership mem on
                          mem.chat_id = shi.Creator where `progress` > '0'  and    `progress` < '3'  and 
                          `send` = 0 and  date_add(shi.dateRegiter,interval {0} HOUR)<now()'''.format(

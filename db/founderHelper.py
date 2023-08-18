@@ -22,13 +22,13 @@ class HelperFunder:
 
     def checkStatus(self, bot, mem: Membership, update=None):
         if mem.register_progress >= 10:
-            if mem.verifyAdmin == 0:
+            if mem.verifyAdmin == 0 and mem.register_progress != 18:
                 bot.sendMessage(mem.chatId, msg.messageLib.notVerifyAdmin.value)
                 return
             txtMessage = None
-            if 'message' in update:
+            if 'message' in update and 'text' in update['message']:
                 txtMessage = update['message']['text']
-            if not txtMessage in listCommand and not'callback_query' in update:
+            if not txtMessage in listCommand and not 'callback_query' in update:
                 for item in listDenyOP:
                     if mem.register_progress == int(item["pr"]) and mem.op == int(item["op"]):
                         bot.sendMessage(mem.chatId, item["msg"])
@@ -179,11 +179,10 @@ class HelperFunder:
         students = mydb.get_all_student_chatid()  # 3 is tpe of student
         for shiftRow in shiftRows:
             for st in students:
-                # todo: delete print
-                print('student ={0}'.format(st[0]))
                 mydb.shift_update_by_id(fieldName='send', fieldValue=1, idshift=shiftRow[9])
                 rowReq = 'درخواست دهنده: {}'.format(shiftRow[0])
-                rowDate = 'تاریخ  : {}'.format(shiftRow[2])
+                rowDate = 'تاریخ شروع : {}'.format(shiftRow[2])
+                rowDateEnd = 'تاریخ پایان : {}'.format(shiftRow[10])
                 rowStartTime = 'ساعت شروع  : {}'.format(shiftRow[3])
                 rowEndTime = 'ساعت پایان  : {}'.format(shiftRow[4])
                 rowWage = 'حق الزحمه  : {}'.format(shiftRow[5])
@@ -191,12 +190,13 @@ class HelperFunder:
                 bot.sendMessage(st[0], '''
 {0}
 {1}
+{7}
 {2}
 {3}
 {4}
 {5}
 {6}'''.format(rowReq, rowDate, rowStartTime, rowEndTime, rowWage, rowaddr,
-              msg.messageLib.doYouLike.value),
+              msg.messageLib.doYouLike.value,rowDateEnd),
                                 reply_markup=menu.keyLib.kbCreateMenuApproveShift(shiftId=shiftRow[9]))
 
     def send_profile(self, chatid, bot, forUser=None):
@@ -215,18 +215,26 @@ class HelperFunder:
                 mydb.get_funder_property(fieldName='pharmacy_name', chatid=chatid))
             profileInfo += 'نوع  داروخانه:\t{0}\n'.format(
                 mydb.get_funder_property(fieldName='pharmacy_type', chatid=chatid))
-            profileInfo += 'تصویر مجوز داروخانه:\t{0}\n'
-            img = 'download/{}'.format(mydb.get_student_property('personal_photo', chatid))
+            profileInfo += 'تصویر مجوز داروخانه:\t\n'
+            img = 'download/{}'.format(mydb.get_funder_property('license_photo', chatid))
             bot.sendMessage(fuser, profileInfo)
-            bot.sendPhoto(chatid, open(img, 'rb'))
+            isExisting = os.path.exists(img)
+            if isExisting:
+                bot.sendPhoto(chatid, open(img, 'rb'))
+            else:
+                bot.sendMessage(fuser, 'فایل تصویر پیدا نشد')
         elif mem.membership_type == 2:
             profileInfo += 'نوع کاربری:\t{0}\n'.format('مسئول فنی')
             profileInfo += 'کد ملی:\t{0}\n'.format(
                 mydb.get_technical_property(fieldName='national_code', chatid=chatid))
-            profileInfo += 'تصویر مجوز نظام پزشکی:\t{0}\n'
+            profileInfo += 'تصویر مجوز نظام پزشکی:\t\n'
             img = 'download/{}'.format(mydb.get_technical_property('membership_card_photo', chatid))
             bot.sendMessage(fuser, profileInfo)
-            bot.sendPhoto(chatid, open(img, 'rb'))
+            isExisting = os.path.exists(img)
+            if isExisting:
+                bot.sendPhoto(chatid, open(img, 'rb'))
+            else:
+                bot.sendMessage(fuser, 'فایل تصویر پیدا نشد')
         elif mem.membership_type == 3:
             profileInfo += 'نوع کاربری:\t{0}\n'.format('دانشجو')
             profileInfo += 'کد ملی:\t{0}\n'.format(mydb.get_student_property(fieldName='national_code', chatid=chatid))
@@ -240,17 +248,25 @@ class HelperFunder:
                 mydb.get_student_property(fieldName='shift_access', chatid=chatid))
             profileInfo += 'تصویر مجوز نظام پزشکی:'
             img = 'download/{}'.format(mydb.get_student_property('overtime_license_photo', chatid))
-            print(fuser)
+
             bot.sendMessage(fuser, profileInfo)
-            bot.sendPhoto(fuser, open(img, 'rb'))
-            bot.sendMessage(fuser, 'تصویر پروفایل')
+            isExisting = os.path.exists(img)
+            if isExisting:
+                bot.sendPhoto(chatid, open(img, 'rb'))
+            else:
+                bot.sendMessage(fuser, 'فایل تصویر پیدا نشد')
+            bot.sendMessage(fuser, ':تصویر پروفایل')
             img = 'download/{}'.format(mydb.get_student_property('personal_photo', chatid))
-            bot.sendPhoto(fuser, open(img, 'rb'))
+            isExisting = os.path.exists(img)
+            if isExisting:
+                bot.sendPhoto(chatid, open(img, 'rb'))
+            else:
+                bot.sendMessage(fuser, 'فایل تصویر پیدا نشد')
         elif mem.membership_type == 4:
             profileInfo += 'نوع کاربری:\t{0}\n'.format('ادمین')
             bot.sendMessage(fuser, profileInfo)
 
-    def editProfile(self, bot, spBtn, mem:Membership):
+    def editProfile(self, bot, spBtn, mem: Membership):
         userId = mem.chatId
         mydb.member_update_chatid('opTime', DT.now(), userId)
         mydb.member_update_chatid('registration_progress', 18, userId)
@@ -266,10 +282,10 @@ class HelperFunder:
             bot.sendMessage(userId, msg.messageLib.enterPhoneNumber.value)
         elif spBtn[2] == 'nationCodeEdit':
             mydb.member_update_chatid('op', 5, userId)
-            bot.sendMessage(userId, msg.messageLib.enterPhoneNumber.value)
+            bot.sendMessage(userId, msg.messageLib.enterNationCode.value)
         elif spBtn[2] == 'pharmacyNameEdit':
             mydb.member_update_chatid('op', 5, userId)
-            bot.sendMessage(userId, msg.messageLib.enterPhoneNumber.value)
+            bot.sendMessage(userId, msg.messageLib.enterPharmacyName.value)
         elif spBtn[2] == 'pharmacyTypeEdit':
             mydb.member_update_chatid('op', 6, userId)
             bot.sendMessage(userId, msg.messageLib.enterPharmacyType.value, reply_markup=menu.keyLib.kbTypePharmacy())
@@ -307,11 +323,13 @@ class HelperFunder:
             bot.sendMessage(userId, str(msg.messageLib.enterSelfiPhoto.value))
         elif spBtn[2] == 'typeEdit':
             mydb.member_update_chatid('op', 16, userId)
-            bot.sendMessage(userId,f'نوع کاربری جاری شما '
-                                   f' <strong><u>{ mem.getTextType() }</u></strong> '
-                                   f'  می باشد برای تغییر آن روی یکی از کلید های زیر کلیک کنید.',parse_mode='html',
+            bot.sendMessage(userId, f'نوع کاربری جاری شما '
+                                    f' <strong><u>{mem.getTextType()}</u></strong> '
+                                    f'  می باشد برای تغییر آن روی یکی از کلید های زیر کلیک کنید.', parse_mode='html',
                             reply_markup=menu.keyLib.kbWhoAreYou(exclude=mem.membership_type))
-
+        elif spBtn[2] == 'deactiveUser':
+            mydb.member_update_chatid('del', 1, userId)
+            bot.sendMessage(userId, f'نام کاربری شما غیر فعال گردید.')
         return None
 
     def regEditItem(self, mem: Membership, bot, newValue):
@@ -404,9 +422,34 @@ class HelperFunder:
                 bot.sendMessage(userId,
                                 str(msg.messageLib.errorSendFile.value))
         else:
-            bot.sendMessage(userId,)
+            bot.sendMessage(userId, )
 
         mydb.member_update_chatid(fieldName='verifyAdmin', fieldValue=0, chatid=userId)
         # send message to user
         bot.sendMessage(userId, msg.messageLib.afterEdit.value,
                         reply_markup=menu.keyLib.kbVerifyEditProfile(self=None, tag=userId))
+
+    def msg_get_all_shift_approve(self, chatId, bot):
+        shiftRows = mydb.get_all_shift_managerApproved()
+        if len(shiftRows) > 0:
+            for shiftRow in shiftRows:
+                rowReq = 'درخواست دهنده: {}'.format(shiftRow[0])
+                rowDate = 'تاریخ شروع : {}'.format(shiftRow[2])
+                rowDateEnd = 'تاریخ پایان : {}'.format(shiftRow[10])
+                rowStartTime = 'ساعت شروع  : {}'.format(shiftRow[3])
+                rowEndTime = 'ساعت پایان  : {}'.format(shiftRow[4])
+                rowWage = 'حق الزحمه  : {}'.format(shiftRow[5])
+                rowaddr = 'آدرس  : {}'.format(shiftRow[6])
+                bot.sendMessage(chatId, '''
+{0}
+{1}
+{7}
+{2}
+{3}
+{4}
+{5}
+{6}'''.format(rowReq, rowDate, rowStartTime, rowEndTime, rowWage, rowaddr,
+              msg.messageLib.doYouLike.value,rowDateEnd),
+                                reply_markup=menu.keyLib.kbCreateMenuApproveShift(shiftId=shiftRow[9]))
+        else:
+            bot.sendMessage(chatId, msg.messageLib.noShift.value)
