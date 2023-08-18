@@ -110,7 +110,8 @@ class HelperFunder:
         else:
             for shiftRow in shifts:
                 rowReq = 'درخواست دهنده: {}'.format(shiftRow[0])
-                rowDate = 'تاریخ  : {}'.format(shiftRow[2])
+                rowDate = 'تاریخ شروع : {}'.format(shiftRow[2])
+                rowDateEnd = 'تاریخ پایان : {}'.format(shiftRow[10])
                 rowStartTime = 'ساعت شروع  : {}'.format(shiftRow[3])
                 rowEndTime = 'ساعت پایان  : {}'.format(shiftRow[4])
                 rowWage = 'حق الزحمه  : {}'.format(shiftRow[5])
@@ -118,12 +119,13 @@ class HelperFunder:
                 bot.sendMessage(chatId, '''
 {0}
 {1}
+{7}
 {2}
 {3}
 {4}
 {5}
 {6}'''.format(rowReq, rowDate, rowStartTime, rowEndTime, rowWage, rowaddr,
-              msg.messageLib.doYouLike.value),
+                              msg.messageLib.doYouLike.value, rowDateEnd),
                                 reply_markup=menu.keyLib.kbCreateMenuCancelShift(shiftId=shiftRow[9]))
 
     def validate_IR_national_id(self, national_id):
@@ -158,7 +160,8 @@ class HelperFunder:
         ts = mydb.get_all_ts_chatid()
         for t in ts:
             rowReq = 'درخواست دهنده: {}'.format(shiftRow[0])
-            rowDate = 'تاریخ  : {}'.format(shiftRow[2])
+            rowDate = 'تاریخ شروع : {}'.format(shiftRow[2])
+            rowDateEnd = 'تاریخ پایان : {}'.format(shiftRow[10])
             rowStartTime = 'ساعت شروع  : {}'.format(shiftRow[3])
             rowEndTime = 'ساعت پایان  : {}'.format(shiftRow[4])
             rowWage = 'حق الزحمه  : {}'.format(shiftRow[5])
@@ -166,12 +169,13 @@ class HelperFunder:
             bot.sendMessage(t[0], '''
 {0}
 {1}
+{7}
 {2}
 {3}
 {4}
 {5}
 {6}'''.format(rowReq, rowDate, rowStartTime, rowEndTime, rowWage, rowaddr,
-              msg.messageLib.doYouLike.value),
+              msg.messageLib.doYouLike.value, rowDateEnd),
                             reply_markup=menu.keyLib.kbCreateMenuCancelShift(shiftId=shiftRow[9]))
 
     def send_shift_to_student(self, bot):
