@@ -179,8 +179,6 @@ class HelperFunder:
         students = mydb.get_all_student_chatid()  # 3 is tpe of student
         for shiftRow in shiftRows:
             for st in students:
-                # todo: delete print
-                print('student ={0}'.format(st[0]))
                 mydb.shift_update_by_id(fieldName='send', fieldValue=1, idshift=shiftRow[9])
                 rowReq = 'درخواست دهنده: {}'.format(shiftRow[0])
                 rowDate = 'تاریخ  : {}'.format(shiftRow[2])
@@ -428,3 +426,22 @@ class HelperFunder:
         # send message to user
         bot.sendMessage(userId, msg.messageLib.afterEdit.value,
                         reply_markup=menu.keyLib.kbVerifyEditProfile(self=None, tag=userId))
+    def msg_get_all_shift_approve(self,chatId,bot):
+        shiftRows = mydb.get_all_shift_managerApproved()
+        for shiftRow in shiftRows:
+            rowReq = 'درخواست دهنده: {}'.format(shiftRow[0])
+            rowDate = 'تاریخ  : {}'.format(shiftRow[2])
+            rowStartTime = 'ساعت شروع  : {}'.format(shiftRow[3])
+            rowEndTime = 'ساعت پایان  : {}'.format(shiftRow[4])
+            rowWage = 'حق الزحمه  : {}'.format(shiftRow[5])
+            rowaddr = 'آدرس  : {}'.format(shiftRow[6])
+            bot.sendMessage(chatId, '''
+{0}
+{1}
+{2}
+{3}
+{4}
+{5}
+{6}'''.format(rowReq, rowDate, rowStartTime, rowEndTime, rowWage, rowaddr,
+              msg.messageLib.doYouLike.value),
+                reply_markup=menu.keyLib.kbCreateMenuApproveShift(shiftId=shiftRow[9]))

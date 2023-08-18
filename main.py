@@ -204,7 +204,9 @@ def handle_new_messages(user_id, userName, update):
                 tempMember.register_progress = 5
             elif tempMember.membership_type == 2:
                 nationCode = message['text']
-                repNation = mydb.rep_nation_code(nationCode)
+                repNation = False
+                if tempMember.op == 0:
+                    repNation = mydb.rep_nation_code(nationCode)
                 if repNation:
                     bot.sendMessage(user_id, msg.messageLib.repNationCode.value)
                     return
@@ -504,7 +506,8 @@ def handle_new_messages(user_id, userName, update):
                 bot.sendMessage(user_id, str(msg.messageLib.changeLicenss.value).format(licenss))
                 return None
             elif spBtn[1] == 'repShift':
-                helper.msg_get_all_shift_approve(message=message, bot=bot)
+                # todo: write function
+                helper.msg_get_all_shift_approve(user_id, bot)
             elif spBtn[1] == 'reactive':
                 tempMember.delf = 0
                 mydb.member_update(fieldName='del', fieldValue=0, chatid=spBtn[2])
