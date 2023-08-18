@@ -22,11 +22,11 @@ MAX_IDLE_TIME = 600
 mydb = msc.mysqlconnector()
 idFromFile = None
 # sirmrmco1
-bot = telepot.Bot('409679224:AAHAWm_FaSNiuthByMxAESwqq4SFYR8CxZE')
+# bot = telepot.Bot('409679224:AAHAWm_FaSNiuthByMxAESwqq4SFYR8CxZE')
 
 
 # shiftkari
-# bot = telepot.Bot('6012649808:AAGXWUsZJBtvWsFlYuvqg18tgIwo7ildPUs')
+bot = telepot.Bot('6012649808:AAGXWUsZJBtvWsFlYuvqg18tgIwo7ildPUs')
 
 
 # admins = mydb.getAdmins()
@@ -832,7 +832,7 @@ def handle_new_messages(user_id, userName, update):
                                         reply_markup=menu.keyLib.kbCreateMenuDeleteShift(shiftId=shiftRow[9]))
             elif spBtn[1] == 'DeleteShiftList':  # فشردن دکمه حذف شیفت
                 bot.sendMessage(user_id, msg.messageLib.confirmDeleteShift.value,
-                                reply_markup=menu.keyLib.kbCreateMenuConfirmDelete(spBtn[2]))
+                                reply_markup=menu.keyLib.kbCreateMenuConfirmDelete(shiftId=spBtn[2]))
             elif spBtn[1] == 'confirmDelete':  # تائیدیه پاک کردن شیفت توسط مدیر سیستم
                 mydb.shift_update_by_id(fieldName='del', fieldValue='1', idshift=spBtn[2])
                 bot.sendMessage(message['chat']['id'], msg.messageLib.delShiftMessage.value)
@@ -1302,29 +1302,28 @@ def handle_updates(updates):
         # پردازش پیام جدید
         handle_new_messages(user_id, user_name, update)
 
-
 # شروع برنامه
 def main():
     lui = 0
     # HTML کد پیام
     # html_message = '<table><tr><th>نام</th><th>سن</th></tr><tr><td>علی</td><td>30</td></tr><tr><td>محمد</td><td>25</td></tr></table>'
-    # try:
-    while True:
-        # todo: بررسی کردن شیفت ها آیا برای دانشجویان شیفتی ارسال شود؟
-        # todo: ثبت اطلاعات فاصله ساعت ارسال برای مسئولان فنی و دانشجویان
-        # todo:شیفت ها فقط یک بار تائید بشه
-        # todo: تائیدیه پاک کردن شیفت
-        # دریافت تمامی پیام های دریافتی
-        helper.send_shift_to_student(bot=bot)
-        updates = bot.getUpdates(timeout=10, offset=lui)
-        if updates:
-            lui = int(updates[-1]['update_id']) + 1
-            handle_updates(updates)
-    # except Exception as e:
-    #     print(e)
-    #     lui = lui + 1
-    #     bot.sendMessage('6274361322', str(e))
-    #     main()
+    try:
+        while True:
+            # todo: بررسی کردن شیفت ها آیا برای دانشجویان شیفتی ارسال شود؟
+            # todo: ثبت اطلاعات فاصله ساعت ارسال برای مسئولان فنی و دانشجویان
+            # todo:شیفت ها فقط یک بار تائید بشه
+            # todo: تائیدیه پاک کردن شیفت
+            # دریافت تمامی پیام های دریافتی
+            helper.send_shift_to_student(bot=bot)
+            updates = bot.getUpdates(timeout=10, offset=lui)
+            if updates:
+                lui = int(updates[-1]['update_id']) + 1
+                handle_updates(updates)
+    except Exception as e:
+        print(e)
+        lui = lui + 1
+        bot.sendMessage('6274361322', str(e))
+        main()
 
 
 if __name__ == '__main__':
