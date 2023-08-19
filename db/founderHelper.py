@@ -28,7 +28,7 @@ class HelperFunder:
             txtMessage = None
             if 'message' in update and 'text' in update['message']:
                 txtMessage = update['message']['text']
-            res = [idx for idx in listCommand if idx.lower().startswith(str(txtMessage).lower())]
+            res = [idx for idx in listCommand if idx.lower().startswith(str(txtMessage).split(" ")[0].lower())]
             if len(res) == 0 and not txtMessage in listCommand and not 'callback_query' in update:
                 for item in listDenyOP:
                     if mem.register_progress == int(item["pr"]) and mem.op == int(item["op"]):
