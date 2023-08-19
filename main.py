@@ -98,7 +98,7 @@ def handle_new_messages(user_id, userName, update):
             elif tempMember.membership_type == 4:
                 bot.sendMessage(message['chat']['id'], msg.messageLib.yourOperation.value,
                                 reply_markup=menu.keyLib.kbCreateMenuManager(chatId=message['chat']['id']))
-        elif 'text' in message and str(message['text']).startswith('/changeHrStudent'):
+        elif 'text' in message and str(message['text']).startswith('/changeHrStudent'.lower()):
             hr = None
             try:
                 hr = int(str(message['text'])[16:])
@@ -107,7 +107,7 @@ def handle_new_messages(user_id, userName, update):
                 return
             mydb.domain_update_by_key('hrStudent', hr)
             bot.sendMessage(user_id, str(msg.messageLib.changeHourSuccess.value).format(hr))
-        elif 'text' in message and str(message['text']).startswith('/changeMinWage'):
+        elif 'text' in message and str(message['text']).startswith('/changeMinWage'.lower()):
             wage = None
             try:
                 wage = int(str(message['text'])[14:])
@@ -116,7 +116,7 @@ def handle_new_messages(user_id, userName, update):
                 return
             mydb.domain_update_by_key('wage', wage)
             bot.sendMessage(user_id, str(msg.messageLib.changeWageSuccess.value).format(wage))
-        elif 'text' in message and str(message['text']).startswith('/changeMinLicenss'):
+        elif 'text' in message and str(message['text']).startswith('/changeMinLicenss'.lower()):
             licenssRent = None
             try:
                 licenssRent = int(str(message['text'])[17:])
@@ -867,7 +867,7 @@ def handle_new_messages(user_id, userName, update):
                         bot.sendMessage(message['chat']["id"], '''
 {0}
 {1}
-{7}
+{8}
 {2}
 {3}
 {4}

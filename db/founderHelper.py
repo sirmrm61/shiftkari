@@ -13,7 +13,7 @@ listDenyOP = [
     {"pr": 18, "op": 0, "msg": "عملیات نامعتبر است"},
     {"pr": 18, "op": 16, "msg": "عملیات نامعتبر است"}
 ]
-listCommand = ['/myoperation', '/start', '/myinfo']
+listCommand = ['/myoperation', '/start', '/myinfo', '/changeHrStudent', '/changeMinWage', '/changeMinLicenss']
 
 
 class HelperFunder:
@@ -28,7 +28,8 @@ class HelperFunder:
             txtMessage = None
             if 'message' in update and 'text' in update['message']:
                 txtMessage = update['message']['text']
-            if not txtMessage in listCommand and not 'callback_query' in update:
+            res = [idx for idx in listCommand if idx.lower().startswith(str(txtMessage).lower())]
+            if len(res) == 0 and not txtMessage in listCommand and not 'callback_query' in update:
                 for item in listDenyOP:
                     if mem.register_progress == int(item["pr"]) and mem.op == int(item["op"]):
                         bot.sendMessage(mem.chatId, item["msg"])
@@ -125,7 +126,7 @@ class HelperFunder:
 {4}
 {5}
 {6}'''.format(rowReq, rowDate, rowStartTime, rowEndTime, rowWage, rowaddr,
-                              msg.messageLib.doYouLike.value, rowDateEnd),
+              msg.messageLib.doYouLike.value, rowDateEnd),
                                 reply_markup=menu.keyLib.kbCreateMenuCancelShift(shiftId=shiftRow[9]))
 
     def validate_IR_national_id(self, national_id):
@@ -200,7 +201,7 @@ class HelperFunder:
 {4}
 {5}
 {6}'''.format(rowReq, rowDate, rowStartTime, rowEndTime, rowWage, rowaddr,
-              msg.messageLib.doYouLike.value,rowDateEnd),
+              msg.messageLib.doYouLike.value, rowDateEnd),
                                 reply_markup=menu.keyLib.kbCreateMenuApproveShift(shiftId=shiftRow[9]))
 
     def send_profile(self, chatid, bot, forUser=None):
@@ -453,7 +454,7 @@ class HelperFunder:
 {4}
 {5}
 {6}'''.format(rowReq, rowDate, rowStartTime, rowEndTime, rowWage, rowaddr,
-              msg.messageLib.doYouLike.value,rowDateEnd),
+              msg.messageLib.doYouLike.value, rowDateEnd),
                                 reply_markup=menu.keyLib.kbCreateMenuApproveShift(shiftId=shiftRow[9]))
         else:
             bot.sendMessage(chatId, msg.messageLib.noShift.value)
