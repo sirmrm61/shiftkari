@@ -21,12 +21,8 @@ MAX_IDLE_TIME = 600
 
 mydb = msc.mysqlconnector()
 idFromFile = None
-# sirmrmco1
-# bot = telepot.Bot('409679224:AAHAWm_FaSNiuthByMxAESwqq4SFYR8CxZE')
-
-
-# shiftkari
-bot = telepot.Bot('6012649808:AAGXWUsZJBtvWsFlYuvqg18tgIwo7ildPUs')
+botKeyApi = mydb.get_property_domain('botkey')
+bot = telepot.Bot(botKeyApi)
 
 
 # admins = mydb.getAdmins()
@@ -453,13 +449,13 @@ def handle_new_messages(user_id, userName, update):
                             bot.sendMessage(message['chat']['id'], msg.messageLib.shiftEndTime.value)
                     if op == 6:
                         minWage = mydb.get_property_domain('wage')
-                        if str(message['text']).isnumeric() :
+                        if str(message['text']).isnumeric():
                             if int(minWage) > int(message['text']):
                                 bot.sendMessage(user_id, str(msg.messageLib.minWage.value).format(minWage))
                                 bot.sendMessage(user_id, msg.messageLib.shiftWage.value)
                                 return
                         else:
-                            bot.sendMessage(user_id,msg.messageLib.errorNumber.value)
+                            bot.sendMessage(user_id, msg.messageLib.errorNumber.value)
                             return
                         mydb.member_update('op', 7, message['chat']['id'])
                         mydb.shift_update('wage', message['text'], message['chat']['id'])
@@ -484,12 +480,17 @@ def handle_new_messages(user_id, userName, update):
         pprint(btn)
         if len(spBtn) > 1:
             if spBtn[1] == 'verify':
-                mydb.member_update_chatid('verifyAdmin', 1, spBtn[2])
-                bot.sendMessage(spBtn[2], msg.messageLib.congratulationsApproveAdmin.value)
-                mem = mydb.load_member(chatid=spBtn[2])
-                helper.send_operation(tempMember=mem, bot=bot, chatid=spBtn[2])
-                mem = mydb.load_member(spBtn[2])
-                bot.sendMessage(user_id, str(msg.messageLib.verifyMsg.value).format(mem.name + " " + mem.last_name))
+                verification = mydb.get_member_property_chatid('verifyAdmin', spBtn[2])
+                if not (verification == 1 or verification == 0):
+                    mydb.member_update_chatid('verifyAdmin', 1, spBtn[2])
+                    mydb.member_update_chatid('adminChatId', message['chat']['id'], spBtn[2])
+                    bot.sendMessage(spBtn[2], msg.messageLib.congratulationsApproveAdmin.value)
+                    mem = mydb.load_member(chatid=spBtn[2])
+                    helper.send_operation(tempMember=mem, bot=bot, chatid=spBtn[2])
+                    mem = mydb.load_member(spBtn[2])
+                    bot.sendMessage(user_id, str(msg.messageLib.verifyMsg.value).format(mem.name + " " + mem.last_name))
+                else:
+                    bot.sendMessage(user_id, msg.messageLib.doseVerify.value)
             elif spBtn[1] == 'editProfile':
                 # آماده‌سازی دریافت اطلاعات کاربر جهت ویرایش
                 helper.editProfile(bot=bot, spBtn=spBtn, mem=tempMember)
@@ -530,10 +531,15 @@ def handle_new_messages(user_id, userName, update):
                 mydb.member_update(fieldName='del', fieldValue=0, chatid=spBtn[2])
                 bot.sendMessage(spBtn[2], msg.messageLib.reActive.value)
             elif spBtn[1] == 'deny':
-                bot.sendMessage(message['chat']['id'],
-                                str(msg.messageLib.descDenyAdmin.value))
-                mydb.member_update_chatid('registration_progress', 15, spBtn[2])
-                mydb.member_update_chatid('adminChatId', message['chat']['id'], spBtn[2])
+                verification = mydb.get_member_property_chatid('verifyAdmin', spBtn[2])
+                if not (verification == 1 or verification == 0):
+                    bot.sendMessage(message['chat']['id'],
+                                    str(msg.messageLib.descDenyAdmin.value))
+                    mydb.member_update_chatid('registration_progress', 15, spBtn[2])
+                    mydb.member_update_chatid('verifyAdmin', 0, spBtn[2])
+                    mydb.member_update_chatid('adminChatId', message['chat']['id'], spBtn[2])
+                else:
+                    bot.sendMessage(user_id, msg.messageLib.doseVerify.value)
             elif spBtn[1] == 'NoDel':
                 helper.send_operation(tempMember=tempMember, bot=bot, chatid=message['chat']['id'])
             elif spBtn[1] == 'reactive':
@@ -694,7 +700,7 @@ def handle_new_messages(user_id, userName, update):
 
                 if int(op) == 5:
                     minWage = mydb.get_property_domain('wage')
-                    bot.sendMessage(user_id,str(msg.messageLib.minWage.value).format(minWage))
+                    bot.sendMessage(user_id, str(msg.messageLib.minWage.value).format(minWage))
                     bot.sendMessage(message['chat']['id'], msg.messageLib.shiftWage.value)
                     mydb.member_update('op', 6, message['chat']['id'])
                 if int(op) == 7:
@@ -713,8 +719,10 @@ def handle_new_messages(user_id, userName, update):
                         mydb.member_update('op', 8, message['chat']['id'])
                 if int(op) == 9:  # TODO: delete print command
                     # Send Shift to All Technical Responsible
-                    bot.sendMessage(message['chat']['id'], msg.messageLib.endRegisterShift.value)
-                    helper.send_shift_to_technicalResponsible(spBtn[3], bot,user_id)
+                    hrSendToStudent = mydb.get_property_domain('hrStudent')
+                    bot.sendMessage(message['chat']['id'],
+                                    str(msg.messageLib.endRegisterShift.value).format(hrSendToStudent))
+                    helper.send_shift_to_technicalResponsible(spBtn[3], bot, user_id)
                     mydb.member_update('op', 0, message['chat']['id'])
                     mydb.shift_update('progress', 1, message['chat']['id'])
             elif spBtn[1] == 'NO':
@@ -762,7 +770,7 @@ def handle_new_messages(user_id, userName, update):
 {4}
 {5}
 '''.format(rowReq, rowDate, rowStartTime, rowEndTime, rowWage, rowaddr,
-              rowDateEnd),)
+           rowDateEnd), )
             elif spBtn[1] == 'epf':
                 bot.sendMessage(user_id, msg.messageLib.editMessag.value)
                 helper.send_profile(chatid=user_id, bot=bot)
@@ -852,7 +860,7 @@ def handle_new_messages(user_id, userName, update):
 {5}
 {6}
 {7}'''.format(rowReq, rowDate, rowStartTime, rowEndTime, rowWage, rowaddr, rowApprove,
-              msg.messageLib.doYouLikeDelete.value,rowDateEnd),
+              msg.messageLib.doYouLikeDelete.value, rowDateEnd),
                                         reply_markup=menu.keyLib.kbCreateMenuDeleteShift(shiftId=shiftRow[9]))
             elif spBtn[1] == 'DeleteShiftList':  # فشردن دکمه حذف شیفت
                 print(spBtn)
@@ -891,7 +899,7 @@ def handle_new_messages(user_id, userName, update):
 {5}
 {6}
 {7}'''.format(rowReq, rowDate, rowStartTime, rowEndTime, rowWage, rowaddr, rowApprove,
-              msg.messageLib.doYouLikeDelete.value,rowDateEnd),
+              msg.messageLib.doYouLikeDelete.value, rowDateEnd),
                                         reply_markup=menu.keyLib.kbCreateMenuDeleteShift(shiftId=shiftRow[9]))
             elif spBtn[1] == 'approveShiftManager':
                 print(spBtn)
