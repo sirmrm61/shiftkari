@@ -731,7 +731,7 @@ def handle_new_messages(user_id, userName, update):
                     mydb.member_update('op', 8, message['chat']['id'])
                     bot.sendMessage(message['chat']['id'], msg.messageLib.enterPharmacyAddress.value)
             elif spBtn[1] == 'listSift':
-                allShift = mydb.get_all_shift(creator=message['chat']["id"])
+                allShift = mydb.get_all_shift_by_creator(creator=message['chat']["id"])
                 if len(allShift) == 0:
                     bot.sendMessage(message['chat']["id"], msg.messageLib.emptyList.value)
                 else:
@@ -746,13 +746,13 @@ def handle_new_messages(user_id, userName, update):
                         bot.sendMessage(message['chat']["id"], '''
 {0}
 {1}
-{7}
+{6}
 {2}
 {3}
 {4}
 {5}
-{6}'''.format(rowReq, rowDate, rowStartTime, rowEndTime, rowWage, rowaddr,
-              msg.messageLib.doYouLike.value,rowDateEnd), reply_markup=menu.keyLib.kbCreateMenuApproveShift(shiftRow[9]))
+'''.format(rowReq, rowDate, rowStartTime, rowEndTime, rowWage, rowaddr,
+              rowDateEnd),)
             elif spBtn[1] == 'epf':
                 bot.sendMessage(user_id, msg.messageLib.editMessag.value)
                 helper.send_profile(chatid=user_id, bot=bot)
