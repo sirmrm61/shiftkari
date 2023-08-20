@@ -445,7 +445,8 @@ class mysqlconnector:
         mydb.autocommit = True
         mycursor = mydb.cursor()
         sqlQuery = '''SELECT concat(mem.name,mem.last_name) as fullname,creator,
-                         DateShift,startTime,endTime,wage,pharmacyAddress,progress,approver,shi.idshift
+                         DateShift,startTime,endTime,wage,pharmacyAddress,progress,approver,shi.idshift,
+                         shi.dateEndShift
                          FROM botshiftkari.shift shi inner join botshiftkari.membership mem on
                           mem.chat_id = shi.Creator where approver is null and not shi.creator = '{0}' and shi.progress={1}'''.format(
             creator, progress)
@@ -486,7 +487,8 @@ class mysqlconnector:
         mydb.autocommit = True
         mycursor = mydb.cursor()
         sqlQuery = '''SELECT concat(mem.name,mem.last_name) as fullname,creator,
-                        DateShift,startTime,endTime,wage,pharmacyAddress,progress,approver,shi.idshift
+                        DateShift,startTime,endTime,wage,pharmacyAddress,progress,approver,shi.idshift,
+                        shi.dateEndShift
                         FROM botshiftkari.shift shi inner join botshiftkari.membership mem on
                          mem.chat_id = shi.Creator where progress = 1 and shi.del = 0'''
         mycursor.execute(sqlQuery)
@@ -536,14 +538,14 @@ class mysqlconnector:
                 tye)
         mycursor.execute(sqlQuery)
         resualt = mycursor.fetchall()
-        return resualt;
+        return resualt
 
     def get_all_shift_by_approver(self=None, creator='0', dateShift=''):
         mydb = self.connector()
         mydb.autocommit = True
         mycursor = mydb.cursor()
         sqlQuery = '''SELECT concat(mem.name,mem.last_name) as fullname,creator,
-                        DateShift,startTime,endTime,wage,pharmacyAddress,progress,approver,shi.idshift
+                        DateShift,startTime,endTime,wage,pharmacyAddress,progress,approver,shi.idshift,
                         shi.dateEndShift
                         FROM botshiftkari.shift shi inner join botshiftkari.membership mem on
                          mem.chat_id = shi.Creator where  shi.approver = '{0}' and shi.DateShift> '{1}'
