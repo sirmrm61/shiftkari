@@ -166,9 +166,9 @@ class HelperFunder:
         # If all conditions are met, return True
         return True
 
-    def send_shift_to_technicalResponsible(self, idshift, bot):
+    def send_shift_to_technicalResponsible(self, idshift, bot,creator=None):
         shiftRow = mydb.get_all_property_shift_byId(idshift)
-        ts = mydb.get_all_ts_chatid()
+        ts = mydb.get_all_ts_chatid(creator)
         for t in ts:
             rowReq = 'درخواست دهنده: {}'.format(shiftRow[0])
             rowDate = 'تاریخ شروع : {}'.format(shiftRow[2])
@@ -187,7 +187,7 @@ class HelperFunder:
 {5}
 {6}'''.format(rowReq, rowDate, rowStartTime, rowEndTime, rowWage, rowaddr,
               msg.messageLib.doYouLike.value, rowDateEnd),
-                            reply_markup=menu.keyLib.kbCreateMenuCancelShift(shiftId=shiftRow[9]))
+                            reply_markup=menu.keyLib.kbCreateMenuApproveShift(shiftId=shiftRow[9]))
 
     def send_shift_to_student(self, bot):
         shiftRows = mydb.get_list_shift_for_student()  # shift's for student
