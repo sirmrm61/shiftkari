@@ -566,12 +566,17 @@ class mysqlconnector:
         resualt = mycursor.fetchone()
         return resualt
 
-    def get_all_ts_chatid(self):
+    def get_all_ts_chatid(self,creator=None):
         mydb = self.connector()
         mydb.autocommit = True
         mycursor = mydb.cursor()
-        sqlQuery = '''SELECT mem.chat_id from botshiftkari.membership as mem where mem.del=0 and 
-        mem.membership_type=2 '''
+        sqlQuery = None
+        if creator is None:
+            sqlQuery = '''SELECT mem.chat_id from botshiftkari.membership as mem where mem.del=0 and 
+            mem.membership_type=2 '''
+        else:
+            sqlQuery = '''SELECT mem.chat_id from botshiftkari.membership as mem where mem.del=0 and 
+                        mem.membership_type=2 and not mem.chat_id = \'{0}\''''.format(creator)
         mycursor.execute(sqlQuery)
         resualt = mycursor.fetchall()
         return resualt

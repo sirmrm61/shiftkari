@@ -714,7 +714,7 @@ def handle_new_messages(user_id, userName, update):
                 if int(op) == 9:  # TODO: delete print command
                     # Send Shift to All Technical Responsible
                     bot.sendMessage(message['chat']['id'], msg.messageLib.endRegisterShift.value)
-                    helper.send_shift_to_technicalResponsible(spBtn[3], bot)
+                    helper.send_shift_to_technicalResponsible(spBtn[3], bot,user_id)
                     mydb.member_update('op', 0, message['chat']['id'])
                     mydb.shift_update('progress', 1, message['chat']['id'])
             elif spBtn[1] == 'NO':
