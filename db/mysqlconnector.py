@@ -542,7 +542,6 @@ class mysqlconnector:
 
     def get_all_shift_by_approver(self=None, creator='0', dateShift=''):
         mydb = self.connector()
-        mydb.autocommit = True
         mycursor = mydb.cursor()
         sqlQuery = '''SELECT concat(mem.name,mem.last_name) as fullname,creator,
                         DateShift,startTime,endTime,wage,pharmacyAddress,progress,approver,shi.idshift,
