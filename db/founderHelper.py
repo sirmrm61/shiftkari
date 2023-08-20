@@ -58,7 +58,11 @@ class HelperFunder:
                             str(msg.messageLib.labelMembershipCardPhoto.value))
             img = 'download/{}'.format(
                 mydb.get_technical_property('membership_card_photo', chatid))
-            bot.sendPhoto(funder_chatid, open(img, 'rb'))
+            isExisting = os.path.exists(img)
+            if isExisting:
+                bot.sendPhoto(funder_chatid, open(img, 'rb'))
+            else:
+                bot.sendMessage(funder_chatid, 'فایل تصویر پیدا نشد')
             bot.sendMessage(funder_chatid, msg.messageLib.messAdminApprove.value,
                             reply_markup=menu.keyLib.kbCreateMenuShiftApproveFunder(shiftId=shiftId))
         elif tempMember.membership_type == 3:
@@ -79,15 +83,21 @@ class HelperFunder:
             bot.sendMessage(funder_chatid,
                             str(msg.messageLib.labelSelfiPhoto.value))
             img = 'download/{}'.format(mydb.get_student_property('personal_photo', chatid))
-            print(
-                'download/{}'.format(mydb.get_student_property('personal_photo', chatid)))
-            bot.sendPhoto(funder_chatid, open(img, 'rb'))
+            isExisting = os.path.exists(img)
+            if isExisting:
+                bot.sendPhoto(funder_chatid, open(img, 'rb'))
+            else:
+                bot.sendMessage(funder_chatid, 'فایل تصویر پیدا نشد')
             bot.sendMessage(funder_chatid,
                             str(msg.messageLib.labelPermitPhoto.value))
             img = 'download/{}'.format(
                 mydb.get_student_property('overtime_license_photo', chatid))
-            bot.sendPhoto(chatid, open(img, 'rb'))
-            bot.sendMessage(chatid, msg.messageLib.messAdminApprove.value,
+            isExisting = os.path.exists(img)
+            if isExisting:
+                bot.sendPhoto(funder_chatid, open(img, 'rb'))
+            else:
+                bot.sendMessage(funder_chatid, 'فایل تصویر پیدا نشد')
+            bot.sendMessage(funder_chatid, msg.messageLib.messAdminApprove.value,
                             reply_markup=menu.keyLib.kbCreateMenuShiftApproveFunder(shiftId=chatid))
 
     def send_operation(self, tempMember, bot, chatid):
@@ -253,7 +263,6 @@ class HelperFunder:
                 mydb.get_student_property(fieldName='shift_access', chatid=chatid))
             profileInfo += 'تصویر مجوز نظام پزشکی:'
             img = 'download/{}'.format(mydb.get_student_property('overtime_license_photo', chatid))
-
             bot.sendMessage(fuser, profileInfo)
             isExisting = os.path.exists(img)
             if isExisting:
