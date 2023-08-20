@@ -265,7 +265,11 @@ def handle_new_messages(user_id, userName, update):
                                         str(msg.messageLib.labelMembershipCardPhoto.value))
                         img = 'download/{}'.format(
                             mydb.get_technical_property('membership_card_photo', message['chat']['id']))
-                        bot.sendPhoto(admin[0], open(img, 'rb'))
+                        isExisting = os.path.exists(img)
+                        if isExisting:
+                            bot.sendPhoto(admin[0], open(img, 'rb'))
+                        else:
+                            bot.sendMessage(admin[0], 'فایل تصویر پیدا نشد')
                         bot.sendMessage(admin[0], msg.messageLib.messAdminApprove.value,
                                         reply_markup=menu.keyLib.kbCreateApproveKey(chat_id=message['chat']['id']))
                     mydb.member_update_chatid('registration_progress', 10, message['chat']['id'])
@@ -329,7 +333,11 @@ def handle_new_messages(user_id, userName, update):
                                         str(msg.messageLib.labelPermitPhoto.value))
                         img = 'download/{}'.format(
                             mydb.get_funder_property('license_photo', message['chat']['id']))
-                        bot.sendPhoto(admin[0], open(img, 'rb'))
+                        isExisting = os.path.exists(img)
+                        if isExisting:
+                            bot.sendPhoto(admin[0], open(img, 'rb'))
+                        else:
+                            bot.sendMessage(admin[0], 'فایل تصویر پیدا نشد')
                         bot.sendMessage(admin[0], msg.messageLib.messAdminApprove.value,
                                         reply_markup=menu.keyLib.kbCreateApproveKey(chat_id=message['chat']['id']))
                     mydb.member_update_chatid('registration_progress', 10, message['chat']['id'])
@@ -721,7 +729,7 @@ def handle_new_messages(user_id, userName, update):
                     bot.sendMessage(message['chat']['id'], msg.messageLib.shiftWage.value)
                 if int(op) == 9:
                     mydb.member_update('op', 8, message['chat']['id'])
-                    bot.sendMessage(message['chat']['id'], msg.messageLib.shiftWage.value)
+                    bot.sendMessage(message['chat']['id'], msg.messageLib.enterPharmacyAddress.value)
             elif spBtn[1] == 'listSift':
                 allShift = mydb.get_all_shift(creator=message['chat']["id"])
                 if len(allShift) == 0:
@@ -1079,12 +1087,20 @@ def handle_new_messages(user_id, userName, update):
                 # todo: print delete command
                 print(
                     'download/{}'.format(mydb.get_student_property('personal_photo', message['chat']['id'])))
-                bot.sendPhoto(admin[0], open(img, 'rb'))
+                isExisting = os.path.exists(img)
+                if isExisting:
+                    bot.sendPhoto(admin[0], open(img, 'rb'))
+                else:
+                    bot.sendMessage(admin[0], 'فایل تصویر پیدا نشد')
                 bot.sendMessage(admin[0],
                                 str(msg.messageLib.labelPermitPhoto.value))
                 img = 'download/{}'.format(
                     mydb.get_student_property('overtime_license_photo', message['chat']['id']))
-                bot.sendPhoto(admin[0], open(img, 'rb'))
+                isExisting = os.path.exists(img)
+                if isExisting:
+                    bot.sendPhoto(admin[0], open(img, 'rb'))
+                else:
+                    bot.sendMessage(admin[0], 'فایل تصویر پیدا نشد')
                 bot.sendMessage(admin[0], msg.messageLib.messAdminApprove.value,
                                 reply_markup=menu.keyLib.kbCreateApproveKey(chat_id=message['chat']['id']))
             mydb.member_update_chatid('registration_progress', 10, message['chat']['id'])
@@ -1125,12 +1141,20 @@ def handle_new_messages(user_id, userName, update):
                 img = 'download/{}'.format(mydb.get_student_property('personal_photo', message['chat']['id']))
                 print(
                     'download/{}'.format(mydb.get_student_property('personal_photo', message['chat']['id'])))
-                bot.sendPhoto(admin[0], open(img, 'rb'))
+                isExisting = os.path.exists(img)
+                if isExisting:
+                    bot.sendPhoto(admin[0], open(img, 'rb'))
+                else:
+                    bot.sendMessage(admin[0], 'فایل تصویر پیدا نشد')
                 bot.sendMessage(admin[0],
                                 str(msg.messageLib.labelPermitPhoto.value))
                 img = 'download/{}'.format(
                     mydb.get_student_property('overtime_license_photo', message['chat']['id']))
-                bot.sendPhoto(admin[0], open(img, 'rb'))
+                isExisting = os.path.exists(img)
+                if isExisting:
+                    bot.sendPhoto(admin[0], open(img, 'rb'))
+                else:
+                    bot.sendMessage(admin[0], 'فایل تصویر پیدا نشد')
                 bot.sendMessage(admin[0], msg.messageLib.messAdminApprove.value,
                                 reply_markup=menu.keyLib.kbCreateApproveKey(chat_id=message['chat']['id']))
             mydb.member_update_chatid('registration_progress', 10, message['chat']['id'])
@@ -1172,12 +1196,20 @@ def handle_new_messages(user_id, userName, update):
                 img = 'download/{}'.format(mydb.get_student_property('personal_photo', message['chat']['id']))
                 print(
                     'download/{}'.format(mydb.get_student_property('personal_photo', message['chat']['id'])))
-                bot.sendPhoto(admin[0], open(img, 'rb'))
+                isExisting = os.path.exists(img)
+                if isExisting:
+                    bot.sendPhoto(admin[0], open(img, 'rb'))
+                else:
+                    bot.sendMessage(admin[0], 'فایل تصویر پیدا نشد')
                 bot.sendMessage(admin[0],
                                 str(msg.messageLib.labelPermitPhoto.value))
                 img = 'download/{}'.format(
                     mydb.get_student_property('overtime_license_photo', message['chat']['id']))
-                bot.sendPhoto(admin[0], open(img, 'rb'))
+                isExisting = os.path.exists(img)
+                if isExisting:
+                    bot.sendPhoto(admin[0], open(img, 'rb'))
+                else:
+                    bot.sendMessage(admin[0], 'فایل تصویر پیدا نشد')
                 bot.sendMessage(admin[0], msg.messageLib.messAdminApprove.value,
                                 reply_markup=menu.keyLib.kbCreateApproveKey(chat_id=message['chat']['id']))
             mydb.member_update_chatid('registration_progress', 10, message['chat']['id'])
@@ -1219,12 +1251,20 @@ def handle_new_messages(user_id, userName, update):
                 img = 'download/{}'.format(mydb.get_student_property('personal_photo', message['chat']['id']))
                 print(
                     'download/{}'.format(mydb.get_student_property('personal_photo', message['chat']['id'])))
-                bot.sendPhoto(admin[0], open(img, 'rb'))
+                isExisting = os.path.exists(img)
+                if isExisting:
+                    bot.sendPhoto(admin[0], open(img, 'rb'))
+                else:
+                    bot.sendMessage(admin[0], 'فایل تصویر پیدا نشد')
                 bot.sendMessage(admin[0],
                                 str(msg.messageLib.labelPermitPhoto.value))
                 img = 'download/{}'.format(
                     mydb.get_student_property('overtime_license_photo', message['chat']['id']))
-                bot.sendPhoto(admin[0], open(img, 'rb'))
+                isExisting = os.path.exists(img)
+                if isExisting:
+                    bot.sendPhoto(admin[0], open(img, 'rb'))
+                else:
+                    bot.sendMessage(admin[0], 'فایل تصویر پیدا نشد')
                 bot.sendMessage(admin[0], msg.messageLib.messAdminApprove.value,
                                 reply_markup=menu.keyLib.kbCreateApproveKey(chat_id=message['chat']['id']))
             mydb.member_update_chatid('registration_progress', 10, message['chat']['id'])
