@@ -452,6 +452,15 @@ def handle_new_messages(user_id, userName, update):
                             bot.sendMessage(message['chat']['id'], msg.messageLib.invalidTime.value)
                             bot.sendMessage(message['chat']['id'], msg.messageLib.shiftEndTime.value)
                     if op == 6:
+                        minWage = mydb.get_property_domain('wage')
+                        if str(message['text']).isnumeric() :
+                            if int(minWage) > int(message['text']):
+                                bot.sendMessage(user_id, str(msg.messageLib.minWage.value).format(minWage))
+                                bot.sendMessage(user_id, msg.messageLib.shiftWage.value)
+                                return
+                        else:
+                            bot.sendMessage(user_id,msg.messageLib.errorNumber.value)
+                            return
                         mydb.member_update('op', 7, message['chat']['id'])
                         mydb.shift_update('wage', message['text'], message['chat']['id'])
                         bot.sendMessage(message['chat']['id'],
@@ -550,6 +559,7 @@ def handle_new_messages(user_id, userName, update):
                     yearTemp = int(jd[0])
                 else:
                     yearTemp = int(jd[0]) + 1
+                print(yearTemp)
                 if spBtn[3] == '1':
                     rowid = mydb.shift_update('DateShift', yearTemp, user_id)
                     # todo: delete print Command
@@ -668,7 +678,6 @@ def handle_new_messages(user_id, userName, update):
             elif spBtn[1] == 'yes':
                 opBtn = int(spBtn[2])
                 op = mydb.get_member_property_chatid('op', message['chat']['id'])
-                print('{0} - {1} = {2}'.format(int(op), int(opBtn), int(op) - int(opBtn)))
                 if (int(op) - int(opBtn)) > 1:
                     bot.sendMessage(user_id, msg.messageLib.erroOnBack.value)
                 if int(op) == 1:  # تاریخ پایان شیفت بعدا اضافه شد
@@ -684,9 +693,10 @@ def handle_new_messages(user_id, userName, update):
                     mydb.member_update('op', 4, message['chat']['id'])
 
                 if int(op) == 5:
+                    minWage = mydb.get_property_domain('wage')
+                    bot.sendMessage(user_id,str(msg.messageLib.minWage.value).format(minWage))
                     bot.sendMessage(message['chat']['id'], msg.messageLib.shiftWage.value)
                     mydb.member_update('op', 6, message['chat']['id'])
-
                 if int(op) == 7:
                     bot.sendMessage(message['chat']['id'], msg.messageLib.pharmacyAddress.value)
                     addressPharmacy = None
@@ -814,7 +824,6 @@ def handle_new_messages(user_id, userName, update):
                 helper.send_info_funder(chatid=message['chat']["id"], funder_chatid=creator,
                                         shiftId=spBtn[2], bot=bot)
             elif spBtn[1] == 'deleteShift':
-                print(message['chat']["id"])
                 allShift = mydb.get_all_shift_by_creator(creator=message['chat']["id"])
                 if len(allShift) == 0:
                     bot.sendMessage(message['chat']["id"], msg.messageLib.emptyList.value)
