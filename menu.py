@@ -69,44 +69,42 @@ class keyLib:
             [InlineKeyboardButton(text='حذف شیفت', callback_data='btn_deleteShift_{}'.format(str(chatId))),
              InlineKeyboardButton(text='ساخت شیفت', callback_data='btn_createSift_{}'.format(str(chatId)))],
             [InlineKeyboardButton(text='ویرایش پروفایل', callback_data='btn_epf_{}'.format(str(chatId))),
-             InlineKeyboardButton(text='غیر فعال', callback_data='btn_createSift_{}'.format(str(chatId)))]
+             InlineKeyboardButton(text='غیر فعال', callback_data='btn_removeProfile_{}'.format(str(chatId)))]
         ])
 
     def kbCreateMenuResponsible(self=None, chatId=None):
         return InlineKeyboardMarkup(inline_keyboard=[
+            [InlineKeyboardButton(text='شیفت های من', callback_data='btn_listSift_{}'.format(str(chatId))),
+             InlineKeyboardButton(text='کنسل کردن شیفت', callback_data='btn_cancelShift_{}'.format(str(chatId))),
+             InlineKeyboardButton(text='درخواست پر کردن شیفت', callback_data='btn_repShift_{}'.format(str(chatId)))],
             [InlineKeyboardButton(text='حذف شیفت', callback_data='btn_deleteShift_{}'.format(str(chatId))),
              InlineKeyboardButton(text='ساخت شیفت', callback_data='btn_createSift_{}'.format(str(chatId))),
              InlineKeyboardButton(text='ویرایش پروفایل', callback_data='btn_epf_{}'.format(str(chatId)))],
 
-            [InlineKeyboardButton(text='شیفت های من', callback_data='btn_listSift_{}'.format(str(chatId))),
-             InlineKeyboardButton(text='کنسل کردن شیفت', callback_data='btn_cancelShift_{}'.format(str(chatId)))],
-            [InlineKeyboardButton(text='درخواست پر کردن شیفت', callback_data='btn_repShift_{}'.format(str(chatId)))]
+            [InlineKeyboardButton(text='غیر فعال', callback_data='btn_removeProfile_{}'.format(str(chatId)))]
         ])
 
     def kbCreateMenuStudent(self=None, chatId=None):
         return InlineKeyboardMarkup(inline_keyboard=[
-            [InlineKeyboardButton(text='حذف پروفایل', callback_data='btn_removeProfile_{}'.format(str(chatId))),
-             InlineKeyboardButton(text='ویرایش پروفایل', callback_data='btn_epf_{}'.format(str(chatId))),
-             ],
             [InlineKeyboardButton(text='کنسل کردن شیفت', callback_data='btn_cancelShift_{}'.format(str(chatId))),
              InlineKeyboardButton(text='لیست شیفت', callback_data='btn_listSift_{}'.format(str(chatId))), ],
             [InlineKeyboardButton(text='ثبت شیفت', callback_data='btn_createSift_{}'.format(str(chatId))), ],
+            [InlineKeyboardButton(text='غیر فعال', callback_data='btn_removeProfile_{}'.format(str(chatId))),
+             InlineKeyboardButton(text='ویرایش پروفایل', callback_data='btn_epf_{}'.format(str(chatId))),
+             ]
         ])
 
     def kbCreateMenuManager(self=None, chatId=None):
         return InlineKeyboardMarkup(inline_keyboard=[
-            [InlineKeyboardButton(text='ویرایش پروفایل', callback_data='btn_epf_{}'.format(str(chatId))),
-             InlineKeyboardButton(text='لیست شیفت', callback_data='btn_listSiftManager_{}'.format(str(chatId))),
-             # InlineKeyboardButton(text='نیازمند تائید', callback_data='btn_listSiftDisApprove_{}'.format(str(chatId))),
-             # InlineKeyboardButton(text='تائید شده', callback_data='btn_listSiftApprove_{}'.format(str(chatId))),
-             ],
             [InlineKeyboardButton(text='لیست موسسان', callback_data='btn_listFunderManager_{}'.format(str(chatId))),
              InlineKeyboardButton(text='لیست مسئولان فنی', callback_data='btn_listresponsible_{}'.format(str(chatId))),
              InlineKeyboardButton(text='لیست دانشجویان', callback_data='btn_listStudent_{}'.format(str(chatId)))],
-
             [InlineKeyboardButton(text='زمان مسئول', callback_data='btn_hr_{}'.format(str(chatId))),
              InlineKeyboardButton(text='حداقل دستمزد', callback_data='btn_minWage_{}'.format(str(chatId))),
-             InlineKeyboardButton(text='قیمت مصوبه پروانه', callback_data='btn_licenss_{}'.format(str(chatId)))]
+             InlineKeyboardButton(text='قیمت مصوبه پروانه', callback_data='btn_licenss_{}'.format(str(chatId)))],
+            [InlineKeyboardButton(text='لیست شیفت', callback_data='btn_listSiftManager_{}'.format(str(chatId))),
+             InlineKeyboardButton(text='ویرایش پروفایل', callback_data='btn_epf_{}'.format(str(chatId))),
+             ]
         ])
 
     def kbCreateMenuYesNO(self=None, chatId=None):
