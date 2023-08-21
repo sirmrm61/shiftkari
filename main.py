@@ -390,9 +390,10 @@ def handle_new_messages(user_id, userName, update):
                     mydb.del_member_chatid(chatid=chatIdUser)
                     bot.sendMessage(chatIdUser, msg.messageLib.sorryDenyAdmin.value)
                     bot.sendMessage(chatIdUser, message['text'])
-            elif tempMember.membership_type == 2 or tempMember.membership_type == 1:
-                print('text={}'.format(message['text']))
-                op = mydb.get_member_property_chatid('op', message['chat']['id'])
+
+        elif tempMember.register_progress == 11:
+            if tempMember.membership_type == 2 or tempMember.membership_type == 1:
+                op = mydb.get_member_property_chatid('op', user_id)
                 if op is not None:
                     if op == 0:
                         try:
@@ -554,10 +555,14 @@ def handle_new_messages(user_id, userName, update):
                     bot.sendMessage(message['chat']['id'], msg.messageLib.dateShift.value)
                     bot.sendMessage(chat_id=user_id, parse_mode='HTML', text='سال را انتخاب کنید',
                                     reply_markup=menu.keyLib.kbCreateMenuYear(tag=1))
+                    mydb.member_update('registration_progress', 11, user_id)
                     mydb.member_update('op', 0, message['chat']['id'])
                 else:
                     bot.sendMessage(message['chat']['id'], msg.messageLib.notAccess.value)
             elif spBtn[1] == 'year':
+                if tempMember.register_progress != 11:
+                    bot.sendMessage(user_id, msg.messageLib.noBussiness.value)
+                    return
                 yearTemp = None
                 todayDate = datetime.date.today()
                 jd = str(JalaliDate.to_jalali(todayDate.year, todayDate.month, todayDate.day)).split('-')
@@ -565,7 +570,6 @@ def handle_new_messages(user_id, userName, update):
                     yearTemp = int(jd[0])
                 else:
                     yearTemp = int(jd[0]) + 1
-                print(yearTemp)
                 if spBtn[3] == '1':
                     rowid = mydb.shift_update('DateShift', yearTemp, user_id)
                     # todo: delete print Command
@@ -585,6 +589,9 @@ def handle_new_messages(user_id, userName, update):
                     bot.sendMessage(chat_id=user_id, parse_mode='HTML', text='ماه انتخاب کنید',
                                     reply_markup=menu.keyLib.kbCreateMenuMonthInYear(tag='5_{}'.format(user_id)))
             elif spBtn[1] == 'month':
+                if tempMember.register_progress != 11:
+                    bot.sendMessage(user_id, msg.messageLib.noBussiness.value)
+                    return
                 if spBtn[3] == '1':
                     year = mydb.get_shift_property(fieldName='DateShift', idShift=spBtn[4])
                     mydb.shift_update_by_id('DateShift', '{0}-{1}'.format(year, spBtn[2]), spBtn[4])
@@ -606,6 +613,9 @@ def handle_new_messages(user_id, userName, update):
                     bot.sendMessage(chat_id=user_id, parse_mode='HTML', text='روز انتخاب کنید',
                                     reply_markup=menu.keyLib.kbCreateMenuDayInMonth(tag='5_{}'.format(user_id)))
             elif spBtn[1] == 'day':
+                if tempMember.register_progress != 11:
+                    bot.sendMessage(user_id, msg.messageLib.noBussiness.value)
+                    return
                 if spBtn[3] == '1':
                     year = mydb.get_shift_property(fieldName='DateShift', idShift=spBtn[4])
                     mydb.shift_update('DateShift', '{0}-{1}'.format(year, spBtn[2]), user_id)
@@ -682,6 +692,9 @@ def handle_new_messages(user_id, userName, update):
                         bot.sendMessage(user_id, msg.messageLib.afterEdit.value,
                                         reply_markup=menu.keyLib.kbVerifyEditProfile(self=None, tag=user_id))
             elif spBtn[1] == 'yes':
+                if tempMember.register_progress != 11:
+                    bot.sendMessage(user_id, msg.messageLib.noBussiness.value)
+                    return
                 opBtn = int(spBtn[2])
                 op = mydb.get_member_property_chatid('op', message['chat']['id'])
                 if (int(op) - int(opBtn)) > 1:
@@ -723,9 +736,13 @@ def handle_new_messages(user_id, userName, update):
                     bot.sendMessage(message['chat']['id'],
                                     str(msg.messageLib.endRegisterShift.value).format(hrSendToStudent))
                     helper.send_shift_to_technicalResponsible(spBtn[3], bot, user_id)
-                    mydb.member_update('op', 0, message['chat']['id'])
-                    mydb.shift_update('progress', 1, message['chat']['id'])
+                    mydb.member_update('registration_progress', 10, user_id)
+                    mydb.member_update('op', 0, user_id)
+                    mydb.shift_update('progress', 1, user_id)
             elif spBtn[1] == 'NO':
+                if tempMember.register_progress != 11:
+                    bot.sendMessage(user_id, msg.messageLib.noBussiness.value)
+                    return
                 opBtn = int(spBtn[2])
                 op = mydb.get_member_property_chatid('op', message['chat']['id'])
                 if (int(op) - int(opBtn)) > 1:
