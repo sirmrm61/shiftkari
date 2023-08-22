@@ -116,7 +116,11 @@ class keyLib:
         return InlineKeyboardMarkup(inline_keyboard=[
             [InlineKeyboardButton(text='شیفت را می پذیرم', callback_data='btn_shiftApprove_{}'.format(str(shiftId)))]
         ])
-
+    def kbApproveAllShiftYesNO(self=None, shiftId=None):
+        return InlineKeyboardMarkup(inline_keyboard=[
+            [InlineKeyboardButton(text='بله', callback_data='btn_yesApproveAllShift_{}'.format(str(shiftId))),
+             InlineKeyboardButton(text='خیر', callback_data='btn_NOApproveAllShift_{}'.format(str(shiftId)))]
+        ])
     def kbCreateMenuDeleteShift(self=None, shiftId=None):
         return InlineKeyboardMarkup(inline_keyboard=[
             [InlineKeyboardButton(text='بله'

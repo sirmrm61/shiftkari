@@ -577,8 +577,6 @@ def handle_new_messages(user_id, userName, update):
                     yearTemp = int(jd[0]) + 1
                 if spBtn[3] == '1':
                     rowid = mydb.shift_update('DateShift', yearTemp, user_id)
-                    # todo: delete print Command
-                    print('rowid = {}'.format(rowid[0]))
                     bot.sendMessage(chat_id=user_id, parse_mode='HTML', text='ماه انتخاب کنید',
                                     reply_markup=menu.keyLib.kbCreateMenuMonthInYear(tag='1_{}'.format(rowid[0])))
                 elif spBtn[3] == '2':
@@ -735,7 +733,7 @@ def handle_new_messages(user_id, userName, update):
                         mydb.member_update('op', 9, message['chat']['id'])
                     else:
                         mydb.member_update('op', 8, message['chat']['id'])
-                if int(op) == 9:  # TODO: delete print command
+                if int(op) == 9:
                     # Send Shift to All Technical Responsible
                     hrSendToStudent = mydb.get_property_domain('hrStudent')
                     bot.sendMessage(message['chat']['id'],
@@ -848,11 +846,20 @@ def handle_new_messages(user_id, userName, update):
             # آپدیت کردن شیفت
             #             پس از فشردن کلید شیفت را می پذیرم اجرا می شود
             elif spBtn[1] == 'shiftApprove':
-                mydb.shift_reserve_by_id(spBtn[2], message['chat']['id'])
-                bot.sendMessage(message['chat']['id'], msg.messageLib.reserveShift.value)
-                creator = mydb.get_shift_property('Creator', spBtn[2])
-                helper.send_info_funder(chatid=message['chat']["id"], funder_chatid=creator,
-                                        shiftId=spBtn[2], bot=bot)
+                # todo: new approve shift
+                dateStart = str(mydb.get_shift_property('DateShift', spBtn[2])).split('-')
+                dateEnd = str(mydb.get_shift_property('dateEndShift', spBtn[2])).split('-')
+                dsG = JalaliDate(dateStart[0], dateStart[1], dateStart[2]).to_gregorian()
+                deG = JalaliDate(dateEnd[0], dateEnd[1], dateEnd[2]).to_gregorian()
+                diffDay = relativedelta(dsG, deG)
+                print("{0} - {1} = {2} Day ".format(dsG, deG, diffDay.days))
+                bot.sendMessage(user_id, str(msg.messageLib.shiftTotalDay.value).format(diffDay.day),
+                                reply_markup=menu.keyLib.kbApproveAllShiftYesNO(shiftId=spBtn[2]))
+                # mydb.shift_reserve_by_id(spBtn[2], message['chat']['id'])
+                # bot.sendMessage(message['chat']['id'], msg.messageLib.reserveShift.value)
+                # creator = mydb.get_shift_property('Creator', spBtn[2])
+                # helper.send_info_funder(chatid=message['chat']["id"], funder_chatid=creator,
+                #                         shiftId=spBtn[2], bot=bot)
             elif spBtn[1] == 'deleteShift':
                 allShift = mydb.get_all_shift_by_creator(creator=message['chat']["id"])
                 if len(allShift) == 0:
@@ -1347,10 +1354,6 @@ def main():
     # html_message = '<table><tr><th>نام</th><th>سن</th></tr><tr><td>علی</td><td>30</td></tr><tr><td>محمد</td><td>25</td></tr></table>'
     # try:
     while True:
-        # todo: بررسی کردن شیفت ها آیا برای دانشجویان شیفتی ارسال شود؟
-        # todo: ثبت اطلاعات فاصله ساعت ارسال برای مسئولان فنی و دانشجویان
-        # todo:شیفت ها فقط یک بار تائید بشه
-        # todo: تائیدیه پاک کردن شیفت
         # دریافت تمامی پیام های دریافتی
         helper.send_shift_to_student(bot=bot)
         updates = bot.getUpdates(timeout=10, offset=lui)
