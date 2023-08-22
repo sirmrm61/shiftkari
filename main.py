@@ -543,9 +543,10 @@ def handle_new_messages(user_id, userName, update):
                     bot.sendMessage(user_id, msg.messageLib.doseVerify.value)
             elif spBtn[1] == 'NoDel':
                 helper.send_operation(tempMember=tempMember, bot=bot, chatid=message['chat']['id'])
-            elif spBtn[1] == 'reactive':
-                mydb.del_member_chatid(message['chat']['id'])
-                bot.sendMessage(message['chat']['id'], msg.messageLib.reActive.value)
+            elif spBtn[1] == 'removeProfile':
+                mydb.del_member_chatid(user_id)
+                mydb.member_update_chatid('registration_progress', 12, spBtn[2])  # 12 mean is deactivate
+                bot.sendMessage(user_id, msg.messageLib.reActive.value)
             elif spBtn[1] == 'Del':
                 tempMember.delf = 1
                 mydb.del_member_chatid(user_id)
