@@ -4,6 +4,7 @@ from model.membership import Membership
 from persiantools.jdatetime import JalaliDate
 from dateutil.relativedelta import relativedelta
 import datetime
+from datetime import timedelta
 import os
 from pprint import pprint
 import msg
@@ -849,19 +850,34 @@ def handle_new_messages(user_id, userName, update):
                 # todo: new approve shift
                 dateStart = str(mydb.get_shift_property('DateShift', spBtn[2])).split('-')
                 dateEnd = str(mydb.get_shift_property('dateEndShift', spBtn[2])).split('-')
-                print(dateStart)
-                print(dateEnd)
                 dsG = JalaliDate(int(dateStart[0]), int(dateStart[1]), int(dateStart[2])).to_gregorian()
                 deG = JalaliDate(int(dateEnd[0]), int(dateEnd[1]), int(dateEnd[2])).to_gregorian()
-                diffDay = relativedelta(dsG, deG)
+                diffDay = relativedelta(deG, dsG)
                 print("{0} - {1} = {2} Day ".format(dsG, deG, diffDay.days))
-                bot.sendMessage(user_id, str(msg.messageLib.shiftTotalDay.value).format(diffDay.day),
+                bot.sendMessage(user_id, str(msg.messageLib.shiftTotalDay.value).format(diffDay.days + 1),
                                 reply_markup=menu.keyLib.kbApproveAllShiftYesNO(shiftId=spBtn[2]))
                 # mydb.shift_reserve_by_id(spBtn[2], message['chat']['id'])
                 # bot.sendMessage(message['chat']['id'], msg.messageLib.reserveShift.value)
                 # creator = mydb.get_shift_property('Creator', spBtn[2])
                 # helper.send_info_funder(chatid=message['chat']["id"], funder_chatid=creator,
                 #                         shiftId=spBtn[2], bot=bot)
+            elif spBtn[1] == 'NOApproveAllShift':
+                dateStart = str(mydb.get_shift_property('DateShift', spBtn[2])).split('-')
+                dateEnd = str(mydb.get_shift_property('dateEndShift', spBtn[2])).split('-')
+                dsG = JalaliDate(int(dateStart[0]), int(dateStart[1]), int(dateStart[2])).to_gregorian()
+                deG = JalaliDate(int(dateEnd[0]), int(dateEnd[1]), int(dateEnd[2])).to_gregorian()
+                delta = deG - dsG
+                listDay = []
+                for i in range(delta.days + 1):
+                    tempDic = {}
+                    day = dsG + timedelta(days=i)
+                    tmp = JalaliDate.to_jalali(day.year, day.month, day.day)
+                    tempDic['text'] = str(tmp)
+                    tempDic['key'] = str(tmp).replace('-', '')
+                    listDay.append(tempDic)
+                bot.sendMessage(user_id,
+                                msg.messageLib.shiftSelectDay.value
+                                , reply_markup=menu.keyLib.createMenuFromList(listMenu= listDay))
             elif spBtn[1] == 'deleteShift':
                 allShift = mydb.get_all_shift_by_creator(creator=message['chat']["id"])
                 if len(allShift) == 0:

@@ -16,7 +16,7 @@ class keyLib:
             ltm = listTypeMember
         else:
             for idx, item in enumerate(listTypeMember):
-                if not idx == int(exclude)-1:
+                if not idx == int(exclude) - 1:
                     ltm.append(item)
         return InlineKeyboardMarkup(inline_keyboard=[ltm])
 
@@ -116,11 +116,13 @@ class keyLib:
         return InlineKeyboardMarkup(inline_keyboard=[
             [InlineKeyboardButton(text='شیفت را می پذیرم', callback_data='btn_shiftApprove_{}'.format(str(shiftId)))]
         ])
+
     def kbApproveAllShiftYesNO(self=None, shiftId=None):
         return InlineKeyboardMarkup(inline_keyboard=[
             [InlineKeyboardButton(text='بله', callback_data='btn_yesApproveAllShift_{}'.format(str(shiftId))),
              InlineKeyboardButton(text='خیر', callback_data='btn_NOApproveAllShift_{}'.format(str(shiftId)))]
         ])
+
     def kbCreateMenuDeleteShift(self=None, shiftId=None):
         return InlineKeyboardMarkup(inline_keyboard=[
             [InlineKeyboardButton(text='بله'
@@ -293,3 +295,16 @@ class keyLib:
                  InlineKeyboardButton(text='نام', callback_data='btn_editProfile_nameEdit_{}'.format(str(chatId))),
                  ],
             ])
+
+    def createMenuFromList(self=None, listMenu=[]):
+        lk = []
+        for item in listMenu:
+            lk.append(InlineKeyboardButton(text=item['text'],
+                                           callback_data='btn_dayShift_{}'.format(str(item['key']))))
+        N = 4
+        res = []
+        mod = 0
+        if (len(lk) % N) > 0: mod = 1
+        for idx in range(0, (len(lk) // N) + mod):
+            res.append(lk[idx * N: (idx + 1) * N])
+        return InlineKeyboardMarkup(inline_keyboard=res)
