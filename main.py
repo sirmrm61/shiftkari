@@ -530,6 +530,7 @@ def handle_new_messages(user_id, userName, update):
             elif spBtn[1] == 'reactive':
                 tempMember.delf = 0
                 mydb.member_update(fieldName='del', fieldValue=0, chatid=user_id)
+                mydb.member_update(fieldName='registration_progress', fieldValue=10, chatid=user_id)
                 bot.sendMessage(user_id, msg.messageLib.reActive.value)
                 helper.send_profile(user_id, bot)
                 helper.send_operation(tempMember, bot, user_id)
