@@ -529,8 +529,10 @@ def handle_new_messages(user_id, userName, update):
                 helper.msg_get_all_shift_approve(user_id, bot)
             elif spBtn[1] == 'reactive':
                 tempMember.delf = 0
-                mydb.member_update(fieldName='del', fieldValue=0, chatid=spBtn[2])
-                bot.sendMessage(spBtn[2], msg.messageLib.reActive.value)
+                mydb.member_update(fieldName='del', fieldValue=0, chatid=user_id)
+                bot.sendMessage(user_id, msg.messageLib.reActive.value)
+                helper.send_profile(user_id, bot)
+                helper.send_operation(tempMember, bot, user_id)
             elif spBtn[1] == 'deny':
                 verification = mydb.get_member_property_chatid('verifyAdmin', spBtn[2])
                 if not (verification == 1 or verification == 0):
