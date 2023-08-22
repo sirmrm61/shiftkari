@@ -861,6 +861,8 @@ def handle_new_messages(user_id, userName, update):
                 # creator = mydb.get_shift_property('Creator', spBtn[2])
                 # helper.send_info_funder(chatid=message['chat']["id"], funder_chatid=creator,
                 #                         shiftId=spBtn[2], bot=bot)
+            elif spBtn[1] == 'dayShift':
+                print(spBtn[2])
             elif spBtn[1] == 'NOApproveAllShift':
                 dateStart = str(mydb.get_shift_property('DateShift', spBtn[2])).split('-')
                 dateEnd = str(mydb.get_shift_property('dateEndShift', spBtn[2])).split('-')

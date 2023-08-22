@@ -667,3 +667,14 @@ class mysqlconnector:
             return True
         else:
             return False
+    def registerDayShift(self,idShift,dateShift,requster,sendedForCreator):
+        mydb = self.connector()
+        myCursor = mydb.cursor()
+        mydb.autocommit = True
+        sqlQuery = f'''INSERT INTO `botshiftkari`.`dayshift`
+(`idShift`,
+`dateShift`,
+`requster`,
+`approveCreator`,
+`sendedForCreator`)
+VALUES({idShift},\'{dateShift}\',\'{requster}\',0,{sendedForCreator})'''

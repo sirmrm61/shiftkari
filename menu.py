@@ -301,7 +301,7 @@ class keyLib:
         for item in listMenu:
             lk.append(InlineKeyboardButton(text=item['text'],
                                            callback_data='btn_dayShift_{}'.format(str(item['key']))))
-        N = 4
+        N = 2
         res = []
         mod = 0
         if (len(lk) % N) > 0: mod = 1
