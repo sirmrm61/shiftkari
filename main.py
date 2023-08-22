@@ -546,11 +546,12 @@ def handle_new_messages(user_id, userName, update):
             elif spBtn[1] == 'removeProfile':
                 mydb.del_member_chatid(user_id)
                 mydb.member_update_chatid('registration_progress', 12, spBtn[2])  # 12 mean is deactivate
-                bot.sendMessage(user_id, msg.messageLib.reActive.value)
+                bot.sendMessage(user_id, msg.messageLib.afterDelete.value)
             elif spBtn[1] == 'Del':
                 tempMember.delf = 1
                 mydb.del_member_chatid(user_id)
-                bot.sendMessage(user_id, msg.messageLib.afteDelete.value)
+                mydb.member_update_chatid('registration_progress', 12, spBtn[2])  # 12 mean is deactivate
+                bot.sendMessage(user_id, msg.messageLib.afterDelete.value)
             elif spBtn[1] == 'createSift':
                 if tempMember.membership_type == 1 or tempMember.membership_type == 2:
                     bot.sendMessage(message['chat']['id'], msg.messageLib.dateShift.value)
