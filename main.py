@@ -851,12 +851,12 @@ def handle_new_messages(user_id, userName, update):
                 dateEnd = str(mydb.get_shift_property('dateEndShift', spBtn[2])).split('-')
                 print(dateStart)
                 print(dateEnd)
-                # dsG = JalaliDate(dateStart[0], dateStart[1], dateStart[2]).to_gregorian()
-                # deG = JalaliDate(dateEnd[0], dateEnd[1], dateEnd[2]).to_gregorian()
-                # diffDay = relativedelta(dsG, deG)
-                # print("{0} - {1} = {2} Day ".format(dsG, deG, diffDay.days))
-                # bot.sendMessage(user_id, str(msg.messageLib.shiftTotalDay.value).format(diffDay.day),
-                #                 reply_markup=menu.keyLib.kbApproveAllShiftYesNO(shiftId=spBtn[2]))
+                dsG = JalaliDate(int(dateStart[0]), int(dateStart[1]), int(dateStart[2])).to_gregorian()
+                deG = JalaliDate(int(dateEnd[0]), int(dateEnd[1]), int(dateEnd[2])).to_gregorian()
+                diffDay = relativedelta(dsG, deG)
+                print("{0} - {1} = {2} Day ".format(dsG, deG, diffDay.days))
+                bot.sendMessage(user_id, str(msg.messageLib.shiftTotalDay.value).format(diffDay.day),
+                                reply_markup=menu.keyLib.kbApproveAllShiftYesNO(shiftId=spBtn[2]))
                 # mydb.shift_reserve_by_id(spBtn[2], message['chat']['id'])
                 # bot.sendMessage(message['chat']['id'], msg.messageLib.reserveShift.value)
                 # creator = mydb.get_shift_property('Creator', spBtn[2])
