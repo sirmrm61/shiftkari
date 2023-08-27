@@ -677,4 +677,23 @@ class mysqlconnector:
 `requster`,
 `approveCreator`,
 `sendedForCreator`)
-VALUES({idShift},\'{dateShift}\',\'{requster}\',0,{sendedForCreator})'''
+VALUES({idShift},\'{dateShift}\',\'{requster}\',0,{sendedForCreator});SELECT LAST_INSERT_ID();'''
+        myCursor.execute(sqlQuery)
+        res = myCursor.fetchone()
+        return res[0]
+
+    def updateShiftDay(self,fieldName,fieldValue,idDayShift):
+        mydb = self.connector()
+        mydb.autocommit = True
+        myCursor = mydb.cursor()
+        sqlQuery = 'UPDATE `botshiftkari`.`dayshift` SET `{0}` = \'{1}\'  where `iddayshift` = \'{2}\''.format(fieldName, fieldValue,idDayShift)
+        myCursor.execute(sqlQuery)
+        myCursor.reset()
+        return None
+    def getEmptyDayOfShift(self,idShift):
+        mydb = self.connector()
+        mycursor = mydb.cursor()
+        sqlQuery = f'SELECT * from botshiftkari.dayshift  where  approveCreator=0 and idShift={idShift}'
+        mycursor.execute(sqlQuery)
+        resualt = mycursor.fetchall()
+        return resualt
