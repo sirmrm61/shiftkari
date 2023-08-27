@@ -853,7 +853,6 @@ def handle_new_messages(user_id, userName, update):
                 dsG = JalaliDate(int(dateStart[0]), int(dateStart[1]), int(dateStart[2])).to_gregorian()
                 deG = JalaliDate(int(dateEnd[0]), int(dateEnd[1]), int(dateEnd[2])).to_gregorian()
                 diffDay = relativedelta(deG, dsG)
-                print("{0} - {1} = {2} Day ".format(dsG, deG, diffDay.days))
                 bot.sendMessage(user_id, str(msg.messageLib.shiftTotalDay.value).format(diffDay.days + 1),
                                 reply_markup=menu.keyLib.kbApproveAllShiftYesNO(shiftId=spBtn[2]))
                 # mydb.shift_reserve_by_id(spBtn[2], message['chat']['id'])
@@ -861,6 +860,9 @@ def handle_new_messages(user_id, userName, update):
                 # creator = mydb.get_shift_property('Creator', spBtn[2])
                 # helper.send_info_funder(chatid=message['chat']["id"], funder_chatid=creator,
                 #                         shiftId=spBtn[2], bot=bot)
+            elif spBtn[1] == 'dayShift':
+                print(spBtn[2])
+
             elif spBtn[1] == 'NOApproveAllShift':
                 dateStart = str(mydb.get_shift_property('DateShift', spBtn[2])).split('-')
                 dateEnd = str(mydb.get_shift_property('dateEndShift', spBtn[2])).split('-')

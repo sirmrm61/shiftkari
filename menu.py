@@ -296,15 +296,15 @@ class keyLib:
                  ],
             ])
 
-    def createMenuFromList(self=None, listMenu=[]):
+    def createMenuFromList(self=None, listMenu=[],totaliInRow = 2):
         lk = []
         for item in listMenu:
             lk.append(InlineKeyboardButton(text=item['text'],
                                            callback_data='btn_dayShift_{}'.format(str(item['key']))))
-        N = 4
+        N = totaliInRow
         res = []
         mod = 0
         if (len(lk) % N) > 0: mod = 1
         for idx in range(0, (len(lk) // N) + mod):
-            res.append(lk[idx * N: (idx + 1) * N])
+            res.append(lk[idx * N: (idx + 1) * N]) # ToDo: check day is empty
         return InlineKeyboardMarkup(inline_keyboard=res)
