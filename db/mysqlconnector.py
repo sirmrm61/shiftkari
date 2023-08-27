@@ -680,7 +680,8 @@ class mysqlconnector:
 VALUES({idShift},\'{dateShift}\',\'{requster}\',0,{sendedForCreator});SELECT LAST_INSERT_ID();'''
         myCursor.execute(sqlQuery)
         res = myCursor.fetchone()
-        return res[0]
+        print(res)
+        return res
 
     def updateShiftDay(self,fieldName,fieldValue,idDayShift):
         mydb = self.connector()
