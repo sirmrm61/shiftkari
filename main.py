@@ -862,7 +862,7 @@ def handle_new_messages(user_id, userName, update):
                 tmp = str(spBtn[2]).split('=')
                 dateStr = tmp[0]
                 idShiftStr = tmp[1]
-                mydb.registerDayShift(idShiftStr,dateStr,user_id)
+                mydb.registerDayShift(idShiftStr, dateStr, user_id, 0)
                 bot.sendMessage(user_id, str(msg.messageLib.afterDaySelction.value).format(dateStr))
             elif spBtn[1] == 'NOApproveAllShift':
                 dateStart = str(mydb.get_shift_property('DateShift', spBtn[2])).split('-')
@@ -876,11 +876,11 @@ def handle_new_messages(user_id, userName, update):
                     day = dsG + timedelta(days=i)
                     tmp = JalaliDate.to_jalali(day.year, day.month, day.day)
                     tempDic['text'] = str(tmp)
-                    tempDic['key'] = str(tmp).replace('-', '.')+f'={spBtn[2]}'
+                    tempDic['key'] = str(tmp).replace('-', '.') + f'={spBtn[2]}'
                     listDay.append(tempDic)
                 bot.sendMessage(user_id,
                                 msg.messageLib.shiftSelectDay.value
-                                , reply_markup=menu.keyLib.createMenuFromList(listMenu= listDay))
+                                , reply_markup=menu.keyLib.createMenuFromList(listMenu=listDay))
                 bot.sendMessage(user_id, str(msg.messageLib.endShiftSelection.value),
                                 reply_markup=menu.keyLib.kbCreateMenuEndSelection(idShift=spBtn[2]))
             elif spBtn[1] == 'deleteShift':
