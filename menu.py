@@ -308,3 +308,7 @@ class keyLib:
         for idx in range(0, (len(lk) // N) + mod):
             res.append(lk[idx * N: (idx + 1) * N]) # ToDo: check day is empty
         return InlineKeyboardMarkup(inline_keyboard=res)
+    def kbCreateMenuEndSelection(self=None, idShift=None):
+        return InlineKeyboardMarkup(inline_keyboard=[
+            [InlineKeyboardButton(text='پایان انتخاب', callback_data='btn_endSelection_{}'.format(str(idShift)))]
+        ])

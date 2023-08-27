@@ -855,14 +855,16 @@ def handle_new_messages(user_id, userName, update):
                 diffDay = relativedelta(deG, dsG)
                 bot.sendMessage(user_id, str(msg.messageLib.shiftTotalDay.value).format(diffDay.days + 1),
                                 reply_markup=menu.keyLib.kbApproveAllShiftYesNO(shiftId=spBtn[2]))
-                # mydb.shift_reserve_by_id(spBtn[2], message['chat']['id'])
-                # bot.sendMessage(message['chat']['id'], msg.messageLib.reserveShift.value)
-                # creator = mydb.get_shift_property('Creator', spBtn[2])
-                # helper.send_info_funder(chatid=message['chat']["id"], funder_chatid=creator,
-                #                         shiftId=spBtn[2], bot=bot)
+                bot.sendMessage(user_id, str(msg.messageLib.endShiftSelection.value),
+                                reply_markup=menu.keyLib.kbCreateMenuEndSelection(shiftId=spBtn[2]))
+
             elif spBtn[1] == 'dayShift':
                 print(spBtn[2])
-
+                tmp = str(spBtn[2]).split('=')
+                dateStr = tmp[0]
+                idShiftStr = tmp[1]
+                mydb.registerDayShift(idShiftStr,dateStr,user_id)
+                bot.sendMessage(user_id, str(msg.messageLib.afterDaySelction.value).format(dateStr))
             elif spBtn[1] == 'NOApproveAllShift':
                 dateStart = str(mydb.get_shift_property('DateShift', spBtn[2])).split('-')
                 dateEnd = str(mydb.get_shift_property('dateEndShift', spBtn[2])).split('-')
@@ -875,7 +877,7 @@ def handle_new_messages(user_id, userName, update):
                     day = dsG + timedelta(days=i)
                     tmp = JalaliDate.to_jalali(day.year, day.month, day.day)
                     tempDic['text'] = str(tmp)
-                    tempDic['key'] = str(tmp).replace('-', '')
+                    tempDic['key'] = str(tmp).replace('-', '.')+f'={spBtn[2]}'
                     listDay.append(tempDic)
                 bot.sendMessage(user_id,
                                 msg.messageLib.shiftSelectDay.value
