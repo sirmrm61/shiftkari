@@ -855,8 +855,7 @@ def handle_new_messages(user_id, userName, update):
                 diffDay = relativedelta(deG, dsG)
                 bot.sendMessage(user_id, str(msg.messageLib.shiftTotalDay.value).format(diffDay.days + 1),
                                 reply_markup=menu.keyLib.kbApproveAllShiftYesNO(shiftId=spBtn[2]))
-                bot.sendMessage(user_id, str(msg.messageLib.endShiftSelection.value),
-                                reply_markup=menu.keyLib.kbCreateMenuEndSelection(idShift=spBtn[2]))
+
 
             elif spBtn[1] == 'dayShift':
                 print(spBtn[2])
@@ -882,6 +881,8 @@ def handle_new_messages(user_id, userName, update):
                 bot.sendMessage(user_id,
                                 msg.messageLib.shiftSelectDay.value
                                 , reply_markup=menu.keyLib.createMenuFromList(listMenu= listDay))
+                bot.sendMessage(user_id, str(msg.messageLib.endShiftSelection.value),
+                                reply_markup=menu.keyLib.kbCreateMenuEndSelection(idShift=spBtn[2]))
             elif spBtn[1] == 'deleteShift':
                 allShift = mydb.get_all_shift_by_creator(creator=message['chat']["id"])
                 if len(allShift) == 0:
