@@ -856,7 +856,7 @@ def handle_new_messages(user_id, userName, update):
                 bot.sendMessage(user_id, str(msg.messageLib.shiftTotalDay.value).format(diffDay.days + 1),
                                 reply_markup=menu.keyLib.kbApproveAllShiftYesNO(shiftId=spBtn[2]))
                 bot.sendMessage(user_id, str(msg.messageLib.endShiftSelection.value),
-                                reply_markup=menu.keyLib.kbCreateMenuEndSelection(shiftId=spBtn[2]))
+                                reply_markup=menu.keyLib.kbCreateMenuEndSelection(idShift=spBtn[2]))
 
             elif spBtn[1] == 'dayShift':
                 print(spBtn[2])
