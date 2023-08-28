@@ -747,5 +747,6 @@ VALUES({idShift},\'{dateShift}\',\'{requster}\',0,{sendedForCreator});SELECT LAS
     def removeFromSelection(self,idDayShift):
         mydb = self.connector()
         mycursor = mydb.cursor()
+        mydb.autocommit = True
         sqlQuery = f'delete from botshiftkari.dayshift  where  iddayShift={idDayShift} and status = 0 '
         mycursor.execute(sqlQuery)
