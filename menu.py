@@ -296,19 +296,38 @@ class keyLib:
                  ],
             ])
 
-    def createMenuFromList(self=None, listMenu=[],totaliInRow = 2):
+    def createMenuFromList(self=None, listMenu=[], totalInRow=2):
         lk = []
         for item in listMenu:
             lk.append(InlineKeyboardButton(text=item['text'],
                                            callback_data='btn_dayShift_{}'.format(str(item['key']))))
-        N = totaliInRow
+        N = totalInRow
         res = []
         mod = 0
         if (len(lk) % N) > 0: mod = 1
         for idx in range(0, (len(lk) // N) + mod):
-            res.append(lk[idx * N: (idx + 1) * N]) # ToDo: check day is empty
+            res.append(lk[idx * N: (idx + 1) * N])  # ToDo: check day is empty
         return InlineKeyboardMarkup(inline_keyboard=res)
+
     def kbCreateMenuEndSelection(self=None, idShift=None):
         return InlineKeyboardMarkup(inline_keyboard=[
             [InlineKeyboardButton(text='پایان انتخاب', callback_data='btn_endSelection_{}'.format(str(idShift)))]
+        ])
+
+    def createMenuFromListDay(self, listDay, totalInRow=2):
+        lk = []
+        for item in listDay:
+            lk.append(InlineKeyboardButton(text=item[1],
+                                           callback_data='btn_daySelectedRemove_{}'.format(str(item[0]))))
+        N = totalInRow
+        res = []
+        mod = 0
+        if (len(lk) % N) > 0: mod = 1
+        for idx in range(0, (len(lk) // N) + mod):
+            res.append(lk[idx * N: (idx + 1) * N])  # ToDo: check day is empty
+        return InlineKeyboardMarkup(inline_keyboard=res)
+
+    def kbCreateMenuSendForCreator(self=None, idShift=None):
+        return InlineKeyboardMarkup(inline_keyboard=[
+            [InlineKeyboardButton(text='تائید', callback_data='btn_sendToCreator_{}'.format(str(idShift)))]
         ])

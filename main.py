@@ -856,9 +856,13 @@ def handle_new_messages(user_id, userName, update):
                 bot.sendMessage(user_id, str(msg.messageLib.shiftTotalDay.value).format(diffDay.days + 1),
                                 reply_markup=menu.keyLib.kbApproveAllShiftYesNO(shiftId=spBtn[2]))
 
-
+            elif spBtn[1] == 'endSelection':
+                helper.endSelectionDayBtnClick(spBtn[2], user_id, bot)
+            elif spBtn[1] == 'daySelectedRemove':
+                idShift = mydb.getIdShiftFromDay(spBtn[2])
+                mydb.removeFromSelection(spBtn[2])
+                helper.endSelectionDayBtnClick(idShift, user_id, bot)
             elif spBtn[1] == 'dayShift':
-                print(spBtn[2])
                 tmp = str(spBtn[2]).split('=')
                 dateStr = tmp[0]
                 idShiftStr = tmp[1]
