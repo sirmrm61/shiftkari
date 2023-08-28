@@ -670,7 +670,7 @@ class mysqlconnector:
 
     def registerDayShift(self, idShift, dateShift, requster, sendedForCreator):
         tmpIdDayShift = self.getIdRegisterDayOfShift(idShift, dateShift, requster)
-        if tmpIdDayShift is not None:
+        if tmpIdDayShift != 0:
             return tmpIdDayShift
         mydb = self.connector()
         myCursor = mydb.cursor()
@@ -712,9 +712,9 @@ VALUES({idShift},\'{dateShift}\',\'{requster}\',0,{sendedForCreator});SELECT LAS
         mycursor.execute(sqlQuery)
         resualt = mycursor.fetchone()
         if resualt is not None:
-            return 0
-        else:
             return resualt[0]
+        else:
+            return 0
 
     def isShiftDayFull(self, idShift, dateShift):
         mydb = self.connector()
