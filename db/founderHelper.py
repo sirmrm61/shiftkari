@@ -166,7 +166,7 @@ class HelperFunder:
         # If all conditions are met, return True
         return True
 
-    def send_shift_to_technicalResponsible(self, idshift, bot,creator=None):
+    def send_shift_to_technicalResponsible(self, idshift, bot, creator=None):
         shiftRow = mydb.get_all_property_shift_byId(idshift)
         ts = mydb.get_all_ts_chatid(creator)
         for t in ts:
@@ -467,3 +467,13 @@ class HelperFunder:
                                 reply_markup=menu.keyLib.kbCreateMenuApproveShift(shiftId=shiftRow[9]))
         else:
             bot.sendMessage(chatId, msg.messageLib.noShift.value)
+
+    def endSelectionDayBtnClick(self, idShift, userId, bot):
+        listDay = mydb.getListDaySelection(idShift, userId)
+        if len(listDay) == 0:
+            bot.sendMessage(userId, msg.messageLib.emptSelectedDay.value)
+        else:
+            bot.sendMessage(userId, msg.messageLib.selectedDay.value,
+                            reply_markup=menu.keyLib.createMenuFromListDay(None, listDay, 2))
+            bot.sendMessage(userId, msg.messageLib.selectedDay.value,
+                            reply_markup=menu.keyLib.kbCreateMenuSendForCreator(None, idShift))

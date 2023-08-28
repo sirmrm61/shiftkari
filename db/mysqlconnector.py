@@ -724,3 +724,27 @@ VALUES({idShift},\'{dateShift}\',\'{requster}\',0,{sendedForCreator});SELECT LAS
         mycursor.execute(sqlQuery)
         resualt = mycursor.fetchone()
         return resualt[0]
+
+    def getListDaySelection(self, idShift, requsterShift):
+        mydb = self.connector()
+        mycursor = mydb.cursor()
+        sqlQuery = f'SELECT iddayShift,dateShift from botshiftkari.dayshift  where  idShift={idShift} and status= 0 ' + \
+                   f' and requster=\'{requsterShift}\''
+        mycursor.execute(sqlQuery)
+        resualt = mycursor.fetchall()
+
+    def getIdShiftFromDay(self, idDayShift):
+        mydb = self.connector()
+        mycursor = mydb.cursor()
+        sqlQuery = f'SELECT idshift from botshiftkari.dayshift  where  iddayShift={idDayShift} '
+        mycursor.execute(sqlQuery)
+        resualt = mycursor.fetchone()
+        if resualt is not None:
+            return resualt[0]
+        else:
+            return None
+    def removeFromSelection(self,idDayShift):
+        mydb = self.connector()
+        mycursor = mydb.cursor()
+        sqlQuery = f'delete from botshiftkari.dayshift  where  iddayShift={idDayShift} and status = 0 '
+        mycursor.execute(sqlQuery)
