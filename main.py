@@ -862,8 +862,14 @@ def handle_new_messages(user_id, userName, update):
                 tmp = str(spBtn[2]).split('=')
                 dateStr = tmp[0]
                 idShiftStr = tmp[1]
-                mydb.registerDayShift(idShiftStr, dateStr, user_id, 0)
-                bot.sendMessage(user_id, str(msg.messageLib.afterDaySelction.value).format(dateStr))
+                if mydb.isShiftDayFull(idShiftStr, dateStr) > 0:
+                    bot.sendMessage(user_id, str(msg.messageLib.shiftDayIsFull.value))
+                    return
+                tmpRes = mydb.registerDayShift(idShiftStr, dateStr, user_id, 0)
+                if tmpRes == 0:
+                    bot.sendMessage(user_id, str(msg.messageLib.afterDaySelction.value).format(dateStr))
+                else:
+                    bot.sendMessage(user_id, str(msg.messageLib.repeatedDay.value))
             elif spBtn[1] == 'NOApproveAllShift':
                 dateStart = str(mydb.get_shift_property('DateShift', spBtn[2])).split('-')
                 dateEnd = str(mydb.get_shift_property('dateEndShift', spBtn[2])).split('-')

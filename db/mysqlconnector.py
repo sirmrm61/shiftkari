@@ -566,7 +566,7 @@ class mysqlconnector:
         resualt = mycursor.fetchone()
         return resualt
 
-    def get_all_ts_chatid(self,creator=None):
+    def get_all_ts_chatid(self, creator=None):
         mydb = self.connector()
         mydb.autocommit = True
         mycursor = mydb.cursor()
@@ -667,7 +667,11 @@ class mysqlconnector:
             return True
         else:
             return False
-    def registerDayShift(self,idShift,dateShift,requster,sendedForCreator):
+
+    def registerDayShift(self, idShift, dateShift, requster, sendedForCreator):
+        tmpIdDayShift = self.getIdRegisterDayOfShift(idShift, dateShift, requster)
+        if tmpIdDayShift is not None:
+            return tmpIdDayShift
         mydb = self.connector()
         myCursor = mydb.cursor()
         mydb.autocommit = True
@@ -680,21 +684,43 @@ class mysqlconnector:
 VALUES({idShift},\'{dateShift}\',\'{requster}\',0,{sendedForCreator});SELECT LAST_INSERT_ID();'''
         myCursor.execute(sqlQuery)
         res = myCursor.fetchone()
-        print(res)
-        return res
+        return 0
 
-    def updateShiftDay(self,fieldName,fieldValue,idDayShift):
+    def updateShiftDay(self, fieldName, fieldValue, idDayShift):
         mydb = self.connector()
         mydb.autocommit = True
         myCursor = mydb.cursor()
-        sqlQuery = 'UPDATE `botshiftkari`.`dayshift` SET `{0}` = \'{1}\'  where `iddayshift` = \'{2}\''.format(fieldName, fieldValue,idDayShift)
+        sqlQuery = 'UPDATE `botshiftkari`.`dayshift` SET `{0}` = \'{1}\'  where `iddayshift` = \'{2}\''.format(
+            fieldName, fieldValue, idDayShift)
         myCursor.execute(sqlQuery)
         myCursor.reset()
         return None
-    def getEmptyDayOfShift(self,idShift):
+
+    def getEmptyDayOfShift(self, idShift):
         mydb = self.connector()
         mycursor = mydb.cursor()
         sqlQuery = f'SELECT * from botshiftkari.dayshift  where  approveCreator=0 and idShift={idShift}'
         mycursor.execute(sqlQuery)
         resualt = mycursor.fetchall()
         return resualt
+
+    def getIdRegisterDayOfShift(self, idShift, dateShift, requsterShift):
+        mydb = self.connector()
+        mycursor = mydb.cursor()
+        sqlQuery = f'SELECT iddayShift from botshiftkari.dayshift  where  idShift={idShift} and dateShift=\'{dateShift}\'' + \
+                   f' and requster=\'{requsterShift}\''
+        mycursor.execute(sqlQuery)
+        resualt = mycursor.fetchone()
+        if resualt is not None:
+            return 0
+        else:
+            return resualt[0]
+
+    def isShiftDayFull(self, idShift, dateShift):
+        mydb = self.connector()
+        mycursor = mydb.cursor()
+        sqlQuery = f'SELECT count(iddayShift) from botshiftkari.dayshift  where  idShift={idShift} and dateShift=\'{dateShift}\'' + \
+                   f' and status = 2 '
+        mycursor.execute(sqlQuery)
+        resualt = mycursor.fetchone()
+        return resualt[0]
