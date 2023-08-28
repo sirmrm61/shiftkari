@@ -475,5 +475,5 @@ class HelperFunder:
         else:
             bot.sendMessage(userId, msg.messageLib.selectedDay.value,
                             reply_markup=menu.keyLib.createMenuFromListDay(None, listDay, 2))
-            bot.sendMessage(userId, msg.messageLib.selectedDay.value,
+            bot.sendMessage(userId, msg.messageLib.sendForCreatorMessage.value,
                             reply_markup=menu.keyLib.kbCreateMenuSendForCreator(None, idShift))
