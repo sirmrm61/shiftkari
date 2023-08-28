@@ -732,6 +732,7 @@ VALUES({idShift},\'{dateShift}\',\'{requster}\',0,{sendedForCreator});SELECT LAS
                    f' and requster=\'{requsterShift}\''
         mycursor.execute(sqlQuery)
         resualt = mycursor.fetchall()
+        return resualt
 
     def getIdShiftFromDay(self, idDayShift):
         mydb = self.connector()
