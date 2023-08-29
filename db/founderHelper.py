@@ -447,6 +447,11 @@ class HelperFunder:
         shiftRows = mydb.get_all_shift_managerApproved()
         if len(shiftRows) > 0:
             for shiftRow in shiftRows:
+                listNotEmptyDay = mydb.getListDayIsNotEmpty(shiftRow[9])
+                dateStr = 'تاریخ های پر شده از این شفت:\n'
+                if len(listNotEmptyDay) > 0:
+                    for item in listNotEmptyDay:
+                        dateStr += item[1] + ','
                 rowReq = 'درخواست دهنده: {}'.format(shiftRow[0])
                 rowDate = 'تاریخ شروع : {}'.format(shiftRow[2])
                 rowDateEnd = 'تاریخ پایان : {}'.format(shiftRow[10])
@@ -462,8 +467,9 @@ class HelperFunder:
 {3}
 {4}
 {5}
-{6}'''.format(rowReq, rowDate, rowStartTime, rowEndTime, rowWage, rowaddr,
-              msg.messageLib.doYouLike.value, rowDateEnd),
+{6}
+{8}'''.format(rowReq, rowDate, rowStartTime, rowEndTime, rowWage, rowaddr,
+              msg.messageLib.doYouLike.value, rowDateEnd, dateStr),
                                 reply_markup=menu.keyLib.kbCreateMenuApproveShift(shiftId=shiftRow[9]))
         else:
             bot.sendMessage(chatId, msg.messageLib.noShift.value)
