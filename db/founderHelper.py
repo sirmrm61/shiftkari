@@ -510,4 +510,4 @@ class HelperFunder:
                         msg.messageLib.shiftSelectDay.value
                         , reply_markup=menu.keyLib.createMenuFromList(listMenu=listDay))
         bot.sendMessage(userID, str(msg.messageLib.endShiftSelection.value),
-                        reply_markup=menu.keyLib.kbCreateMenuEndSelection(idShift=spBtn[2]))
+                        reply_markup=menu.keyLib.kbCreateMenuEndSelection(idShift=idShift))
