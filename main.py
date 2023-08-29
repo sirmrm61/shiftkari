@@ -846,13 +846,17 @@ def handle_new_messages(user_id, userName, update):
             #             پس از فشردن کلید شیفت را می پذیرم اجرا می شود
             elif spBtn[1] == 'shiftApprove':
                 # todo: new approve shift
-                dateStart = str(mydb.get_shift_property('DateShift', spBtn[2])).split('-')
-                dateEnd = str(mydb.get_shift_property('dateEndShift', spBtn[2])).split('-')
-                dsG = JalaliDate(int(dateStart[0]), int(dateStart[1]), int(dateStart[2])).to_gregorian()
-                deG = JalaliDate(int(dateEnd[0]), int(dateEnd[1]), int(dateEnd[2])).to_gregorian()
-                diffDay = relativedelta(deG, dsG)
-                bot.sendMessage(user_id, str(msg.messageLib.shiftTotalDay.value).format(diffDay.days + 1),
-                                reply_markup=menu.keyLib.kbApproveAllShiftYesNO(shiftId=spBtn[2]))
+                listDayFull = mydb.getListDayIsNotEmpty(spBtn[2])
+                if len(listDayFull)==0:
+                    dateStart = str(mydb.get_shift_property('DateShift', spBtn[2])).split('-')
+                    dateEnd = str(mydb.get_shift_property('dateEndShift', spBtn[2])).split('-')
+                    dsG = JalaliDate(int(dateStart[0]), int(dateStart[1]), int(dateStart[2])).to_gregorian()
+                    deG = JalaliDate(int(dateEnd[0]), int(dateEnd[1]), int(dateEnd[2])).to_gregorian()
+                    diffDay = relativedelta(deG, dsG)
+                    bot.sendMessage(user_id, str(msg.messageLib.shiftTotalDay.value).format(diffDay.days + 1),
+                                    reply_markup=menu.keyLib.kbApproveAllShiftYesNO(shiftId=spBtn[2]))
+                else:
+                    helper.NOApproveAllShift(spBtn[2], user_id, bot)
 
             elif spBtn[1] == 'endSelection':
                 helper.endSelectionDayBtnClick(spBtn[2], user_id, bot)
@@ -873,24 +877,7 @@ def handle_new_messages(user_id, userName, update):
                 else:
                     bot.sendMessage(user_id, str(msg.messageLib.repeatedDay.value))
             elif spBtn[1] == 'NOApproveAllShift':
-                dateStart = str(mydb.get_shift_property('DateShift', spBtn[2])).split('-')
-                dateEnd = str(mydb.get_shift_property('dateEndShift', spBtn[2])).split('-')
-                dsG = JalaliDate(int(dateStart[0]), int(dateStart[1]), int(dateStart[2])).to_gregorian()
-                deG = JalaliDate(int(dateEnd[0]), int(dateEnd[1]), int(dateEnd[2])).to_gregorian()
-                delta = deG - dsG
-                listDay = []
-                for i in range(delta.days + 1):
-                    tempDic = {}
-                    day = dsG + timedelta(days=i)
-                    tmp = JalaliDate.to_jalali(day.year, day.month, day.day)
-                    tempDic['text'] = str(tmp)
-                    tempDic['key'] = str(tmp).replace('-', '.') + f'={spBtn[2]}'
-                    listDay.append(tempDic)
-                bot.sendMessage(user_id,
-                                msg.messageLib.shiftSelectDay.value
-                                , reply_markup=menu.keyLib.createMenuFromList(listMenu=listDay))
-                bot.sendMessage(user_id, str(msg.messageLib.endShiftSelection.value),
-                                reply_markup=menu.keyLib.kbCreateMenuEndSelection(idShift=spBtn[2]))
+                helper.NOApproveAllShift(spBtn[2],user_id,bot)
             elif spBtn[1] == 'deleteShift':
                 allShift = mydb.get_all_shift_by_creator(creator=message['chat']["id"])
                 if len(allShift) == 0:
