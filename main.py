@@ -24,8 +24,6 @@ mydb = msc.mysqlconnector()
 idFromFile = None
 botKeyApi = mydb.get_property_domain('botkey')
 bot = telepot.Bot(botKeyApi)
-
-
 # admins = mydb.getAdmins()
 # image = 'download/2c3809f7-8e48-4cbf-acb7-bc7b0c9d1cd4.jpg'
 # pprint(admins)
@@ -1384,7 +1382,7 @@ def handle_updates(updates):
 def main():
     lui = 0
     # HTML کد پیام
-    # html_message = '<table><tr><th>نام</th><th>سن</th></tr><tr><td>علی</td><td>30</td></tr><tr><td>محمد</td><td>25</td></tr></table>'
+    # html_message = '<table><tr><th>نام</th><th>سن</th></tr>''<tr><td>علی</td><td>30</td></tr><tr><td>محمد</td><td>25</td></tr></table>'
     try:
         while True:
             # دریافت تمامی پیام های دریافتی
