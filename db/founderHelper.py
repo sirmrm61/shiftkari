@@ -2,7 +2,10 @@ import db.mysqlconnector as msc
 import msg
 import menu
 from datetime import datetime as DT
+from persiantools.jdatetime import JalaliDate
 from dateutil.relativedelta import relativedelta
+import datetime
+from datetime import timedelta
 from model.membership import Membership
 import uuid
 import os
@@ -448,7 +451,7 @@ class HelperFunder:
         if len(shiftRows) > 0:
             for shiftRow in shiftRows:
                 listNotEmptyDay = mydb.getListDayIsNotEmpty(shiftRow[9])
-                dateStr = 'تاریخ های پر شده از این شفت:\n'
+                dateStr = 'تاریخ های پر شده از این شیفت:\n'
                 if len(listNotEmptyDay) > 0:
                     for item in listNotEmptyDay:
                         dateStr += item[1] + ','
@@ -483,3 +486,28 @@ class HelperFunder:
                             reply_markup=menu.keyLib.createMenuFromListDay(None, listDay, 2))
             bot.sendMessage(userId, msg.messageLib.sendForCreatorMessage.value,
                             reply_markup=menu.keyLib.kbCreateMenuSendForCreator(None, idShift))
+
+    def NOApproveAllShift(self, idShift, userID, bot):
+        dateStart = str(mydb.get_shift_property('DateShift', idShift)).split('-')
+        dateEnd = str(mydb.get_shift_property('dateEndShift', idShift)).split('-')
+        dsG = JalaliDate(int(dateStart[0]), int(dateStart[1]), int(dateStart[2])).to_gregorian()
+        deG = JalaliDate(int(dateEnd[0]), int(dateEnd[1]), int(dateEnd[2])).to_gregorian()
+        delta = deG - dsG
+        listFullDay = mydb.getListDayIsNotEmpty(idShift)
+        listFullDay = list(zip(*listFullDay))[1]
+        listDay = []
+        for i in range(delta.days + 1):
+            tempDic = {}
+            day = dsG + timedelta(days=i)
+            tmp = JalaliDate.to_jalali(day.year, day.month, day.day)
+            txtTmp=str(tmp).replace('-', '.')
+            print(listFullDay)
+            if txtTmp not in listFullDay:
+                tempDic['text'] = str(tmp).replace('-', '.')
+                tempDic['key'] = str(tmp).replace('-', '.') + f'={idShift}'
+                listDay.append(tempDic)
+        bot.sendMessage(userID,
+                        msg.messageLib.shiftSelectDay.value
+                        , reply_markup=menu.keyLib.createMenuFromList(listMenu=listDay))
+        bot.sendMessage(userID, str(msg.messageLib.endShiftSelection.value),
+                        reply_markup=menu.keyLib.kbCreateMenuEndSelection(idShift=spBtn[2]))
