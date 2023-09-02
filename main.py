@@ -478,9 +478,9 @@ def handle_new_messages(user_id, userName, update):
                 chatIdUser = mydb.get_member_property_Adminchatid(fieldName='chat_id', chatid=message['chat']['id'])
                 if chatIdUser is not None:
                     mydb.member_update_chatid('desc', message['text'], chatIdUser)
-                    mydb.member_update_chatid('adminChatId', 'Deny', chatIdUser)
+                    mydb.member_update_chatid('adminChatId', user_id, chatIdUser)
                     mydb.del_member_chatid(chatid=chatIdUser)
-                    mydb.member_update_chatid('registration_progress', 10, ch)
+                    mydb.member_update_chatid('registration_progress', 10, chatIdUser)
                     bot.sendMessage(chatIdUser, msg.messageLib.sorryDenyAdmin.value)
                     bot.sendMessage(chatIdUser, message['text'])
             mydb.member_update_chatid('registration_progress', 10, user_id)
