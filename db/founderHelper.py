@@ -270,14 +270,14 @@ class HelperFunder:
             bot.sendMessage(fuser, profileInfo)
             isExisting = os.path.exists(img)
             if isExisting:
-                bot.sendPhoto(chatid, open(img, 'rb'))
+                bot.sendPhoto(fuser, open(img, 'rb'))
             else:
                 bot.sendMessage(fuser, 'فایل تصویر پیدا نشد')
             bot.sendMessage(fuser, ':تصویر پروفایل')
             img = 'download/{}'.format(mydb.get_student_property('personal_photo', chatid))
             isExisting = os.path.exists(img)
             if isExisting:
-                bot.sendPhoto(chatid, open(img, 'rb'))
+                bot.sendPhoto(fuser, open(img, 'rb'))
             else:
                 bot.sendMessage(fuser, 'فایل تصویر پیدا نشد')
         elif mem.membership_type == 4:
