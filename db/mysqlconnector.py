@@ -212,7 +212,7 @@ class mysqlconnector:
             return resualt[0]
 
     def get_member_property_Adminchatid(self, fieldName, chatid):
-        sqlQuery = 'select `{1}` from `botshiftkari`.`membership` where  adminChatId = \'{0}\''.format(chatid,
+        sqlQuery = 'select `{1}` from `botshiftkari`.`membership` where registration_progress = 15 and  adminChatId = \'{0}\''.format(chatid,
                                                                                                        fieldName)
         mydb = self.connector()
         mydb.autocommit = True
