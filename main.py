@@ -14,7 +14,6 @@ import menu
 import db.founderHelper as fh
 from unidecode import unidecode
 
-
 helper = fh.HelperFunder()
 from telepot.loop import MessageLoop
 
@@ -26,6 +25,8 @@ mydb = msc.mysqlconnector()
 idFromFile = None
 botKeyApi = mydb.get_property_domain('botkey')
 bot = telepot.Bot(botKeyApi)
+
+
 # admins = mydb.getAdmins()
 # image = 'download/2c3809f7-8e48-4cbf-acb7-bc7b0c9d1cd4.jpg'
 # pprint(admins)
@@ -477,10 +478,12 @@ def handle_new_messages(user_id, userName, update):
                 chatIdUser = mydb.get_member_property_Adminchatid(fieldName='chat_id', chatid=message['chat']['id'])
                 if chatIdUser is not None:
                     mydb.member_update_chatid('desc', message['text'], chatIdUser)
-                    mydb.member_update_chatid('adminChatId', 'Deny', chatIdUser)
+                    mydb.member_update_chatid('adminChatId', user_id, chatIdUser)
                     mydb.del_member_chatid(chatid=chatIdUser)
+                    mydb.member_update_chatid('registration_progress', 10, chatIdUser)
                     bot.sendMessage(chatIdUser, msg.messageLib.sorryDenyAdmin.value)
                     bot.sendMessage(chatIdUser, message['text'])
+            mydb.member_update_chatid('registration_progress', 10, user_id)
         elif tempMember.register_progress == 18:
             helper.regEditItem(mem=tempMember, bot=bot, newValue=message)
 
@@ -573,7 +576,7 @@ def handle_new_messages(user_id, userName, update):
                 else:
                     bot.sendMessage(message['chat']['id'], msg.messageLib.notAccess.value)
             elif spBtn[1] == 'year':
-                if tempMember.register_progress not in (11,5):
+                if tempMember.register_progress not in (11, 5):
                     bot.sendMessage(user_id, msg.messageLib.noBussiness.value)
                     return
                 yearTemp = None
@@ -600,7 +603,7 @@ def handle_new_messages(user_id, userName, update):
                     bot.sendMessage(chat_id=user_id, parse_mode='HTML', text='ماه انتخاب کنید',
                                     reply_markup=menu.keyLib.kbCreateMenuMonthInYear(tag='5_{}'.format(user_id)))
             elif spBtn[1] == 'month':
-                if tempMember.register_progress not in (11,5):
+                if tempMember.register_progress not in (11, 5):
                     bot.sendMessage(user_id, msg.messageLib.noBussiness.value)
                     return
                 if spBtn[3] == '1':
@@ -624,7 +627,7 @@ def handle_new_messages(user_id, userName, update):
                     bot.sendMessage(chat_id=user_id, parse_mode='HTML', text='روز انتخاب کنید',
                                     reply_markup=menu.keyLib.kbCreateMenuDayInMonth(tag='5_{}'.format(user_id)))
             elif spBtn[1] == 'day':
-                if tempMember.register_progress not in (11,5):
+                if tempMember.register_progress not in (11, 5):
                     bot.sendMessage(user_id, msg.messageLib.noBussiness.value)
                     return
                 if spBtn[3] == '1':
@@ -856,7 +859,7 @@ def handle_new_messages(user_id, userName, update):
             elif spBtn[1] == 'shiftApprove':
                 # todo: new approve shift
                 listDayFull = mydb.getListDayIsNotEmpty(spBtn[2])
-                if len(listDayFull)==0:
+                if len(listDayFull) == 0:
                     dateStart = str(mydb.get_shift_property('DateShift', spBtn[2])).split('-')
                     dateEnd = str(mydb.get_shift_property('dateEndShift', spBtn[2])).split('-')
                     dsG = JalaliDate(int(dateStart[0]), int(dateStart[1]), int(dateStart[2])).to_gregorian()
@@ -886,7 +889,7 @@ def handle_new_messages(user_id, userName, update):
                 else:
                     bot.sendMessage(user_id, str(msg.messageLib.repeatedDay.value))
             elif spBtn[1] == 'NOApproveAllShift':
-                helper.NOApproveAllShift(spBtn[2],user_id,bot)
+                helper.NOApproveAllShift(spBtn[2], user_id, bot)
             elif spBtn[1] == 'deleteShift':
                 allShift = mydb.get_all_shift_by_creator(creator=message['chat']["id"])
                 if len(allShift) == 0:
