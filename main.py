@@ -492,7 +492,7 @@ def handle_new_messages(user_id, userName, update):
         if len(spBtn) > 1:
             if spBtn[1] == 'verify':
                 verification = mydb.get_member_property_chatid('verifyAdmin', spBtn[2])
-                if not (verification == 1 or verification == 0):
+                if not (verification == 1 or verification == 3):
                     mydb.member_update_chatid('verifyAdmin', 1, spBtn[2])
                     mydb.member_update_chatid('adminChatId', message['chat']['id'], spBtn[2])
                     bot.sendMessage(spBtn[2], msg.messageLib.congratulationsApproveAdmin.value)
@@ -546,12 +546,10 @@ def handle_new_messages(user_id, userName, update):
                 helper.send_operation(tempMember, bot, user_id)
             elif spBtn[1] == 'deny':
                 verification = mydb.get_member_property_chatid('verifyAdmin', spBtn[2])
-                if not (verification == 1 or verification == 0):
+                if not (verification == 1 or verification == 3):
                     bot.sendMessage(message['chat']['id'],
                                     str(msg.messageLib.descDenyAdmin.value))
-                    mydb.member_update_chatid('registration_progress', 15, spBtn[2])
-                    mydb.member_update_chatid('verifyAdmin', 0, spBtn[2])
-                    mydb.member_update_chatid('adminChatId', user_id, spBtn[2])
+                    mydb.member_update_chatid('registration_progress', 15, user_id)
                 else:
                     bot.sendMessage(user_id, msg.messageLib.doseVerify.value)
             elif spBtn[1] == 'NoDel':
