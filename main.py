@@ -488,6 +488,7 @@ def handle_new_messages(user_id, userName, update):
         message = update['callback_query']['message']
         btn = update['callback_query']['data']
         spBtn = btn.split('_')
+        print(spBtn)
         if len(spBtn) > 1:
             if spBtn[1] == 'verify':
                 verification = mydb.get_member_property_chatid('verifyAdmin', spBtn[2])
