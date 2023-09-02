@@ -12,6 +12,8 @@ import db.mysqlconnector as msc
 import uuid
 import menu
 import db.founderHelper as fh
+from unidecode import unidecode
+
 
 helper = fh.HelperFunder()
 from telepot.loop import MessageLoop
@@ -155,11 +157,11 @@ def handle_new_messages(user_id, userName, update):
             mydb.member_update_chatid('registration_progress', 3, message['chat']['id'])
             tempMember.register_progress = 3
         elif tempMember.register_progress == 3:
-            phone = message['text']
+            phone = unidecode(message['text'])
             if not helper.validate_IR_mobile_number(mobile_number=phone):
                 bot.sendMessage(message['chat']['id'], msg.messageLib.errorPhoneNumber.value)
                 return
-            mydb.member_update_chatid('phone_number', message['text'], message['chat']['id'])
+            mydb.member_update_chatid('phone_number', unidecode(message['text']), message['chat']['id'])
             tempMember.phone_number = message['text']
             if tempMember.membership_type == 1:
                 bot.sendMessage(message['chat']['id'],
@@ -198,7 +200,7 @@ def handle_new_messages(user_id, userName, update):
                 mydb.member_update_chatid('registration_progress', 5, message['chat']['id'])
                 tempMember.register_progress = 5
             elif tempMember.membership_type == 2:
-                nationCode = message['text']
+                nationCode = unidecode(message['text'])
                 repNation = False
                 if tempMember.op == 0:
                     repNation = mydb.rep_nation_code(nationCode)
@@ -208,13 +210,13 @@ def handle_new_messages(user_id, userName, update):
                 if not helper.validate_IR_national_id(nationCode):
                     bot.sendMessage(message['chat']['id'], msg.messageLib.errrorNation.value)
                     return
-                mydb.technicalManager_update('national_code', message['text'], message['chat']['id'])
+                mydb.technicalManager_update('national_code', unidecode(message['text']), message['chat']['id'])
                 bot.sendMessage(message['chat']['id'],
                                 str(msg.messageLib.enetrcodePharmaceutical.value))
                 mydb.member_update_chatid('registration_progress', 5, message['chat']['id'])
                 tempMember.register_progress = 5
             elif tempMember.membership_type == 3:
-                nationCode = message['text']
+                nationCode = unidecode(message['text'])
                 repNation = mydb.rep_nation_code(nationCode)
                 if repNation:
                     bot.sendMessage(user_id, msg.messageLib.repNationCode.value)
@@ -222,7 +224,7 @@ def handle_new_messages(user_id, userName, update):
                 if not helper.validate_IR_national_id(nationCode):
                     bot.sendMessage(message['chat']['id'], msg.messageLib.errrorNation.value)
                     return
-                mydb.student_update('national_code', message['text'], message['chat']['id'])
+                mydb.student_update('national_code', unidecode(message['text']), message['chat']['id'])
                 bot.sendMessage(message['chat']['id'],
                                 str(msg.messageLib.enterLicenseStartDate.value))
                 bot.sendMessage(chat_id=user_id, parse_mode='HTML', text='سال را انتخاب کنید',
@@ -238,7 +240,6 @@ def handle_new_messages(user_id, userName, update):
                     ufid = uuid.uuid4()
                     image_path = 'download/{0}{1}'.format(ufid, fileExtention)
                     bot.download_file(file_id, image_path)
-                    print()
                     mydb.technicalManager_update('membership_card_photo', '{0}{1}'.format(ufid, fileExtention),
                                                  message['chat']['id'])
                     bot.sendMessage(message['chat']['id'],
@@ -273,7 +274,8 @@ def handle_new_messages(user_id, userName, update):
                     bot.sendMessage(message['chat']['id'],
                                     str(msg.messageLib.errorSendFile.value))
             elif tempMember.membership_type == 3:
-                mydb.student_update('hourPermit', message['text'], user_id)
+                # todo: check number
+                mydb.student_update('hourPermit', unidecode(message['text']), user_id)
                 bot.sendMessage(message['chat']['id'],
                                 str(msg.messageLib.enterWorkoverPermitPhoto.value))
                 mydb.member_update_chatid('registration_progress', 7, message['chat']['id'])
@@ -382,7 +384,7 @@ def handle_new_messages(user_id, userName, update):
                                     tempMember.name + ' ' + tempMember.last_name),
                                 reply_markup=menu.keyLib.kbAdmin())
             elif tempMember.membership_type == 4:
-                chatIdUser = mydb.get_member_property_Adminchatid(fieldName='chat_id', chatid=message['chat']['id'])
+                chatIdUser = mydb.get_member_property_Adminchatid(fieldName='chat_id', chatid=user_id)
                 if chatIdUser is not None:
                     mydb.member_update_chatid('desc', message['text'], chatIdUser)
                     mydb.member_update_chatid('adminChatId', 'Deny', chatIdUser)
@@ -470,6 +472,15 @@ def handle_new_messages(user_id, userName, update):
                                         'آیا آدرس {0} برای داروخانه صحیح است؟'.format(message['text']),
                                         reply_markup=menu.keyLib.kbCreateMenuYesNO(
                                             chatId='{0}_{1}'.format(9, rs[0])))
+        elif tempMember.register_progress == 15:
+            if tempMember.membership_type == 4:
+                chatIdUser = mydb.get_member_property_Adminchatid(fieldName='chat_id', chatid=message['chat']['id'])
+                if chatIdUser is not None:
+                    mydb.member_update_chatid('desc', message['text'], chatIdUser)
+                    mydb.member_update_chatid('adminChatId', 'Deny', chatIdUser)
+                    mydb.del_member_chatid(chatid=chatIdUser)
+                    bot.sendMessage(chatIdUser, msg.messageLib.sorryDenyAdmin.value)
+                    bot.sendMessage(chatIdUser, message['text'])
         elif tempMember.register_progress == 18:
             helper.regEditItem(mem=tempMember, bot=bot, newValue=message)
 
@@ -477,7 +488,7 @@ def handle_new_messages(user_id, userName, update):
         message = update['callback_query']['message']
         btn = update['callback_query']['data']
         spBtn = btn.split('_')
-        pprint(btn)
+        print(spBtn)
         if len(spBtn) > 1:
             if spBtn[1] == 'verify':
                 verification = mydb.get_member_property_chatid('verifyAdmin', spBtn[2])
@@ -540,7 +551,7 @@ def handle_new_messages(user_id, userName, update):
                                     str(msg.messageLib.descDenyAdmin.value))
                     mydb.member_update_chatid('registration_progress', 15, spBtn[2])
                     mydb.member_update_chatid('verifyAdmin', 0, spBtn[2])
-                    mydb.member_update_chatid('adminChatId', message['chat']['id'], spBtn[2])
+                    mydb.member_update_chatid('adminChatId', user_id, spBtn[2])
                 else:
                     bot.sendMessage(user_id, msg.messageLib.doseVerify.value)
             elif spBtn[1] == 'NoDel':
@@ -564,7 +575,7 @@ def handle_new_messages(user_id, userName, update):
                 else:
                     bot.sendMessage(message['chat']['id'], msg.messageLib.notAccess.value)
             elif spBtn[1] == 'year':
-                if tempMember.register_progress != 11:
+                if tempMember.register_progress not in (11,5):
                     bot.sendMessage(user_id, msg.messageLib.noBussiness.value)
                     return
                 yearTemp = None
@@ -591,7 +602,7 @@ def handle_new_messages(user_id, userName, update):
                     bot.sendMessage(chat_id=user_id, parse_mode='HTML', text='ماه انتخاب کنید',
                                     reply_markup=menu.keyLib.kbCreateMenuMonthInYear(tag='5_{}'.format(user_id)))
             elif spBtn[1] == 'month':
-                if tempMember.register_progress != 11:
+                if tempMember.register_progress not in (11,5):
                     bot.sendMessage(user_id, msg.messageLib.noBussiness.value)
                     return
                 if spBtn[3] == '1':
@@ -615,7 +626,7 @@ def handle_new_messages(user_id, userName, update):
                     bot.sendMessage(chat_id=user_id, parse_mode='HTML', text='روز انتخاب کنید',
                                     reply_markup=menu.keyLib.kbCreateMenuDayInMonth(tag='5_{}'.format(user_id)))
             elif spBtn[1] == 'day':
-                if tempMember.register_progress != 11:
+                if tempMember.register_progress not in (11,5):
                     bot.sendMessage(user_id, msg.messageLib.noBussiness.value)
                     return
                 if spBtn[3] == '1':
