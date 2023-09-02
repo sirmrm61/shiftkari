@@ -554,6 +554,7 @@ def handle_new_messages(user_id, userName, update):
                     bot.sendMessage(message['chat']['id'],
                                     str(msg.messageLib.descDenyAdmin.value))
                     mydb.member_update_chatid('registration_progress', 15, user_id)
+                    mydb.member_update_chatid('registration_progress', 15, spBtn[2])
                     mydb.member_update_chatid('adminChatId', user_id, spBtn[2])
                 else:
                     bot.sendMessage(user_id, msg.messageLib.doseVerify.value)
