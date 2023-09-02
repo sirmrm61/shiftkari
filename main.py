@@ -748,7 +748,7 @@ def handle_new_messages(user_id, userName, update):
                     helper.send_shift_to_technicalResponsible(spBtn[3], bot, user_id)
                     mydb.member_update('registration_progress', 10, user_id)
                     mydb.member_update('op', 0, user_id)
-                    mydb.shift_update('progress', 1, user_id)
+                    mydb.shift_update('progress', 2, user_id)
             elif spBtn[1] == 'NO':
                 if tempMember.register_progress != 11:
                     bot.sendMessage(user_id, msg.messageLib.noBussiness.value)

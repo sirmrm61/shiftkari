@@ -504,14 +504,14 @@ class HelperFunder:
         deG = JalaliDate(int(dateEnd[0]), int(dateEnd[1]), int(dateEnd[2])).to_gregorian()
         delta = deG - dsG
         listFullDay = mydb.getListDayIsNotEmpty(idShift)
-        listFullDay = list(zip(*listFullDay))[1]
+        if len(listFullDay) > 0:
+            listFullDay = list(zip(*listFullDay))[1]
         listDay = []
         for i in range(delta.days + 1):
             tempDic = {}
             day = dsG + timedelta(days=i)
             tmp = JalaliDate.to_jalali(day.year, day.month, day.day)
             txtTmp = str(tmp).replace('-', '.')
-            print(listFullDay)
             if txtTmp not in listFullDay:
                 tempDic['text'] = str(tmp).replace('-', '.')
                 tempDic['key'] = str(tmp).replace('-', '.') + f'={idShift}'
