@@ -204,15 +204,10 @@ class mysqlconnector:
         if resualt is None:
             return None
         else:
-            # sqlQuery = '''update `botshiftkari`.`membership` set del=1 WHERE id={0};
-            #               update `botshiftkari`.`founder` set del=1 WHERE idMember={0};
-            #               update `botshiftkari`.`student` set del=1 WHERE idMember ={0};
-            #               update `botshiftkari`.`technicalmanager` set del=1 WHERE idMember={0};'''.format(resualt[0])
-            sqlQuery = '''DELETE FROM `botshiftkari`.`membership`  WHERE id={0};
-                                      DELETE FROM `botshiftkari`.`founder`  WHERE idMember={0};
-                                      DELETE FROM `botshiftkari`.`student`  WHERE idMember ={0};
-                                      DELETE FROM `botshiftkari`.`technicalmanager`  WHERE idMember={0};'''.format(
-                resualt[0])
+            sqlQuery = '''update `botshiftkari`.`membership` set del=1 WHERE id={0};
+                          update `botshiftkari`.`founder` set del=1 WHERE idMember={0};
+                          update `botshiftkari`.`student` set del=1 WHERE idMember ={0};
+                          update `botshiftkari`.`technicalmanager` set del=1 WHERE idMember={0};'''.format(resualt[0])
             mycursor.execute(sqlQuery)
             return resualt[0]
 
