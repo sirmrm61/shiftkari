@@ -384,16 +384,6 @@ def handle_new_messages(user_id, userName, update):
                                 str(msg.messageLib.helloAdmin.value).format(
                                     tempMember.name + ' ' + tempMember.last_name),
                                 reply_markup=menu.keyLib.kbAdmin())
-            elif tempMember.membership_type == 4:
-                chatIdUser = mydb.get_member_property_Adminchatid(fieldName='chat_id', chatid=user_id)
-                if chatIdUser is not None:
-                    mydb.member_update_chatid('desc', message['text'], chatIdUser)
-                    mydb.member_update_chatid('adminChatId', 'Deny', chatIdUser)
-                    # mydb.del_member_chatid(chatid=chatIdUser)
-                    bot.sendMessage(chatIdUser, msg.messageLib.sorryDenyAdmin.value)
-                    bot.sendMessage(chatIdUser, message['text'])
-                    bot.sendMessage(user_id, msg.messageLib.selectPropertyForEdit.value,
-                                    reply_markup=menu.keyLib.kbEditProfile(chatId=chatIdUser))
         elif tempMember.register_progress == 11:
             if tempMember.membership_type == 2 or tempMember.membership_type == 1:
                 op = mydb.get_member_property_chatid('op', user_id)
@@ -484,6 +474,8 @@ def handle_new_messages(user_id, userName, update):
                     mydb.member_update_chatid('registration_progress', 10, chatIdUser)
                     bot.sendMessage(chatIdUser, msg.messageLib.sorryDenyAdmin.value)
                     bot.sendMessage(chatIdUser, message['text'])
+                    bot.sendMessage(user_id, msg.messageLib.selectPropertyForEdit.value,
+                                    reply_markup=menu.keyLib.kbEditProfile(chatId=chatIdUser))
             mydb.member_update_chatid('registration_progress', 10, user_id)
         elif tempMember.register_progress == 18:
             helper.regEditItem(mem=tempMember, bot=bot, newValue=message)
@@ -550,8 +542,8 @@ def handle_new_messages(user_id, userName, update):
                 helper.send_operation(tempMember, bot, user_id)
             elif spBtn[1] == 'deny':
                 verification = mydb.get_member_property_chatid('verifyAdmin', spBtn[2])
+                print(f'verification={verification}')
                 if not (verification == 1 or verification == 3):
-
                     bot.sendMessage(message['chat']['id'],
                                     str(msg.messageLib.descDenyAdmin.value))
                     mydb.member_update_chatid('registration_progress', 15, user_id)
