@@ -490,9 +490,10 @@ class mysqlconnector:
                          mem.chat_id = shi.Creator where progress = 1 and shi.del = 0'''
         mycursor.execute(sqlQuery)
         resualt = mycursor.fetchall()
-        return resualt;
+        return resualt
 
-    def get_all_shift_managerApproved(self=None):
+    def \
+            get_all_shift_managerApproved(self=None):
         mydb = self.connector()
         mydb.autocommit = True
         mycursor = mydb.cursor()
