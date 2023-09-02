@@ -389,10 +389,11 @@ def handle_new_messages(user_id, userName, update):
                 if chatIdUser is not None:
                     mydb.member_update_chatid('desc', message['text'], chatIdUser)
                     mydb.member_update_chatid('adminChatId', 'Deny', chatIdUser)
-                    mydb.del_member_chatid(chatid=chatIdUser)
+                    # mydb.del_member_chatid(chatid=chatIdUser)
                     bot.sendMessage(chatIdUser, msg.messageLib.sorryDenyAdmin.value)
                     bot.sendMessage(chatIdUser, message['text'])
-
+                    bot.sendMessage(user_id, msg.messageLib.selectPropertyForEdit.value,
+                                    reply_markup=menu.keyLib.kbEditProfile(chatId=chatIdUser))
         elif tempMember.register_progress == 11:
             if tempMember.membership_type == 2 or tempMember.membership_type == 1:
                 op = mydb.get_member_property_chatid('op', user_id)
