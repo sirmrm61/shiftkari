@@ -220,7 +220,7 @@ class keyLib:
     def kbVerifyEditProfile(self, tag):
         return InlineKeyboardMarkup(inline_keyboard=[
             [InlineKeyboardButton(text='ویرایش میکنم', callback_data='btn_yesEditProfile_{}'.format(str(tag))),
-             InlineKeyboardButton(text='بازگشت', callback_data='btn_noBack_{}'.format(str(tag))), ],
+             InlineKeyboardButton(text='تائید نهایی', callback_data='btn_noBack_{}'.format(str(tag))), ],
         ])
 
     def kbEditProfile(self=None, chatId=None):
