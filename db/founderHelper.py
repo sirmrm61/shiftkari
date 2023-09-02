@@ -9,6 +9,7 @@ from datetime import timedelta
 from model.membership import Membership
 import uuid
 import os
+from unidecode import unidecode
 
 mydb = msc.mysqlconnector()
 listDenyOP = [
@@ -369,17 +370,26 @@ class HelperFunder:
         elif op == 2:
             mydb.member_update_chatid(fieldName='last_name', fieldValue=newValue['text'], chatid=userId)
         elif op == 4:
+            phone = unidecode(newValue['text'])
             print(f'phoneNumber:{newValue["text"]}')
-            if self.validate_IR_mobile_number(mobile_number=newValue['text']):
-                mydb.member_update_chatid(fieldName='phone_number', fieldValue=newValue['text'], chatid=userId)
+            if self.validate_IR_mobile_number(mobile_number=phone):
+                mydb.member_update_chatid(fieldName='phone_number', fieldValue=phone, chatid=userId)
             else:
                 bot.sendMessage(userId, msg.messageLib.errorPhoneNumber)
                 return
         elif op == 5:
             if mem.membership_type == 2:
-                mydb.technicalManager_update(fieldName='national_code', fieldValue=newValue['text'], chatid=userId)
+                nationCode = unidecode(newValue['text'])
+                if self.validate_IR_national_id(nationCode):
+                    mydb.technicalManager_update(fieldName='national_code', fieldValue=nationCode, chatid=userId)
+                else:
+                    bot.sendMessage(userId, msg.messageLib.errrorNation)
             elif mem.membership_type == 3:
-                mydb.student_update(fieldName='national_code', fieldValue=newValue['text'], chatid=userId)
+                nationCode = unidecode(newValue['text'])
+                if self.validate_IR_national_id(nationCode):
+                    mydb.student_update(fieldName='national_code', fieldValue=nationCode, chatid=userId)
+                else:
+                    bot.sendMessage(userId, msg.messageLib.errrorNation)
             else:
                 mydb.founder_update(fieldName='pharmacy_name', fieldValue=newValue['text'], chatid=userId)
         elif op == 7:
@@ -500,7 +510,7 @@ class HelperFunder:
             tempDic = {}
             day = dsG + timedelta(days=i)
             tmp = JalaliDate.to_jalali(day.year, day.month, day.day)
-            txtTmp=str(tmp).replace('-', '.')
+            txtTmp = str(tmp).replace('-', '.')
             print(listFullDay)
             if txtTmp not in listFullDay:
                 tempDic['text'] = str(tmp).replace('-', '.')
