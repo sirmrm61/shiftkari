@@ -470,11 +470,10 @@ def handle_new_messages(user_id, userName, update):
                 if chatIdUser is not None:
                     mydb.member_update_chatid('desc', message['text'], chatIdUser)
                     mydb.member_update_chatid('adminChatId', user_id, chatIdUser)
-                    mydb.del_member_chatid(chatid=chatIdUser)
-                    mydb.member_update_chatid('registration_progress', 10, chatIdUser)
+                    # mydb.del_member_chatid(chatid=chatIdUser)
                     bot.sendMessage(chatIdUser, msg.messageLib.sorryDenyAdmin.value)
                     bot.sendMessage(chatIdUser, message['text'])
-                    bot.sendMessage(user_id, msg.messageLib.selectPropertyForEdit.value,
+                    bot.sendMessage(chatIdUser, msg.messageLib.selectPropertyForEdit.value,
                                     reply_markup=menu.keyLib.kbEditProfile(chatId=chatIdUser))
             mydb.member_update_chatid('registration_progress', 10, user_id)
         elif tempMember.register_progress == 18:
@@ -547,7 +546,7 @@ def handle_new_messages(user_id, userName, update):
                     bot.sendMessage(message['chat']['id'],
                                     str(msg.messageLib.descDenyAdmin.value))
                     mydb.member_update_chatid('registration_progress', 15, user_id)
-                    mydb.member_update_chatid('registration_progress', 15, spBtn[2])
+                    mydb.member_update_chatid('registration_progress', 18, spBtn[2])
                     mydb.member_update_chatid('adminChatId', user_id, spBtn[2])
                 else:
                     bot.sendMessage(user_id, msg.messageLib.doseVerify.value)
