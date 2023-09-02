@@ -216,7 +216,6 @@ class mysqlconnector:
     def get_member_property_Adminchatid(self, fieldName, chatid):
         sqlQuery = 'select `{1}` from `botshiftkari`.`membership` where  adminChatId = \'{0}\''.format(chatid,
                                                                                                        fieldName)
-        print(sqlQuery)
         mydb = self.connector()
         mydb.autocommit = True
         mycursor = mydb.cursor()

@@ -27,7 +27,7 @@ class HelperFunder:
         if mem.register_progress >= 10:
             if mem.verifyAdmin == 0 and mem.register_progress != 18:
                 bot.sendMessage(mem.chatId, msg.messageLib.notVerifyAdmin.value)
-                return
+                return False
             txtMessage = None
             if 'message' in update and 'text' in update['message']:
                 txtMessage = update['message']['text']
