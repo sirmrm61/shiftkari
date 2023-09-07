@@ -692,7 +692,13 @@ VALUES({idShift},\'{dateShift}\',\'{requster}\',0,{sendedForCreator});SELECT LAS
         myCursor.execute(sqlQuery)
         myCursor.reset()
         return None
-
+    def getShiftDayProperty(self,fieldName,idDayShift):
+        mydb = self.connector()
+        mycursor = mydb.cursor()
+        sqlQuery = f'SELECT {fieldName} from botshiftkari.dayshift  where  idDayShift={idDayShift}'
+        mycursor.execute(sqlQuery)
+        resualt = mycursor.fetchone()
+        return resualt[0]
     def getEmptyDayOfShift(self, idShift):
         mydb = self.connector()
         mycursor = mydb.cursor()

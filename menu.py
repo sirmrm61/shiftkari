@@ -334,8 +334,11 @@ class keyLib:
     def createMenuFromListDayForApproveCreator(self, listDay, totalInRow=2):
         lk = []
         for item in listDay:
+            listIdDay = str(item[0]) + '#'
             lk.append(InlineKeyboardButton(text=item[1],
                                            callback_data='btn_dayApproveCreator_{}'.format(str(item[0]))))
+        if len(lk)>1: lk.append (InlineKeyboardButton(text="همه روزها",
+                                           callback_data='btn_approveAllDay_{}'.format(listDay)))
         N = totalInRow
         res = []
         mod = 0
