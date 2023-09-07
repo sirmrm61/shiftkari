@@ -696,6 +696,8 @@ VALUES({idShift},\'{dateShift}\',\'{requster}\',0,{sendedForCreator});SELECT LAS
         mydb = self.connector()
         mycursor = mydb.cursor()
         sqlQuery = f'SELECT {fieldName} from botshiftkari.dayshift  where  idDayShift={idDayShift}'
+        print(sqlQuery)
+        print(resualt)
         mycursor.execute(sqlQuery)
         resualt = mycursor.fetchone()
         return resualt[0]
