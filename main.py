@@ -498,6 +498,21 @@ def handle_new_messages(user_id, userName, update):
                     bot.sendMessage(user_id, str(msg.messageLib.verifyMsg.value).format(mem.name + " " + mem.last_name))
                 else:
                     bot.sendMessage(user_id, msg.messageLib.doseVerify.value)
+            elif spBtn[1] == 'sendToCreator':
+                creatorChatID = mydb.get_shift_property(fieldName='Creator',idShift=spBtn[2])
+                listDayAccept = mydb.getListDaySelection(idShift=spBtn[2],requsterShift=user_id)
+                fname = mydb.get_member_property_chatid('name')
+                lname = mydb.get_member_property_chatid('last_name')
+                fullName = fname +' '+lname
+                
+                if len(listDayAccept)>0:
+                    bot.sendMessage(creatorChatID,str(msg.messageLib.sendDayForApproveCreator.value).format(fullName))
+                    helper.send_profile(user_id,bot,creatorChatID)
+                    bot.sendMessage(creatorChatID,'روز های مورد تائید را نتخاب نمائید',reply_markup=menu.keyLib.createMenuFromListDayForApproveCreator(None,listDayAccept,2))
+                else:
+                    bot.sendMessage(creatorChatID,str(msg.messageLib.senndAcceptAllDayInShift.value).format(fullName),
+                                    reply_markup=menu.keyLib.kbCreateMenuShiftApproveManager(shiftId=spBtn[2]))
+
             elif spBtn[1] == 'editProfile':
                 # آماده‌سازی دریافت اطلاعات کاربر جهت ویرایش
                 helper.editProfile(bot=bot, spBtn=spBtn, mem=tempMember)

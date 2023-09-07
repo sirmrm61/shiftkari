@@ -492,8 +492,7 @@ class mysqlconnector:
         resualt = mycursor.fetchall()
         return resualt
 
-    def \
-            get_all_shift_managerApproved(self=None):
+    def get_all_shift_managerApproved(self=None):
         mydb = self.connector()
         mydb.autocommit = True
         mycursor = mydb.cursor()
