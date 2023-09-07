@@ -331,3 +331,15 @@ class keyLib:
         return InlineKeyboardMarkup(inline_keyboard=[
             [InlineKeyboardButton(text='تائید', callback_data='btn_sendToCreator_{}'.format(str(idShift)))]
         ])
+    def createMenuFromListDayForApproveCreator(self, listDay, totalInRow=2):
+        lk = []
+        for item in listDay:
+            lk.append(InlineKeyboardButton(text=item[1],
+                                           callback_data='btn_dayApproveCreator_{}'.format(str(item[0]))))
+        N = totalInRow
+        res = []
+        mod = 0
+        if (len(lk) % N) > 0: mod = 1
+        for idx in range(0, (len(lk) // N) + mod):
+            res.append(lk[idx * N: (idx + 1) * N])  # ToDo: check day is empty
+        return InlineKeyboardMarkup(inline_keyboard=res)
