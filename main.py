@@ -578,14 +578,11 @@ def handle_new_messages(user_id, userName, update):
                 mydb.member_update_chatid('registration_progress', 12, spBtn[2])  # 12 mean is deactivate
                 bot.sendMessage(user_id, msg.messageLib.afterDelete.value)
             elif spBtn[1] == 'createSift':
-                if tempMember.membership_type == 1 or tempMember.membership_type == 2:
                     bot.sendMessage(message['chat']['id'], msg.messageLib.dateShift.value)
                     bot.sendMessage(chat_id=user_id, parse_mode='HTML', text='سال را انتخاب کنید',
                                     reply_markup=menu.keyLib.kbCreateMenuYear(tag=1))
                     mydb.member_update('registration_progress', 11, user_id)
                     mydb.member_update('op', 0, message['chat']['id'])
-                else:
-                    bot.sendMessage(message['chat']['id'], msg.messageLib.notAccess.value)
             elif spBtn[1] == 'year':
                 if tempMember.register_progress not in (11, 5):
                     bot.sendMessage(user_id, msg.messageLib.noBussiness.value)
