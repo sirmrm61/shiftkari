@@ -501,8 +501,8 @@ def handle_new_messages(user_id, userName, update):
             elif spBtn[1] == 'sendToCreator':
                 creatorChatID = mydb.get_shift_property(fieldName='Creator',idShift=spBtn[2])
                 listDayAccept = mydb.getListDaySelection(idShift=spBtn[2],requsterShift=user_id)
-                fname = mydb.get_member_property_chatid('name')
-                lname = mydb.get_member_property_chatid('last_name')
+                fname = mydb.get_member_property_chatid('name',user_id)
+                lname = mydb.get_member_property_chatid('last_name',user_id)
                 fullName = fname +' '+lname
                 
                 if len(listDayAccept)>0:
