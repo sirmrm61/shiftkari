@@ -519,7 +519,7 @@ class HelperFunder:
                         reply_markup=menu.keyLib.kbCreateMenuShiftApproveManager(shiftId=shiftRow[9]))
 
     def yesApproveAllShift(self, idShift, userId, bot):
-        mydb.shift_update_by_id('approver', userId)
+        mydb.shift_update_by_id('approver', userId,idShift)
         creator = mydb.get_shift_property('Creator', idShift)
         bot.sendMessage(creator, msg.messageLib.reqTitleMessageForCreator.value)
         self.send_profile(userId, bot, creator)
