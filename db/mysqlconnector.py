@@ -700,7 +700,10 @@ VALUES({idShift},\'{dateShift}\',\'{requster}\',0,{sendedForCreator});SELECT LAS
         print(resualt)
         mycursor.execute(sqlQuery)
         resualt = mycursor.fetchone()
-        return resualt[0]
+        if resualt==None:
+            return None
+        else:
+            return resualt[0]
     def getEmptyDayOfShift(self, idShift):
         mydb = self.connector()
         mycursor = mydb.cursor()
