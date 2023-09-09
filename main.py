@@ -982,9 +982,11 @@ def handle_new_messages(user_id, userName, update):
                 approver = mydb.get_shift_property('approver', spBtn[2])
                 bot.sendMessage(approver, msg.messageLib.shiftApprovedByManager.value)
                 helper.registerFullShiftDay(spBtn[2], approver)
+                bot.sendMessage(user_id,msg.messageLib.requesterNotify.value)
             elif spBtn[1] == 'disApproveShiftManager':
                 approver = mydb.get_shift_property('approver', spBtn[2])
                 bot.sendMessage(approver, msg.messageLib.shiftDisApprovedByManager.value)
+                bot.sendMessage(user_id, msg.messageLib.requesterNotify.value)
             elif spBtn[1] == 'listFunderManager':
                 resualt = mydb.get_all_member(tye=1)
                 print(resualt);
