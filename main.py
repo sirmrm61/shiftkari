@@ -499,25 +499,27 @@ def handle_new_messages(user_id, userName, update):
                 else:
                     bot.sendMessage(user_id, msg.messageLib.doseVerify.value)
             elif spBtn[1] == 'sendToCreator':
-                creatorChatID = mydb.get_shift_property(fieldName='Creator',idShift=spBtn[2])
-                listDayAccept = mydb.getListDaySelection(idShift=spBtn[2],requsterShift=user_id)
-                fname = mydb.get_member_property_chatid('name',user_id)
-                lname = mydb.get_member_property_chatid('last_name',user_id)
-                fullName = fname +' '+lname
-                
-                if len(listDayAccept)>0:
-                    bot.sendMessage(creatorChatID,str(msg.messageLib.sendDayForApproveCreator.value).format(fullName))
-                    helper.send_profile(user_id,bot,creatorChatID)
-                    bot.sendMessage(creatorChatID,'روز های مورد تائید را نتخاب نمائید',reply_markup=menu.keyLib.createMenuFromListDayForApproveCreator(None,listDayAccept,2))
+                creatorChatID = mydb.get_shift_property(fieldName='Creator', idShift=spBtn[2])
+                listDayAccept = mydb.getListDaySelection(idShift=spBtn[2], requsterShift=user_id)
+                fname = mydb.get_member_property_chatid('name', user_id)
+                lname = mydb.get_member_property_chatid('last_name', user_id)
+                fullName = fname + ' ' + lname
+
+                if len(listDayAccept) > 0:
+                    bot.sendMessage(creatorChatID, str(msg.messageLib.sendDayForApproveCreator.value).format(fullName))
+                    helper.send_profile(user_id, bot, creatorChatID)
+                    bot.sendMessage(creatorChatID, 'روز های مورد تائید را نتخاب نمائید',
+                                    reply_markup=menu.keyLib.createMenuFromListDayForApproveCreator(None, listDayAccept,
+                                                                                                    2))
                 else:
-                    bot.sendMessage(creatorChatID,str(msg.messageLib.senndAcceptAllDayInShift.value).format(fullName),
+                    bot.sendMessage(creatorChatID, str(msg.messageLib.senndAcceptAllDayInShift.value).format(fullName),
                                     reply_markup=menu.keyLib.kbCreateMenuShiftApproveManager(shiftId=spBtn[2]))
             elif spBtn[1] == 'dayApproveCreator':
-                helper.registerDay(spBtn[2],bot,user_id)
+                helper.registerDay(spBtn[2], bot, user_id)
             elif spBtn[1] == 'approveAllDay':
                 listIdDay = str(spBtn[2]).split('#')
                 for item in listIdDay:
-                    helper.registerDay(item,bot,user_id)
+                    helper.registerDay(item, bot, user_id)
             elif spBtn[1] == 'editProfile':
                 # آماده‌سازی دریافت اطلاعات کاربر جهت ویرایش
                 helper.editProfile(bot=bot, spBtn=spBtn, mem=tempMember)
@@ -583,11 +585,11 @@ def handle_new_messages(user_id, userName, update):
                 mydb.member_update_chatid('registration_progress', 12, spBtn[2])  # 12 mean is deactivate
                 bot.sendMessage(user_id, msg.messageLib.afterDelete.value)
             elif spBtn[1] == 'createSift':
-                    bot.sendMessage(message['chat']['id'], msg.messageLib.dateShift.value)
-                    bot.sendMessage(chat_id=user_id, parse_mode='HTML', text='سال را انتخاب کنید',
-                                    reply_markup=menu.keyLib.kbCreateMenuYear(tag=1))
-                    mydb.member_update('registration_progress', 11, user_id)
-                    mydb.member_update('op', 0, message['chat']['id'])
+                bot.sendMessage(message['chat']['id'], msg.messageLib.dateShift.value)
+                bot.sendMessage(chat_id=user_id, parse_mode='HTML', text='سال را انتخاب کنید',
+                                reply_markup=menu.keyLib.kbCreateMenuYear(tag=1))
+                mydb.member_update('registration_progress', 11, user_id)
+                mydb.member_update('op', 0, message['chat']['id'])
             elif spBtn[1] == 'year':
                 if tempMember.register_progress not in (11, 5):
                     bot.sendMessage(user_id, msg.messageLib.noBussiness.value)
@@ -904,7 +906,7 @@ def handle_new_messages(user_id, userName, update):
             elif spBtn[1] == 'NOApproveAllShift':
                 helper.NOApproveAllShift(spBtn[2], user_id, bot)
             elif spBtn[1] == 'yesApproveAllShift':
-                helper.yesApproveAllShift(spBtn[2],user_id,bot)
+                helper.yesApproveAllShift(spBtn[2], user_id, bot)
             elif spBtn[1] == 'deleteShift':
                 allShift = mydb.get_all_shift_by_creator(creator=message['chat']["id"])
                 if len(allShift) == 0:
@@ -976,14 +978,13 @@ def handle_new_messages(user_id, userName, update):
               msg.messageLib.doYouLikeDelete.value, rowDateEnd),
                                         reply_markup=menu.keyLib.kbCreateMenuDeleteShift(shiftId=shiftRow[9]))
             elif spBtn[1] == 'approveShiftManager':
-                print(spBtn)
                 mydb.shift_update_by_id('progress', 2, spBtn[2])
-                cr = mydb.get_shift_property('creator', spBtn[2])
-                bot.sendMessage(cr, msg.messageLib.shiftApprovedByManager.value)
+                approver = mydb.get_shift_property('approver', spBtn[2])
+                bot.sendMessage(approver, msg.messageLib.shiftApprovedByManager.value)
+                helper.registerFullShiftDay(spBtn[2], approver)
             elif spBtn[1] == 'disApproveShiftManager':
-                mydb.shift_update_by_id('progress', 3, spBtn[2])
-                cr = mydb.get_shift_property('creator', spBtn[2])
-                bot.sendMessage(cr, msg.messageLib.shiftDisApprovedByManager.value)
+                approver = mydb.get_shift_property('approver', spBtn[2])
+                bot.sendMessage(approver, msg.messageLib.shiftDisApprovedByManager.value)
             elif spBtn[1] == 'listFunderManager':
                 resualt = mydb.get_all_member(tye=1)
                 print(resualt);

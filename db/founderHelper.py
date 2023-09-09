@@ -497,17 +497,16 @@ class HelperFunder:
             bot.sendMessage(userId, msg.messageLib.sendForCreatorMessage.value,
                             reply_markup=menu.keyLib.kbCreateMenuSendForCreator(None, idShift))
 
-    def send_shift_to_other(self, bot,idshift,userId):
-        shiftRows = mydb.get_all_property_shift_byId(idshift)  # shift's for student
-        for shiftRow in shiftRows:
-                rowReq = 'درخواست دهنده: {}'.format(shiftRow[0])
-                rowDate = 'تاریخ شروع : {}'.format(shiftRow[2])
-                rowDateEnd = 'تاریخ پایان : {}'.format(shiftRow[10])
-                rowStartTime = 'ساعت شروع  : {}'.format(shiftRow[3])
-                rowEndTime = 'ساعت پایان  : {}'.format(shiftRow[4])
-                rowWage = 'حق الزحمه  : {}'.format(shiftRow[5])
-                rowaddr = 'آدرس  : {}'.format(shiftRow[6])
-                bot.sendMessage(userId, '''
+    def send_shift_to_other(self, bot, idshift, userId):
+        shiftRow = mydb.get_all_property_shift_byId(idshift)  # shift's for student
+        rowReq = 'درخواست دهنده: {}'.format(shiftRow[0])
+        rowDate = 'تاریخ شروع : {}'.format(shiftRow[2])
+        rowDateEnd = 'تاریخ پایان : {}'.format(shiftRow[10])
+        rowStartTime = 'ساعت شروع  : {}'.format(shiftRow[3])
+        rowEndTime = 'ساعت پایان  : {}'.format(shiftRow[4])
+        rowWage = 'حق الزحمه  : {}'.format(shiftRow[5])
+        rowaddr = 'آدرس  : {}'.format(shiftRow[6])
+        bot.sendMessage(userId, '''
 {0}
 {1}
 {7}
@@ -516,15 +515,31 @@ class HelperFunder:
 {4}
 {5}
 {6}'''.format(rowReq, rowDate, rowStartTime, rowEndTime, rowWage, rowaddr,
-              msg.messageLib.doYouLike.value, rowDateEnd),
-                                reply_markup=menu.keyLib.kbCreateMenuShiftApproveManager(shiftId=shiftRow[9]))
+              msg.messageLib.doYouLikeApproveRequest.value, rowDateEnd),
+                        reply_markup=menu.keyLib.kbCreateMenuShiftApproveManager(shiftId=shiftRow[9]))
+
     def yesApproveAllShift(self, idShift, userId, bot):
+        mydb.shift_update_by_id('approver', userId)
         creator = mydb.get_shift_property('Creator', idShift)
         bot.sendMessage(creator, msg.messageLib.reqTitleMessageForCreator.value)
-        self.send_profile(userId,bot, creator)
-        self.send_shift_to_other(bot,idShift,creator)
-        bot.sendMessage(userId,msg.messageLib.YourInfoToCreatorShift.value)
+        self.send_profile(userId, bot, creator)
+        self.send_shift_to_other(bot, idShift, creator)
+        bot.sendMessage(userId, msg.messageLib.YourInfoToCreatorShift.value)
 
+    def registerFullShiftDay(self, idShift, requester):
+        dateStart = str(mydb.get_shift_property('DateShift', idShift)).split('-')
+        dateEnd = str(mydb.get_shift_property('dateEndShift', idShift)).split('-')
+        dsG = JalaliDate(int(dateStart[0]), int(dateStart[1]), int(dateStart[2])).to_gregorian()
+        deG = JalaliDate(int(dateEnd[0]), int(dateEnd[1]), int(dateEnd[2])).to_gregorian()
+        delta = deG - dsG
+        listFullDay = mydb.getListDayIsNotEmpty(idShift)
+        if len(listFullDay) > 0:
+            listFullDay = list(zip(*listFullDay))[1]
+        for i in range(delta.days + 1):
+            day = dsG + timedelta(days=i)
+            tmp = JalaliDate.to_jalali(day.year, day.month, day.day)
+            txtTmp = str(tmp).replace('-', '.')
+            print(mydb.registerDayShift(idShift, txtTmp, requester, 0, 2))
 
     def NOApproveAllShift(self, idShift, userID, bot):
         dateStart = str(mydb.get_shift_property('DateShift', idShift)).split('-')
