@@ -514,6 +514,9 @@ def handle_new_messages(user_id, userName, update):
                                     reply_markup=menu.keyLib.kbCreateMenuShiftApproveManager(shiftId=spBtn[2]))
             elif spBtn[1] == 'dayApproveCreator':
                 statusDay = mydb.getShiftDayProperty('status',spBtn[2])
+                if statusDay == None:
+                    bot.sendMessage('6274361322',f'Can not find {spBtn[2]} in id to dayshift table')
+                    return
                 dateReq = mydb.getShiftDayProperty('dateShift',spBtn[2])
                 if mydb.isShiftDayFull(spBtn[2],dateReq)>0:
                     bot.sendMessage(user_id,msg.messageLib.invalidApproveDate.value)
