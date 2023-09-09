@@ -521,7 +521,7 @@ class HelperFunder:
     def yesApproveAllShift(self, idShift, userId, bot):
         creator = mydb.get_shift_property('Creator', idShift)
         bot.sendMessage(creator, msg.messageLib.reqTitleMessageForCreator.value)
-        self.send_profile(userId, creator)
+        self.send_profile(userId,bot, creator)
         self.send_shift_to_other(bot,idShift,creator)
         bot.sendMessage(userId,msg.messageLib.YourInfoToCreatorShift.value)
 
