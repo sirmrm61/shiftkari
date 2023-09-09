@@ -338,6 +338,7 @@ class keyLib:
             listIdDay += str(item[0]) + '#'
             lk.append(InlineKeyboardButton(text=item[1],
                                            callback_data='btn_dayApproveCreator_{}'.format(str(item[0]))))
+        listIdDay = listIdDay[:-1]
         if len(lk)>1: lk.append (InlineKeyboardButton(text="همه روزها",
                                            callback_data='btn_approveAllDay_{}'.format(listIdDay)))
         N = totalInRow

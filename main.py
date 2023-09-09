@@ -517,7 +517,7 @@ def handle_new_messages(user_id, userName, update):
             elif spBtn[1] == 'approveAllDay':
                 listIdDay = str(spBtn[2]).split('#')
                 for item in listIdDay:
-                    helper.registerDay(spBtn[2],bot,user_id)
+                    helper.registerDay(item,bot,user_id)
             elif spBtn[1] == 'editProfile':
                 # آماده‌سازی دریافت اطلاعات کاربر جهت ویرایش
                 helper.editProfile(bot=bot, spBtn=spBtn, mem=tempMember)
