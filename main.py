@@ -903,6 +903,8 @@ def handle_new_messages(user_id, userName, update):
                     bot.sendMessage(user_id, str(msg.messageLib.repeatedDay.value))
             elif spBtn[1] == 'NOApproveAllShift':
                 helper.NOApproveAllShift(spBtn[2], user_id, bot)
+            elif spBtn[1] == 'yesApproveAllShift':
+                helper.yesApproveAllShift(spBtn[2],user_id,bot)
             elif spBtn[1] == 'deleteShift':
                 allShift = mydb.get_all_shift_by_creator(creator=message['chat']["id"])
                 if len(allShift) == 0:
