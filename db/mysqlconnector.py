@@ -665,23 +665,32 @@ class mysqlconnector:
         else:
             return False
 
-    def registerDayShift(self, idShift, dateShift, requster, sendedForCreator):
+    def registerDayShift(self, idShift, dateShift, requster, sendedForCreator,status=None):
         tmpIdDayShift = self.getIdRegisterDayOfShift(idShift, dateShift, requster)
         if tmpIdDayShift != 0:
             return tmpIdDayShift
         mydb = self.connector()
         myCursor = mydb.cursor()
         mydb.autocommit = True
-        sqlQuery = f'''INSERT INTO `botshiftkari`.`dayshift`
+        if status is None:
+            sqlQuery = f'''INSERT INTO `botshiftkari`.`dayshift`
 (`idShift`,
 `dateShift`,
 `requster`,
 `approveCreator`,
 `sendedForCreator`)
 VALUES({idShift},\'{dateShift}\',\'{requster}\',0,{sendedForCreator});SELECT LAST_INSERT_ID();'''
+        else:
+            sqlQuery = f'''INSERT INTO `botshiftkari`.`dayshift`
+            (`idShift`,
+            `dateShift`,
+            `requster`,
+            `approveCreator`,
+            `sendedForCreator`,status)
+            VALUES({idShift},\'{dateShift}\',\'{requster}\',0,{sendedForCreator},{status});SELECT LAST_INSERT_ID();'''
         myCursor.execute(sqlQuery)
         res = myCursor.fetchone()
-        return 0
+        return res
 
     def updateShiftDay(self, fieldName, fieldValue, idDayShift):
         mydb = self.connector()

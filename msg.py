@@ -124,3 +124,4 @@ class messageLib(Enum):
     invalidApproveDate = 'این تاریخ را قبلا تائید کرده اید.'
     reqTitleMessageForCreator = 'فردی با مشخصات ذیل درخواست پرکردن شیفتی که شما ایجاد کرده اید را داده است'
     YourInfoToCreatorShift = ' درخواست شما برای سازنده شیفت ارسال گرید در صورت تائید به شما اطلاع رسانی می گردد'
+    doYouLikeApproveRequest = 'آیا تمایل به پذیرش ذرخواست دارید؟'
