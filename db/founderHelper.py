@@ -497,6 +497,35 @@ class HelperFunder:
             bot.sendMessage(userId, msg.messageLib.sendForCreatorMessage.value,
                             reply_markup=menu.keyLib.kbCreateMenuSendForCreator(None, idShift))
 
+    def send_shift_to_other(self, bot,idshift,userId):
+        shiftRows = mydb.get_all_property_shift_byId(idshift)  # shift's for student
+        for shiftRow in shiftRows:
+                rowReq = 'درخواست دهنده: {}'.format(shiftRow[0])
+                rowDate = 'تاریخ شروع : {}'.format(shiftRow[2])
+                rowDateEnd = 'تاریخ پایان : {}'.format(shiftRow[10])
+                rowStartTime = 'ساعت شروع  : {}'.format(shiftRow[3])
+                rowEndTime = 'ساعت پایان  : {}'.format(shiftRow[4])
+                rowWage = 'حق الزحمه  : {}'.format(shiftRow[5])
+                rowaddr = 'آدرس  : {}'.format(shiftRow[6])
+                bot.sendMessage(userId, '''
+{0}
+{1}
+{7}
+{2}
+{3}
+{4}
+{5}
+{6}'''.format(rowReq, rowDate, rowStartTime, rowEndTime, rowWage, rowaddr,
+              msg.messageLib.doYouLike.value, rowDateEnd),
+                                reply_markup=menu.keyLib.kbCreateMenuShiftApproveManager(shiftId=shiftRow[9]))
+    def yesApproveAllShift(self, idShift, userId, bot):
+        creator = mydb.get_shift_property('Creator', idShift)
+        bot.sendMessage(creator, msg.messageLib.reqTitleMessageForCreator.value)
+        self.send_profile(userId, creator)
+        self.send_shift_to_other(bot,idShift,creator)
+        bot.sendMessage(userId,msg.messageLib.YourInfoToCreatorShift.value)
+
+
     def NOApproveAllShift(self, idShift, userID, bot):
         dateStart = str(mydb.get_shift_property('DateShift', idShift)).split('-')
         dateEnd = str(mydb.get_shift_property('dateEndShift', idShift)).split('-')
@@ -521,16 +550,17 @@ class HelperFunder:
                         , reply_markup=menu.keyLib.createMenuFromList(listMenu=listDay))
         bot.sendMessage(userID, str(msg.messageLib.endShiftSelection.value),
                         reply_markup=menu.keyLib.kbCreateMenuEndSelection(idShift=idShift))
-    def registerDay(self,idDay,bot,userId):
-            statusDay = mydb.getShiftDayProperty('status',idDay)
-            if statusDay == None:
-                bot.sendMessage('6274361322',f'Can not find {idDay} in id to dayshift table')
-                return
-            dateReq = mydb.getShiftDayProperty('dateShift',idDay)
-            if mydb.isShiftDayFull(idDay,dateReq)>0:
-                bot.sendMessage(userId,msg.messageLib.invalidApproveDate.value)
-                return
-            if(int(statusDay)!=2):
-                mydb.updateShiftDay(fieldName='status',fieldValue=2,idDayShift=idDay)
-                requesterShift = mydb.getShiftDayProperty('requster',idDay)
-                bot.sendMessage(requesterShift,str(msg.messageLib.approvedDay.value).format(dateReq))
+
+    def registerDay(self, idDay, bot, userId):
+        statusDay = mydb.getShiftDayProperty('status', idDay)
+        if statusDay == None:
+            bot.sendMessage('6274361322', f'Can not find {idDay} in id to dayshift table')
+            return
+        dateReq = mydb.getShiftDayProperty('dateShift', idDay)
+        if mydb.isShiftDayFull(idDay, dateReq) > 0:
+            bot.sendMessage(userId, msg.messageLib.invalidApproveDate.value)
+            return
+        if (int(statusDay) != 2):
+            mydb.updateShiftDay(fieldName='status', fieldValue=2, idDayShift=idDay)
+            requesterShift = mydb.getShiftDayProperty('requster', idDay)
+            bot.sendMessage(requesterShift, str(msg.messageLib.approvedDay.value).format(dateReq))
