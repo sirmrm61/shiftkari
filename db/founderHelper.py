@@ -539,7 +539,7 @@ class HelperFunder:
             day = dsG + timedelta(days=i)
             tmp = JalaliDate.to_jalali(day.year, day.month, day.day)
             txtTmp = str(tmp).replace('-', '.')
-            print(mydb.registerDayShift(idShift, txtTmp, requester, 0, 2))
+            mydb.registerDayShift(idShift, txtTmp, requester, 0, 2)
 
     def NOApproveAllShift(self, idShift, userID, bot):
         dateStart = str(mydb.get_shift_property('DateShift', idShift)).split('-')

@@ -395,7 +395,6 @@ class mysqlconnector:
         mycursor = mydb.cursor()
         sqlQuery = 'UPDATE `botshiftkari`.`shift` SET `{0}` = \'{1}\'  where  idshift = \'{2}\''.format(
             fieldName, fieldValue, idshift)
-        print(sqlQuery)
         mycursor.execute(sqlQuery)
         mycursor.reset()
         return None
