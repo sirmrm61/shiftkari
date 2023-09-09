@@ -978,7 +978,7 @@ def handle_new_messages(user_id, userName, update):
               msg.messageLib.doYouLikeDelete.value, rowDateEnd),
                                         reply_markup=menu.keyLib.kbCreateMenuDeleteShift(shiftId=shiftRow[9]))
             elif spBtn[1] == 'approveShiftManager':
-                mydb.shift_update_by_id('progress', 2, spBtn[2])
+                mydb.shift_update_by_id(fieldName='progress',fieldValue= 2,idshift=spBtn[2])
                 approver = mydb.get_shift_property('approver', spBtn[2])
                 bot.sendMessage(approver, msg.messageLib.shiftApprovedByManager.value)
                 helper.registerFullShiftDay(spBtn[2], approver)
