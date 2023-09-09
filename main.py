@@ -513,19 +513,11 @@ def handle_new_messages(user_id, userName, update):
                     bot.sendMessage(creatorChatID,str(msg.messageLib.senndAcceptAllDayInShift.value).format(fullName),
                                     reply_markup=menu.keyLib.kbCreateMenuShiftApproveManager(shiftId=spBtn[2]))
             elif spBtn[1] == 'dayApproveCreator':
-                statusDay = mydb.getShiftDayProperty('status',spBtn[2])
-                if statusDay == None:
-                    bot.sendMessage('6274361322',f'Can not find {spBtn[2]} in id to dayshift table')
-                    return
-                dateReq = mydb.getShiftDayProperty('dateShift',spBtn[2])
-                if mydb.isShiftDayFull(spBtn[2],dateReq)>0:
-                    bot.sendMessage(user_id,msg.messageLib.invalidApproveDate.value)
-                    return
-                if(int(statusDay)!=2):
-                    mydb.updateShiftDay(fieldName='status',fieldValue=2,idDayShift=spBtn[2])
-                    requesterShift = mydb.getShiftDayProperty('requster',spBtn[2])
-                    bot.sendMessage(requesterShift,str(msg.messageLib.approvedDay.value).format(dateReq))
-
+                helper.registerDay(spBtn[2],bot,user_id)
+            elif spBtn[1] == 'approveAllDay':
+                listIdDay = str(spBtn[2]).split('#')
+                for item in listIdDay:
+                    helper.registerDay(spBtn[2],bot,user_id)
             elif spBtn[1] == 'editProfile':
                 # آماده‌سازی دریافت اطلاعات کاربر جهت ویرایش
                 helper.editProfile(bot=bot, spBtn=spBtn, mem=tempMember)

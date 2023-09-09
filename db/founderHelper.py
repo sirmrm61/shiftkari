@@ -521,3 +521,16 @@ class HelperFunder:
                         , reply_markup=menu.keyLib.createMenuFromList(listMenu=listDay))
         bot.sendMessage(userID, str(msg.messageLib.endShiftSelection.value),
                         reply_markup=menu.keyLib.kbCreateMenuEndSelection(idShift=idShift))
+        def registerDay(self,idDay,bot,userId):
+                statusDay = mydb.getShiftDayProperty('status',idDay)
+                if statusDay == None:
+                    bot.sendMessage('6274361322',f'Can not find {idDay} in id to dayshift table')
+                    return
+                dateReq = mydb.getShiftDayProperty('dateShift',idDay)
+                if mydb.isShiftDayFull(idDay,dateReq)>0:
+                    bot.sendMessage(userId,msg.messageLib.invalidApproveDate.value)
+                    return
+                if(int(statusDay)!=2):
+                    mydb.updateShiftDay(fieldName='status',fieldValue=2,idDayShift=idDay)
+                    requesterShift = mydb.getShiftDayProperty('requster',idDay)
+                    bot.sendMessage(requesterShift,str(msg.messageLib.approvedDay.value).format(dateReq))
