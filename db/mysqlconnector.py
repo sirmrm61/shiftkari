@@ -771,3 +771,14 @@ VALUES({idShift},\'{dateShift}\',\'{requster}\',0,{sendedForCreator});SELECT LAS
         mycursor.execute(sqlQuery)
         resualt = mycursor.fetchall()
         return resualt
+    def getListMember(self, sender, group=None):
+        sqlQuery = ''
+        if group is None:
+            sqlQuery = f"SELECT chat_id FROM botshiftkari.membership where not chat_id = '{sender}'"
+        else:
+            sqlQuery = f"SELECT chat_id FROM botshiftkari.membership where not chat_id = '{sender}'  and membership_type = {group}"
+        mydb=self.connector()
+        mycursor = mydb.cursor()
+        mycursor.execute(sqlQuery)
+        result = mycursor.fetchall()
+        return result

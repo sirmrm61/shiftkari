@@ -123,6 +123,10 @@ def handle_new_messages(user_id, userName, update):
                 return
             mydb.domain_update_by_key('licenss', licenssRent)
             bot.sendMessage(user_id, str(msg.messageLib.changeLicenssSuccess.value).format(licenssRent))
+        elif 'text' in message and message['text'] == '/CancelMessage':
+            mydb.member_update_chatid('registration_progress', 10, user_id)
+            mydb.member_update_chatid('op', 0, user_id)
+            bot.sendMessage(user_id, msg.messageLib.cancelMsg.value)
         elif 'text' in message and message['text'] == '/myoperation':
             helper.send_operation(tempMember=tempMember, bot=bot, chatid=message['chat']['id'])
 
@@ -479,7 +483,23 @@ def handle_new_messages(user_id, userName, update):
             mydb.member_update_chatid('registration_progress', 10, user_id)
         elif tempMember.register_progress == 18:
             helper.regEditItem(mem=tempMember, bot=bot, newValue=message)
-
+        elif tempMember.register_progress == 19:
+            listReciver = None
+            if tempMember.op == 20:  # مدیران
+                listReciver = mydb.getListMember(user_id, 4)
+            elif tempMember.op == 21:  # موسسان
+                listReciver = mydb.getListMember(user_id, 1)
+            elif tempMember.op == 22:  # مسئولان فنی
+                listReciver = mydb.getListMember(user_id, 2)
+            elif tempMember.op == 23:  # دانشجویان
+                listReciver = mydb.getListMember(user_id, 3)
+            elif tempMember.op == 24:  # همه
+                listReciver = mydb.getListMember(user_id)
+            for item in listReciver:
+                bot.sendMessage(item[0], message['text'])
+            mydb.member_update_chatid('registration_progress', 10, user_id)
+            mydb.member_update_chatid('op', 0, user_id)
+            bot.sendMessage(user_id,msg.messageLib.sendedMessage.value)
     elif 'callback_query' in update:
         message = update['callback_query']['message']
         btn = update['callback_query']['data']
@@ -563,14 +583,25 @@ def handle_new_messages(user_id, userName, update):
                 helper.send_profile(user_id, bot)
                 helper.send_operation(tempMember, bot, user_id)
             elif spBtn[1] == 'sendMessage':
-                bot.sendMessage(user_id,msg.messageLib.whoDoYouSend.value,reply_markup=menu.keyLib.kbcreateSendMessage(chatId=user_id))
+                bot.sendMessage(user_id, msg.messageLib.whoDoYouSend.value,
+                                reply_markup=menu.keyLib.kbcreateSendMessage(chatId=user_id))
             elif spBtn[1] == 'SM':
-                if spBtn[2] == '0': #مدیران
-                    
-                if spBtn[2] == '1': #موسسان
-                if spBtn[2] == '2': #مدیران
-                if spBtn[2] == '3': #مدیران
-                if spBtn[2] == '4': #مدیران
+                if spBtn[2] == '0':  # مدیران
+                    mydb.member_update_chatid('registration_progress', 19, user_id)
+                    mydb.member_update_chatid('op', 20, user_id)
+                elif spBtn[2] == '1':  # موسسان
+                    mydb.member_update_chatid('registration_progress', 19, user_id)
+                    mydb.member_update_chatid('op', 21, user_id)
+                elif spBtn[2] == '2':  # مسئولان فنی
+                    mydb.member_update_chatid('registration_progress', 19, user_id)
+                    mydb.member_update_chatid('op', 22, user_id)
+                elif spBtn[2] == '3':  # دانشجویان
+                    mydb.member_update_chatid('registration_progress', 19, user_id)
+                    mydb.member_update_chatid('op', 23, user_id)
+                elif spBtn[2] == '4':  # همه
+                    mydb.member_update_chatid('registration_progress', 19, user_id)
+                    mydb.member_update_chatid('op', 24, user_id)
+                bot.sendMessage(user_id, msg.messageLib.msgSend.value)
             elif spBtn[1] == 'deny':
                 verification = mydb.get_member_property_chatid('verifyAdmin', spBtn[2])
                 if not (verification == 1 or verification == 3):
@@ -986,11 +1017,11 @@ def handle_new_messages(user_id, userName, update):
               msg.messageLib.doYouLikeDelete.value, rowDateEnd),
                                         reply_markup=menu.keyLib.kbCreateMenuDeleteShift(shiftId=shiftRow[9]))
             elif spBtn[1] == 'approveShiftManager':
-                mydb.shift_update_by_id(fieldName='progress',fieldValue= 2,idshift=spBtn[2])
+                mydb.shift_update_by_id(fieldName='progress', fieldValue=2, idshift=spBtn[2])
                 approver = mydb.get_shift_property('approver', spBtn[2])
                 bot.sendMessage(approver, msg.messageLib.shiftApprovedByManager.value)
                 helper.registerFullShiftDay(spBtn[2], approver)
-                bot.sendMessage(user_id,msg.messageLib.requesterNotify.value)
+                bot.sendMessage(user_id, msg.messageLib.requesterNotify.value)
             elif spBtn[1] == 'disApproveShiftManager':
                 approver = mydb.get_shift_property('approver', spBtn[2])
                 bot.sendMessage(approver, msg.messageLib.shiftDisApprovedByManager.value)
