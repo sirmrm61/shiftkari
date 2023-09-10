@@ -102,10 +102,18 @@ class keyLib:
             [InlineKeyboardButton(text='زمان مسئول', callback_data='btn_hr_{}'.format(str(chatId))),
              InlineKeyboardButton(text='حداقل دستمزد', callback_data='btn_minWage_{}'.format(str(chatId))),
              InlineKeyboardButton(text='قیمت مصوبه پروانه', callback_data='btn_licenss_{}'.format(str(chatId)))],
-            [InlineKeyboardButton(text='لیست شیفت', callback_data='btn_listSiftManager_{}'.format(str(chatId))),
+            [InlineKeyboardButton(text='ارسال پیام', callback_data='btn_sendMessage_{}'.format(str(chatId))),
+             InlineKeyboardButton(text='لیست شیفت', callback_data='btn_listSiftManager_{}'.format(str(chatId))),
              InlineKeyboardButton(text='ویرایش پروفایل', callback_data='btn_epf_{}'.format(str(chatId)))]
         ])
-
+    def kbcreateSendMessage(self=None,chatId=None):
+            return InlineKeyboardMarkup(inline_keyboard=[
+            [InlineKeyboardButton(text='مدیران', callback_data='btn_SM_0_{}'.format(str(chatId))),
+             InlineKeyboardButton(text='موسسان', callback_data='btn_SM_1_{}'.format(str(chatId)))],
+              [InlineKeyboardButton(text='مسئولان فنی', callback_data='btn_SM_2_{}'.format(str(chatId))),
+             InlineKeyboardButton(text='دانشجویان', callback_data='btn_SM_3_{}'.format(str(chatId)))],
+              [InlineKeyboardButton(text='همه', callback_data='btn_SM_4_{}'.format(str(chatId)))]
+        ])
     def kbCreateMenuYesNO(self=None, chatId=None):
         return InlineKeyboardMarkup(inline_keyboard=[
             [InlineKeyboardButton(text='بله', callback_data='btn_yes_{}'.format(str(chatId))),

@@ -17,7 +17,7 @@ listDenyOP = [
     {"pr": 18, "op": 0, "msg": "عملیات نامعتبر است"},
     {"pr": 18, "op": 16, "msg": "عملیات نامعتبر است"}
 ]
-listCommand = ['/myoperation', '/start', '/myinfo', '/changeHrStudent', '/changeMinWage', '/changeMinLicenss']
+listCommand = ['/myoperation', '/start', '/myinfo', '/changeHrStudent', '/changeMinWage', '/changeMinLicenss','/CancelMessage']
 
 
 class HelperFunder:
@@ -539,7 +539,7 @@ class HelperFunder:
             day = dsG + timedelta(days=i)
             tmp = JalaliDate.to_jalali(day.year, day.month, day.day)
             txtTmp = str(tmp).replace('-', '.')
-            print(mydb.registerDayShift(idShift, txtTmp, requester, 0, 2))
+            mydb.registerDayShift(idShift, txtTmp, requester, 0, 2)
 
     def NOApproveAllShift(self, idShift, userID, bot):
         dateStart = str(mydb.get_shift_property('DateShift', idShift)).split('-')
