@@ -562,9 +562,17 @@ def handle_new_messages(user_id, userName, update):
                 bot.sendMessage(user_id, msg.messageLib.reActive.value)
                 helper.send_profile(user_id, bot)
                 helper.send_operation(tempMember, bot, user_id)
+            elif spBtn[1] == 'sendMessage':
+                bot.sendMessage(user_id,msg.messageLib.whoDoYouSend.value,reply_markup=menu.keyLib.kbcreateSendMessage(chatId=user_id))
+            elif spBtn[1] == 'SM':
+                if spBtn[2] == '0': #مدیران
+                    
+                if spBtn[2] == '1': #موسسان
+                if spBtn[2] == '2': #مدیران
+                if spBtn[2] == '3': #مدیران
+                if spBtn[2] == '4': #مدیران
             elif spBtn[1] == 'deny':
                 verification = mydb.get_member_property_chatid('verifyAdmin', spBtn[2])
-                print(f'verification={verification}')
                 if not (verification == 1 or verification == 3):
                     bot.sendMessage(message['chat']['id'],
                                     str(msg.messageLib.descDenyAdmin.value))
