@@ -126,3 +126,4 @@ class messageLib(Enum):
     YourInfoToCreatorShift = ' درخواست شما برای سازنده شیفت ارسال گرید در صورت تائید به شما اطلاع رسانی می گردد'
     doYouLikeApproveRequest = 'آیا تمایل به پذیرش ذرخواست دارید؟'
     requesterNotify = 'به درخواست دهنده اطلاع رسانی انجام شد'
+    whoDoYouSend = 'برای چه گروهی می خواهسد پیام ارسال کنید؟'
