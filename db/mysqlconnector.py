@@ -618,7 +618,7 @@ class mysqlconnector:
         mydb = self.connector()
         mydb.autocommit = True
         myCursor = mydb.cursor()
-        sqlQuery = 'select `value` from `botshiftkari`.`domain` where `key` = \'wage\''
+        sqlQuery = 'select `value` from `botshiftkari`.`domain` where `key` = \'hrStudent\''
         myCursor.execute(sqlQuery)
         resualt = myCursor.fetchone()
         sqlQuery = '''SELECT concat(mem.name,' ',mem.last_name) as fullname,creator,

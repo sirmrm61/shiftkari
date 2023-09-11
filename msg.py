@@ -130,3 +130,4 @@ class messageLib(Enum):
     cancelMsg = 'کاربری شما از حالت ارسال پیام خارج گردید'
     whoDoYouSend = 'برای چه گروهی می خواهسد پیام ارسال کنید؟'
     sendedMessage = 'پیامی ارسالی به گروه درخواستی ارسال گردید.'
+    propertyShiftCreator = 'مشخصات ایجاد کننده شیفت.'
