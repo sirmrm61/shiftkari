@@ -464,30 +464,30 @@ def handle_new_messages(user_id, userName, update):
                         else:
                             bot.sendMessage(user_id, msg.messageLib.errorNumber.value)
                             return
-                        mydb.member_update('op', 10, message['chat']['id'])
+                        mydb.member_update('op', 7, message['chat']['id'])
                         mydb.shift_update('wage', message['text'], message['chat']['id'])
                         bot.sendMessage(message['chat']['id'],
                                         'آیا مبلغ {0} ریال بعنوان حق الزحمه صحیح است؟'.format(message['text']),
                                         reply_markup=menu.keyLib.kbCreateMenuYesNO(
                                             chatId='{}'.format(op)))
-                    if op == 11:
+                    if op == 8:
                         minWage = mydb.get_property_domain('wfStudent')
                         if str(message['text']).isnumeric():
                             if int(minWage) > int(message['text']):
                                 bot.sendMessage(user_id, str(msg.messageLib.minWFStudent.value).format(minWage))
-                                bot.sendMessage(user_id, msg.messageLib.shiftWage.value)
+                                bot.sendMessage(user_id, msg.messageLib.shiftWageStudent.value)
                                 return
                         else:
                             bot.sendMessage(user_id, msg.messageLib.errorNumber.value)
                             return
-                        mydb.member_update('op', 7, message['chat']['id'])
+                        mydb.member_update('op', 9, message['chat']['id'])
                         mydb.shift_update('wfStudent', message['text'], message['chat']['id'])
                         bot.sendMessage(message['chat']['id'],
                                         'آیا مبلغ {0} ریال بعنوان حق الزحمه دانشجو صحیح است؟'.format(message['text']),
                                         reply_markup=menu.keyLib.kbCreateMenuYesNO(
                                             chatId='{}'.format(op)))
-                    if op == 8:
-                        mydb.member_update('op', 9, message['chat']['id'])
+                    if op == 10:
+                        mydb.member_update('op', 11, message['chat']['id'])
                         rs = mydb.shift_update('pharmacyAddress', message['text'], message['chat']['id'])
                         bot.sendMessage(message['chat']['id'],
                                         'آیا آدرس {0} برای داروخانه صحیح است؟'.format(message['text']),
@@ -816,12 +816,12 @@ def handle_new_messages(user_id, userName, update):
                     bot.sendMessage(user_id, str(msg.messageLib.minWage.value).format(minWage))
                     bot.sendMessage(message['chat']['id'], msg.messageLib.shiftWage.value)
                     mydb.member_update('op', 6, message['chat']['id'])
-                if int(op) == 10:
+                if int(op) == 7:
                     wfStudent = mydb.get_property_domain('wfStudent')
                     bot.sendMessage(user_id, str(msg.messageLib.minWFStudent.value).format(minWage))
-                    bot.sendMessage(message['chat']['id'], msg.messageLib.shiftWage.value)
-                    mydb.member_update('op', 11, message['chat']['id'])
-                if int(op) == 7:
+                    bot.sendMessage(message['chat']['id'], msg.messageLib.shiftWageStudent.value)
+                    mydb.member_update('op', 8, message['chat']['id'])
+                if int(op) == 9:
                     bot.sendMessage(message['chat']['id'], msg.messageLib.pharmacyAddress.value)
                     addressPharmacy = None
                     if tempMember.membership_type == 1:
@@ -831,11 +831,11 @@ def handle_new_messages(user_id, userName, update):
                         bot.sendMessage(message['chat']['id'],
                                         'آیا آدرس {0} برای داروخانه صحیح است؟'.format(addressPharmacy),
                                         reply_markup=menu.keyLib.kbCreateMenuYesNO(
-                                            chatId='{0}_{1}'.format(9, rs[0])))
-                        mydb.member_update('op', 9, message['chat']['id'])
+                                            chatId='{0}_{1}'.format(11, rs[0])))
+                        mydb.member_update('op', 11, message['chat']['id'])
                     else:
-                        mydb.member_update('op', 8, message['chat']['id'])
-                if int(op) == 9:
+                        mydb.member_update('op', 10, message['chat']['id'])
+                if int(op) == 11:
                     # Send Shift to All Technical Responsible
                     hrSendToStudent = mydb.get_property_domain('hrStudent')
                     bot.sendMessage(message['chat']['id'],
@@ -864,14 +864,14 @@ def handle_new_messages(user_id, userName, update):
                 if int(op) == 5:
                     mydb.member_update('op', 4, message['chat']['id'])
                     bot.sendMessage(message['chat']['id'], msg.messageLib.shiftEndTime.value)
-                if int(op) == 10:
-                    mydb.member_update('op', 6, message['chat']['id'])
-                    bot.sendMessage(message['chat']['id'], msg.messageLib.shiftWage.value)
                 if int(op) == 7:
-                    mydb.member_update('op', 10, message['chat']['id'])
+                    mydb.member_update('op', 6, message['chat']['id'])
                     bot.sendMessage(message['chat']['id'], msg.messageLib.shiftWage.value)
                 if int(op) == 9:
                     mydb.member_update('op', 8, message['chat']['id'])
+                    bot.sendMessage(message['chat']['id'], msg.messageLib.shiftWageStudent.value)
+                if int(op) == 11:
+                    mydb.member_update('op', 10, message['chat']['id'])
                     bot.sendMessage(message['chat']['id'], msg.messageLib.enterPharmacyAddress.value)
             elif spBtn[1] == 'listSift':
                 allShift = mydb.get_all_shift_by_creator(creator=message['chat']["id"])
