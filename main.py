@@ -471,7 +471,7 @@ def handle_new_messages(user_id, userName, update):
                                         reply_markup=menu.keyLib.kbCreateMenuYesNO(
                                             chatId='{}'.format(op)))
                     if op == 8:
-                        minWage = mydb.get_property_domain('wfStudent')
+                        minWage = mydb.get_property_domain('studentWage')
                         if str(message['text']).isnumeric():
                             if int(minWage) > int(message['text']):
                                 bot.sendMessage(user_id, str(msg.messageLib.minWFStudent.value).format(minWage))
@@ -820,7 +820,7 @@ def handle_new_messages(user_id, userName, update):
                     bot.sendMessage(message['chat']['id'], msg.messageLib.shiftWage.value)
                     mydb.member_update('op', 6, message['chat']['id'])
                 if int(op) == 7:
-                    wfStudent = mydb.get_property_domain('wfStudent')
+                    wfStudent = mydb.get_property_domain('studentWage')
                     bot.sendMessage(user_id, str(msg.messageLib.minWFStudent.value).format(minWage))
                     bot.sendMessage(message['chat']['id'], msg.messageLib.shiftWageStudent.value)
                     mydb.member_update('op', 8, message['chat']['id'])
