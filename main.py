@@ -799,7 +799,7 @@ def handle_new_messages(user_id, userName, update):
                 #todo: remove print
                 print(f'int(op) - int(opBtn)={int(op) - int(opBtn)}')
                 print(f'op={op}')
-                print(f'op={op}')
+                print(f'opBtn={opBtn}')
                 if (int(op) - int(opBtn)) > 1:
                     bot.sendMessage(user_id, msg.messageLib.erroOnBack.value)
                 if int(op) == 1:  # تاریخ پایان شیفت بعدا اضافه شد
