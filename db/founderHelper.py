@@ -18,7 +18,7 @@ listDenyOP = [
     {"pr": 18, "op": 16, "msg": "عملیات نامعتبر است"}
 ]
 listCommand = ['/myoperation', '/start', '/myinfo', '/changeHrStudent', '/changeMinWage', '/changeMinLicenss',
-               '/CancelMessage','/changeWFS']
+               '/CancelMessage', '/changeWFS']
 
 
 class HelperFunder:
@@ -129,18 +129,17 @@ class HelperFunder:
             rowWage = 'حق الزحمه  : {}'.format(shiftRow[5])
         elif memberType == 3:
             rowWage = 'حق الزحمه  : {}'.format(shiftRow[11])
-        if memberType is None: rowWage += 'حق الزحمه دانشجو  : {}\n'.format(shiftRow[11])
+        if memberType is None: rowWage += '{} حق الزحمه دانشجو  : {}'.format('\n', shiftRow[11])
         rowaddr = 'آدرس  : {}'.format(shiftRow[6])
         return '''
 {0}
 {1}
-{7}
+{6}
 {2}
 {3}
 {4}
 {5}
-{6}'''.format(rowReq, rowDate, rowStartTime, rowEndTime, rowWage, rowaddr,
-              msg.messageLib.doYouLike.value, rowDateEnd)
+'''.format(rowReq, rowDate, rowStartTime, rowEndTime, rowWage, rowaddr, rowDateEnd)
 
     def send_list_shift_Cancel(self, chatId, bot, todayDate):
         shifts = mydb.get_all_shift_by_approver(chatId, todayDate)
