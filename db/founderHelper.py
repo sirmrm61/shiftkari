@@ -17,7 +17,8 @@ listDenyOP = [
     {"pr": 18, "op": 0, "msg": "عملیات نامعتبر است"},
     {"pr": 18, "op": 16, "msg": "عملیات نامعتبر است"}
 ]
-listCommand = ['/myoperation', '/start', '/myinfo', '/changeHrStudent', '/changeMinWage', '/changeMinLicenss','/CancelMessage']
+listCommand = ['/myoperation', '/start', '/myinfo', '/changeHrStudent', '/changeMinWage', '/changeMinLicenss',
+               '/CancelMessage','/changeWFS']
 
 
 class HelperFunder:
@@ -118,20 +119,19 @@ class HelperFunder:
             bot.sendMessage(chatid, msg.messageLib.yourOperation.value,
                             reply_markup=menu.keyLib.kbCreateMenuManager(chatId=chatid))
 
-    def send_list_shift_Cancel(self, chatId, bot, todayDate):
-        shifts = mydb.get_all_shift_by_approver(chatId, todayDate)
-        if len(shifts) == 0:
-            bot.sendMessage(chatId, msg.messageLib.emptyList.value)
-        else:
-            for shiftRow in shifts:
-                rowReq = 'درخواست دهنده: {}'.format(shiftRow[0])
-                rowDate = 'تاریخ شروع : {}'.format(shiftRow[2])
-                rowDateEnd = 'تاریخ پایان : {}'.format(shiftRow[10])
-                rowStartTime = 'ساعت شروع  : {}'.format(shiftRow[3])
-                rowEndTime = 'ساعت پایان  : {}'.format(shiftRow[4])
-                rowWage = 'حق الزحمه  : {}'.format(shiftRow[5])
-                rowaddr = 'آدرس  : {}'.format(shiftRow[6])
-                bot.sendMessage(chatId, '''
+    def formatShiftMessage(self, shiftRow, memberType=None):
+        rowReq = 'درخواست دهنده: {}'.format(shiftRow[0])
+        rowDate = 'تاریخ شروع : {}'.format(shiftRow[2])
+        rowDateEnd = 'تاریخ پایان : {}'.format(shiftRow[10])
+        rowStartTime = 'ساعت شروع  : {}'.format(shiftRow[3])
+        rowEndTime = 'ساعت پایان  : {}'.format(shiftRow[4])
+        if memberType != 3:
+            rowWage = 'حق الزحمه  : {}'.format(shiftRow[5])
+        elif memberType == 3:
+            rowWage = 'حق الزحمه  : {}'.format(shiftRow[11])
+        if memberType is None: rowWage += 'حق الزحمه دانشجو  : {}\n'.format(shiftRow[11])
+        rowaddr = 'آدرس  : {}'.format(shiftRow[6])
+        return '''
 {0}
 {1}
 {7}
@@ -140,7 +140,15 @@ class HelperFunder:
 {4}
 {5}
 {6}'''.format(rowReq, rowDate, rowStartTime, rowEndTime, rowWage, rowaddr,
-              msg.messageLib.doYouLike.value, rowDateEnd),
+              msg.messageLib.doYouLike.value, rowDateEnd)
+
+    def send_list_shift_Cancel(self, chatId, bot, todayDate):
+        shifts = mydb.get_all_shift_by_approver(chatId, todayDate)
+        if len(shifts) == 0:
+            bot.sendMessage(chatId, msg.messageLib.emptyList.value)
+        else:
+            for shiftRow in shifts:
+                bot.sendMessage(chatId, self.formatShiftMessage(shiftRow, 0),
                                 reply_markup=menu.keyLib.kbCreateMenuCancelShift(shiftId=shiftRow[9]))
 
     def validate_IR_national_id(self, national_id):
@@ -174,49 +182,18 @@ class HelperFunder:
         shiftRow = mydb.get_all_property_shift_byId(idshift)
         ts = mydb.get_all_ts_chatid(creator)
         for t in ts:
-            rowReq = 'درخواست دهنده: {}'.format(shiftRow[0])
-            rowDate = 'تاریخ شروع : {}'.format(shiftRow[2])
-            rowDateEnd = 'تاریخ پایان : {}'.format(shiftRow[10])
-            rowStartTime = 'ساعت شروع  : {}'.format(shiftRow[3])
-            rowEndTime = 'ساعت پایان  : {}'.format(shiftRow[4])
-            rowWage = 'حق الزحمه  : {}'.format(shiftRow[5])
-            rowaddr = 'آدرس  : {}'.format(shiftRow[6])
-            bot.sendMessage(t[0], '''
-{0}
-{1}
-{7}
-{2}
-{3}
-{4}
-{5}
-{6}'''.format(rowReq, rowDate, rowStartTime, rowEndTime, rowWage, rowaddr,
-              msg.messageLib.doYouLike.value, rowDateEnd),
+            bot.sendMessage(t[0], self.formatShiftMessage(shiftRow, 2),
                             reply_markup=menu.keyLib.kbCreateMenuApproveShift(shiftId=shiftRow[9]))
 
     def send_shift_to_student(self, bot):
         shiftRows = mydb.get_list_shift_for_student()  # shift's for student
-        students = mydb.get_all_student_chatid()  # 3 is tpe of student
-        for shiftRow in shiftRows:
-            for st in students:
-                mydb.shift_update_by_id(fieldName='send', fieldValue=1, idshift=shiftRow[9])
-                rowReq = 'درخواست دهنده: {}'.format(shiftRow[0])
-                rowDate = 'تاریخ شروع : {}'.format(shiftRow[2])
-                rowDateEnd = 'تاریخ پایان : {}'.format(shiftRow[10])
-                rowStartTime = 'ساعت شروع  : {}'.format(shiftRow[3])
-                rowEndTime = 'ساعت پایان  : {}'.format(shiftRow[4])
-                rowWage = 'حق الزحمه  : {}'.format(shiftRow[5])
-                rowaddr = 'آدرس  : {}'.format(shiftRow[6])
-                bot.sendMessage(st[0], '''
-{0}
-{1}
-{7}
-{2}
-{3}
-{4}
-{5}
-{6}'''.format(rowReq, rowDate, rowStartTime, rowEndTime, rowWage, rowaddr,
-              msg.messageLib.doYouLike.value, rowDateEnd),
-                                reply_markup=menu.keyLib.kbCreateMenuApproveShift(shiftId=shiftRow[9]))
+        if len(shiftRows) > 0:
+            students = mydb.get_all_student_chatid()  # 3 is tpe of student
+            for shiftRow in shiftRows:
+                for st in students:
+                    mydb.shift_update_by_id(fieldName='send', fieldValue=1, idshift=shiftRow[9])
+                    bot.sendMessage(st[0], self.formatShiftMessage(shiftRow, 3),
+                                    reply_markup=menu.keyLib.kbCreateMenuApproveShift(shiftId=shiftRow[9]))
 
     def send_profile(self, chatid, bot, forUser=None):
         fuser = None
@@ -461,28 +438,11 @@ class HelperFunder:
         if len(shiftRows) > 0:
             for shiftRow in shiftRows:
                 listNotEmptyDay = mydb.getListDayIsNotEmpty(shiftRow[9])
-                dateStr = 'تاریخ های پر شده از این شیفت:\n'
+                dateStr = '\nتاریخ های پر شده از این شیفت:\n'
                 if len(listNotEmptyDay) > 0:
                     for item in listNotEmptyDay:
                         dateStr += item[1] + ','
-                rowReq = 'درخواست دهنده: {}'.format(shiftRow[0])
-                rowDate = 'تاریخ شروع : {}'.format(shiftRow[2])
-                rowDateEnd = 'تاریخ پایان : {}'.format(shiftRow[10])
-                rowStartTime = 'ساعت شروع  : {}'.format(shiftRow[3])
-                rowEndTime = 'ساعت پایان  : {}'.format(shiftRow[4])
-                rowWage = 'حق الزحمه  : {}'.format(shiftRow[5])
-                rowaddr = 'آدرس  : {}'.format(shiftRow[6])
-                bot.sendMessage(chatId, '''
-{0}
-{1}
-{7}
-{2}
-{3}
-{4}
-{5}
-{6}
-{8}'''.format(rowReq, rowDate, rowStartTime, rowEndTime, rowWage, rowaddr,
-              msg.messageLib.doYouLike.value, rowDateEnd, dateStr),
+                bot.sendMessage(chatId, self.formatShiftMessage(shiftRow) + dateStr,
                                 reply_markup=menu.keyLib.kbCreateMenuApproveShift(shiftId=shiftRow[9]))
         else:
             bot.sendMessage(chatId, msg.messageLib.noShift.value)
@@ -497,29 +457,13 @@ class HelperFunder:
             bot.sendMessage(userId, msg.messageLib.sendForCreatorMessage.value,
                             reply_markup=menu.keyLib.kbCreateMenuSendForCreator(None, idShift))
 
-    def send_shift_to_other(self, bot, idshift, userId):
+    def send_shift_to_other(self, bot, idshift, userId, typeMember=2):
         shiftRow = mydb.get_all_property_shift_byId(idshift)  # shift's for student
-        rowReq = 'درخواست دهنده: {}'.format(shiftRow[0])
-        rowDate = 'تاریخ شروع : {}'.format(shiftRow[2])
-        rowDateEnd = 'تاریخ پایان : {}'.format(shiftRow[10])
-        rowStartTime = 'ساعت شروع  : {}'.format(shiftRow[3])
-        rowEndTime = 'ساعت پایان  : {}'.format(shiftRow[4])
-        rowWage = 'حق الزحمه  : {}'.format(shiftRow[5])
-        rowaddr = 'آدرس  : {}'.format(shiftRow[6])
-        bot.sendMessage(userId, '''
-{0}
-{1}
-{7}
-{2}
-{3}
-{4}
-{5}
-{6}'''.format(rowReq, rowDate, rowStartTime, rowEndTime, rowWage, rowaddr,
-              msg.messageLib.doYouLikeApproveRequest.value, rowDateEnd),
+        bot.sendMessage(userId, self.formatShiftMessage(shiftRow, typeMember),
                         reply_markup=menu.keyLib.kbCreateMenuShiftApproveManager(shiftId=shiftRow[9]))
 
     def yesApproveAllShift(self, idShift, userId, bot):
-        mydb.shift_update_by_id('approver', userId,idShift)
+        mydb.shift_update_by_id('approver', userId, idShift)
         creator = mydb.get_shift_property('Creator', idShift)
         bot.sendMessage(creator, msg.messageLib.reqTitleMessageForCreator.value)
         self.send_profile(userId, bot, creator)

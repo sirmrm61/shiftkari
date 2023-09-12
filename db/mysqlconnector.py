@@ -449,7 +449,7 @@ class mysqlconnector:
         print(sqlQuery)
         mycursor.execute(sqlQuery)
         resualt = mycursor.fetchall()
-        return resualt;
+        return resualt
 
     def get_all_shift_by_creator(self=None, creator=0):
         mydb = self.connector()
@@ -457,13 +457,13 @@ class mysqlconnector:
         mycursor = mydb.cursor()
         sqlQuery = '''SELECT concat(mem.name,mem.last_name) as fullname,creator,
                         DateShift,startTime,endTime,wage,pharmacyAddress,progress,approver,shi.idshift,
-                        shi.dateEndShift
+                        shi.dateEndShift,shi.wfStudent
                         FROM botshiftkari.shift shi inner join botshiftkari.membership mem on
                          mem.chat_id = shi.Creator where  shi.creator = '{0}' and (shi.progress=1 or shi.progress=2) and shi.del=0'''.format(
             creator)
         mycursor.execute(sqlQuery)
         resualt = mycursor.fetchall()
-        return resualt;
+        return resualt
 
     def get_all_shift_manager(self=None):
         mydb = self.connector()
@@ -471,7 +471,7 @@ class mysqlconnector:
         mycursor = mydb.cursor()
         sqlQuery = '''SELECT concat(mem.name,mem.last_name) as fullname,creator,
                         DateShift,startTime,endTime,wage,pharmacyAddress,progress,approver,shi.idshift,
-                        shi.dateEndShift
+                        shi.dateEndShift,shi.wfStudent
                         FROM botshiftkari.shift shi inner join botshiftkari.membership mem on
                          mem.chat_id = shi.Creator and shi.del=0 '''
         mycursor.execute(sqlQuery)
@@ -484,7 +484,7 @@ class mysqlconnector:
         mycursor = mydb.cursor()
         sqlQuery = '''SELECT concat(mem.name,mem.last_name) as fullname,creator,
                         DateShift,startTime,endTime,wage,pharmacyAddress,progress,approver,shi.idshift,
-                        shi.dateEndShift
+                        shi.dateEndShift,shi.wfStudent
                         FROM botshiftkari.shift shi inner join botshiftkari.membership mem on
                          mem.chat_id = shi.Creator where progress = 1 and shi.del = 0'''
         mycursor.execute(sqlQuery)
@@ -497,7 +497,7 @@ class mysqlconnector:
         mycursor = mydb.cursor()
         sqlQuery = '''SELECT concat(mem.name,mem.last_name) as fullname,creator,
                         DateShift,startTime,endTime,wage,pharmacyAddress,progress,approver,shi.idshift,
-                        shi.dateEndShift
+                        shi.dateEndShift,shi.wfStudent
                         FROM botshiftkari.shift shi inner join botshiftkari.membership mem on
                          mem.chat_id = shi.Creator where progress = 2 and shi.del = 0'''
         mycursor.execute(sqlQuery)
@@ -541,7 +541,7 @@ class mysqlconnector:
         mycursor = mydb.cursor()
         sqlQuery = '''SELECT concat(mem.name,mem.last_name) as fullname,creator,
                         DateShift,startTime,endTime,wage,pharmacyAddress,progress,approver,shi.idshift,
-                        shi.dateEndShift
+                        shi.dateEndShift,shi.wfStudent
                         FROM botshiftkari.shift shi inner join botshiftkari.membership mem on
                          mem.chat_id = shi.Creator where  shi.approver = '{0}' and shi.DateShift> '{1}'
                           and (shi.progress=3 or shi.progress=4) and shi.del=0'''.format(creator, dateShift)
@@ -555,7 +555,7 @@ class mysqlconnector:
         mycursor = mydb.cursor()
         sqlQuery = '''SELECT concat(mem.name,mem.last_name) as fullname,creator,
                         DateShift,startTime,endTime,wage,pharmacyAddress,progress,approver,shi.idshift,
-                        shi.dateEndShift
+                        shi.dateEndShift,shi.wfStudent
                         FROM botshiftkari.shift shi inner join botshiftkari.membership mem on
                          mem.chat_id = shi.Creator where  shi.idshift={0}'''.format(idshift)
         mycursor.execute(sqlQuery)
@@ -615,6 +615,7 @@ class mysqlconnector:
         return False
 
     def get_list_shift_for_student(self):
+        # send تعیین می کند که آیا برای دانشجویان ارسال شده اس قبلا
         mydb = self.connector()
         mydb.autocommit = True
         myCursor = mydb.cursor()
@@ -623,7 +624,7 @@ class mysqlconnector:
         resualt = myCursor.fetchone()
         sqlQuery = '''SELECT concat(mem.name,' ',mem.last_name) as fullname,creator,
                         DateShift,startTime,endTime,wage,pharmacyAddress,progress,approver,shi.idshift,
-                        shi.dateEndShift
+                        shi.dateEndShift,shi.wfStudent
                         FROM botshiftkari.shift shi inner join botshiftkari.membership mem on
                          mem.chat_id = shi.Creator where `progress` > '0'  and    `progress` < '3'  and 
                          `send` = 0 and  date_add(shi.dateRegiter,interval {0} HOUR)<now()'''.format(
