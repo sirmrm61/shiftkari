@@ -980,6 +980,7 @@ def handle_new_messages(user_id, userName, update):
             elif spBtn[1] == 'confirmDelete':  # تائیدیه پاک کردن شیفت توسط مدیر سیستم
                 mydb.shift_update_by_id(fieldName='del', fieldValue='1', idshift=spBtn[2])
                 listDay = mydb.getListDayIsNotEmpty(spBtn[2], None)
+
                 for item in listDay:
                     bot.sendMessage(item[2], str(msg.messageLib.cancelShiftFromCreator.value).format(item[1]))
                 bot.sendMessage(user_id, msg.messageLib.delShiftMessage.value)

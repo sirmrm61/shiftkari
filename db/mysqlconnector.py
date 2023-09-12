@@ -773,7 +773,7 @@ VALUES({idShift},\'{dateShift}\',\'{requster}\',0,{sendedForCreator});SELECT LAS
     def getListDayIsNotEmpty(self, idShift, status=2):
         mydb = self.connector()
         mycursor = mydb.cursor()
-        sqlQuery = f'SELECT iddayShift,dateShift from botshiftkari.dayshift  where  idShift={idShift}'
+        sqlQuery = f'SELECT iddayShift,dateShift,requster from botshiftkari.dayshift  where  idShift={idShift}'
         if status is not None:
             sqlQuery += f' and status= {status} '
         mycursor.execute(sqlQuery)
