@@ -765,13 +765,15 @@ VALUES({idShift},\'{dateShift}\',\'{requster}\',0,{sendedForCreator});SELECT LAS
         mydb.autocommit = True
         sqlQuery = f'delete from botshiftkari.dayshift  where  iddayShift={idDayShift} and status = 0 '
         mycursor.execute(sqlQuery)
-    def getListDayIsNotEmpty(self,idShift):
+    def getListDayIsNotEmpty(self,idShift,status=2):
         mydb = self.connector()
         mycursor = mydb.cursor()
-        sqlQuery = f'SELECT iddayShift,dateShift from botshiftkari.dayshift  where  idShift={idShift} and status= 2 '
+        sqlQuery = f'SELECT iddayShift,dateShift from botshiftkari.dayshift  where  idShift={idShift}'
+        if status is not None:
+            sqlQuery += f' and status= {status} '
         mycursor.execute(sqlQuery)
         resualt = mycursor.fetchall()
-        return resualt
+
     def getListMember(self, sender, group=None):
         sqlQuery = ''
         if group is None:

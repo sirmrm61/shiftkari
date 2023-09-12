@@ -796,7 +796,7 @@ def handle_new_messages(user_id, userName, update):
                     return
                 opBtn = int(spBtn[2])
                 op = mydb.get_member_property_chatid('op', message['chat']['id'])
-                #todo: remove print
+                # todo: remove print
                 print(f'int(op) - int(opBtn)={int(op) - int(opBtn)}')
                 print(f'op={op}')
                 print(f'opBtn={opBtn}')
@@ -877,12 +877,12 @@ def handle_new_messages(user_id, userName, update):
                     mydb.member_update('op', 10, message['chat']['id'])
                     bot.sendMessage(message['chat']['id'], msg.messageLib.enterPharmacyAddress.value)
             elif spBtn[1] == 'listSift':
-                allShift = mydb.get_all_shift_by_creator(creator=message['chat']["id"])
+                allShift = mydb.get_all_shift_by_creator(creator=user_id)
                 if len(allShift) == 0:
-                    bot.sendMessage(message['chat']["id"], msg.messageLib.emptyList.value)
+                    bot.sendMessage(user_id, msg.messageLib.emptyList.value)
                 else:
                     for shiftRow in allShift:
-                        bot.sendMessage(message['chat']["id"], helper.formatShiftMessage(shiftRow))
+                        bot.sendMessage(user_id, helper.formatShiftMessage(shiftRow))
             elif spBtn[1] == 'epf':
                 bot.sendMessage(user_id, msg.messageLib.editMessag.value)
                 helper.send_profile(chatid=user_id, bot=bot)
@@ -970,7 +970,8 @@ def handle_new_messages(user_id, userName, update):
                     bot.sendMessage(message['chat']["id"], msg.messageLib.emptyList.value)
                 else:
                     for shiftRow in allShift:
-                        bot.sendMessage(message['chat']["id"],helper.formatShiftMessage(shiftRow),
+                        bot.sendMessage(message['chat']["id"], helper.formatShiftMessage(shiftRow) +
+                                        msg.messageLib.deleteMessage.value,
                                         reply_markup=menu.keyLib.kbCreateMenuDeleteShift(shiftId=shiftRow[9]))
             elif spBtn[1] == 'DeleteShiftList':  # فشردن دکمه حذف شیفت
                 # todo: اگر شیفت پر است برای افرادی که شیف را پر کرده اند پیام بفرستد
@@ -978,7 +979,10 @@ def handle_new_messages(user_id, userName, update):
                                 reply_markup=menu.keyLib.kbCreateMenuConfirmDelete(shiftId=spBtn[2]))
             elif spBtn[1] == 'confirmDelete':  # تائیدیه پاک کردن شیفت توسط مدیر سیستم
                 mydb.shift_update_by_id(fieldName='del', fieldValue='1', idshift=spBtn[2])
-                bot.sendMessage(message['chat']['id'], msg.messageLib.delShiftMessage.value)
+                listDay = mydb.getListDayIsNotEmpty(spBtn[2], None)
+                for item in listDay:
+                    bot.sendMessage(item[2], str(msg.messageLib.cancelShiftFromCreator.value).format(item[1]))
+                bot.sendMessage(user_id, msg.messageLib.delShiftMessage.value)
             elif spBtn[1] == 'listSiftManager':
                 allShift = mydb.get_all_shift_manager()
                 if len(allShift) == 0:
@@ -986,8 +990,7 @@ def handle_new_messages(user_id, userName, update):
                 else:
                     bot.sendMessage(message['chat']["id"], msg.messageLib.diver.value)
                     for shiftRow in allShift:
-                        bot.sendMessage(message['chat']["id"],helper.formatShiftMessage(shiftRow),
-                                        reply_markup=menu.keyLib.kbCreateMenuDeleteShift(shiftId=shiftRow[9]))
+                        bot.sendMessage(message['chat']["id"], helper.formatShiftMessage(shiftRow))
             elif spBtn[1] == 'approveShiftManager':
                 mydb.shift_update_by_id(fieldName='progress', fieldValue=2, idshift=spBtn[2])
                 approver = mydb.get_shift_property('approver', spBtn[2])
