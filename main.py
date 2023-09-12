@@ -775,7 +775,6 @@ def handle_new_messages(user_id, userName, update):
                         # send message to user
                         bot.sendMessage(user_id, msg.messageLib.afterEdit.value,
                                         reply_markup=menu.keyLib.kbVerifyEditProfile(self=None, tag=user_id))
-
                 elif spBtn[3] == '5':
                     year = mydb.get_student_property(fieldName='end_date', chatid=user_id)
                     mydb.student_update('end_date', '{0}{1}'.format(year, spBtn[2]), user_id)
@@ -797,14 +796,18 @@ def handle_new_messages(user_id, userName, update):
                     return
                 opBtn = int(spBtn[2])
                 op = mydb.get_member_property_chatid('op', message['chat']['id'])
+                #todo: remove print
+                print(f'int(op) - int(opBtn)={int(op) - int(opBtn)}')
+                print(f'op={op}')
+                print(f'op={op}')
                 if (int(op) - int(opBtn)) > 1:
                     bot.sendMessage(user_id, msg.messageLib.erroOnBack.value)
                 if int(op) == 1:  # تاریخ پایان شیفت بعدا اضافه شد
                     bot.sendMessage(message['chat']['id'], msg.messageLib.enterDateEnd.value)
                     bot.sendMessage(chat_id=user_id, parse_mode='HTML', text='سال را کنید',
                                     reply_markup=menu.keyLib.kbCreateMenuYear(tag='2_{}'.format(spBtn[2])))
-                    mydb.member_update('op', 11, message['chat']['id'])
-                if int(op) == 11:
+                    mydb.member_update('op', 13, message['chat']['id'])
+                if int(op) == 13:
                     bot.sendMessage(message['chat']['id'], msg.messageLib.shiftStartTime.value)
                     mydb.member_update('op', 2, message['chat']['id'])
                 if int(op) == 3:
