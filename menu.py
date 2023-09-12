@@ -104,6 +104,9 @@ class keyLib:
              InlineKeyboardButton(text='حداقل دستمزد', callback_data='btn_minWage_{}'.format(str(chatId))),],
              [InlineKeyboardButton(text='حداقل دستمزد دانشجو', callback_data='btn_minWFStudent_{}'.format(str(chatId))),
               InlineKeyboardButton(text='قیمت مصوبه پروانه', callback_data='btn_licenss_{}'.format(str(chatId)))],
+            [InlineKeyboardButton(text='ساعت تشخیص شیفت اضطراری', callback_data='btn_shiftEMHr_{}'.format(str(chatId)))],
+            [InlineKeyboardButton(text='دوره شیفت اضطراری',callback_data='btn_shiftPD_{}'.format(str(chatId)))],
+            [InlineKeyboardButton(text='تعداد شیفت اضطراری', callback_data='btn_shiftPD_{}'.format(str(chatId)))],
             [InlineKeyboardButton(text='ارسال پیام', callback_data='btn_sendMessage_{}'.format(str(chatId))),
              InlineKeyboardButton(text='لیست شیفت', callback_data='btn_listSiftManager_{}'.format(str(chatId))),
              InlineKeyboardButton(text='ویرایش پروفایل', callback_data='btn_epf_{}'.format(str(chatId)))]
