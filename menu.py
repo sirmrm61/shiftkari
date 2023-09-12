@@ -135,8 +135,8 @@ class keyLib:
 
     def kbCreateMenuDeleteShift(self=None, shiftId=None):
         return InlineKeyboardMarkup(inline_keyboard=[
-            [InlineKeyboardButton(text='بله'
-                                       ' ', callback_data='btn_DeleteShiftList_{}'.format(str(shiftId)))]
+            [InlineKeyboardButton(text='بله', callback_data='btn_DeleteShiftList_{}'.format(str(shiftId))),
+             InlineKeyboardButton(text='خیر', callback_data='btn_noDeleteShiftList_{}'.format(str(shiftId)))]
         ])
 
     def kbCreateMenuShiftApproveManager(self=None, shiftId=None):
