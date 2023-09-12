@@ -820,7 +820,7 @@ def handle_new_messages(user_id, userName, update):
                     bot.sendMessage(message['chat']['id'], msg.messageLib.shiftWage.value)
                     mydb.member_update('op', 6, message['chat']['id'])
                 if int(op) == 7:
-                    wfStudent = mydb.get_property_domain('studentWage')
+                    minWage = mydb.get_property_domain('studentWage')
                     bot.sendMessage(user_id, str(msg.messageLib.minWFStudent.value).format(minWage))
                     bot.sendMessage(message['chat']['id'], msg.messageLib.shiftWageStudent.value)
                     mydb.member_update('op', 8, message['chat']['id'])
