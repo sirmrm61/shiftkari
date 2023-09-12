@@ -123,6 +123,33 @@ def handle_new_messages(user_id, userName, update):
                 return
             mydb.domain_update_by_key('studentWage', wage)
             bot.sendMessage(user_id, str(msg.messageLib.changeWageSuccess.value).format(wage))
+        elif 'text' in message and str(message['text']).lower().startswith('/changeShiftEmHr'.lower()):
+            emhr = None
+            try:
+                emhr = int(str(message['text'])[16:])
+            except:
+                bot.sendMessage(user_id, msg.messageLib.erroCommand.value)
+                return
+            mydb.domain_update_by_key('hrEmShift', emhr)
+            bot.sendMessage(user_id, str(msg.messageLib.changeShiftEmHr.value).format(emhr))
+        elif 'text' in message and str(message['text']).lower().startswith('/changePDEM'.lower()):
+            PDEM = None
+            try:
+                PDEM = int(str(message['text'])[11:])
+            except:
+                bot.sendMessage(user_id, msg.messageLib.erroCommand.value)
+                return
+            mydb.domain_update_by_key('PDEM', PDEM)
+            bot.sendMessage(user_id, str(msg.messageLib.chandePDEM.value).format(PDEM))
+        elif 'text' in message and str(message['text']).lower().startswith('/changeTPDEM'.lower()):
+            TSPDEM = None
+            try:
+                TSPDEM = int(str(message['text'])[12:])
+            except:
+                bot.sendMessage(user_id, msg.messageLib.erroCommand.value)
+                return
+            mydb.domain_update_by_key('TSPDEM', TSPDEM)
+            bot.sendMessage(user_id, str(msg.messageLib.chageTSPDEM.value).format(TSPDEM))
         elif 'text' in message and str(message['text']).lower().startswith('/changeMinLicenss'.lower()):
             licenssRent = None
             try:
@@ -589,6 +616,13 @@ def handle_new_messages(user_id, userName, update):
                                     reply_markup=menu.keyLib.kbCreateApproveKey(chat_id=user_id))
                 bot.sendMessage(user_id, msg.messageLib.sendToAdminMessage.value)
                 # todo: send To Admin
+            elif spBtn[1] == 'shiftEMHr':
+                hrEmShift = mydb.get_property_domain('hrEmShift')
+                bot.sendMessage(user_id, str(msg.messageLib.shiftEMHrLabel.value).format(hrEmShift))
+            elif spBtn[1] == 'shiftPD':
+                TSPDEM = mydb.get_property_domain('TSPDEM')
+                PDEM = mydb.get_property_domain('PDEM')
+                bot.sendMessage(user_id, str(msg.messageLib.pdLabel.value).format(PDEM,TSPDEM))
             elif spBtn[1] == 'minWFStudent':
                 studentWage = mydb.get_property_domain('studentWage')
                 bot.sendMessage(user_id, str(msg.messageLib.wfStudenMessage.value).format(studentWage))
