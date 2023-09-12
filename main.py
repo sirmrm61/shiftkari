@@ -492,7 +492,7 @@ def handle_new_messages(user_id, userName, update):
                         bot.sendMessage(message['chat']['id'],
                                         'آیا آدرس {0} برای داروخانه صحیح است؟'.format(message['text']),
                                         reply_markup=menu.keyLib.kbCreateMenuYesNO(
-                                            chatId='{0}_{1}'.format(9, rs[0])))
+                                            chatId='{0}_{1}'.format(11, rs[0])))
         elif tempMember.register_progress == 15:
             if tempMember.membership_type == 4:
                 chatIdUser = mydb.get_member_property_Adminchatid(fieldName='chat_id', chatid=message['chat']['id'])
@@ -591,7 +591,7 @@ def handle_new_messages(user_id, userName, update):
                 # todo: send To Admin
             elif spBtn[1] == 'minWFStudent':
                 studentWage = mydb.get_property_domain('studentWage')
-                bot.sendMessage(user_id, str(msg.messageLib.changeHour.value).format(studentWage))
+                bot.sendMessage(user_id, str(msg.messageLib.wfStudenMessage.value).format(studentWage))
             elif spBtn[1] == 'hr':
                 hr = mydb.get_property_domain('hrStudent')
                 bot.sendMessage(user_id, str(msg.messageLib.changeHour.value).format(hr))
