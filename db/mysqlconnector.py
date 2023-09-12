@@ -212,8 +212,9 @@ class mysqlconnector:
             return resualt[0]
 
     def get_member_property_Adminchatid(self, fieldName, chatid):
-        sqlQuery = 'select `{1}` from `botshiftkari`.`membership` where registration_progress = 15 and  adminChatId = \'{0}\''.format(chatid,
-                                                                                                       fieldName)
+        sqlQuery = 'select `{1}` from `botshiftkari`.`membership` where registration_progress = 15 and  adminChatId = \'{0}\''.format(
+            chatid,
+            fieldName)
         mydb = self.connector()
         mydb.autocommit = True
         mycursor = mydb.cursor()
@@ -665,7 +666,7 @@ class mysqlconnector:
         else:
             return False
 
-    def registerDayShift(self, idShift, dateShift, requster, sendedForCreator,status=None):
+    def registerDayShift(self, idShift, dateShift, requster, sendedForCreator, status=None):
         tmpIdDayShift = self.getIdRegisterDayOfShift(idShift, dateShift, requster)
         if tmpIdDayShift != 0:
             return tmpIdDayShift
@@ -701,16 +702,18 @@ VALUES({idShift},\'{dateShift}\',\'{requster}\',0,{sendedForCreator});SELECT LAS
         myCursor.execute(sqlQuery)
         myCursor.reset()
         return None
-    def getShiftDayProperty(self,fieldName,idDayShift):
+
+    def getShiftDayProperty(self, fieldName, idDayShift):
         mydb = self.connector()
         mycursor = mydb.cursor()
         sqlQuery = f'SELECT {fieldName} from botshiftkari.dayshift  where  idDayShift={idDayShift}'
         mycursor.execute(sqlQuery)
         resualt = mycursor.fetchone()
-        if resualt==None:
+        if resualt == None:
             return None
         else:
             return resualt[0]
+
     def getEmptyDayOfShift(self, idShift):
         mydb = self.connector()
         mycursor = mydb.cursor()
@@ -759,20 +762,23 @@ VALUES({idShift},\'{dateShift}\',\'{requster}\',0,{sendedForCreator});SELECT LAS
             return resualt[0]
         else:
             return None
-    def removeFromSelection(self,idDayShift):
+
+    def removeFromSelection(self, idDayShift):
         mydb = self.connector()
         mycursor = mydb.cursor()
         mydb.autocommit = True
         sqlQuery = f'delete from botshiftkari.dayshift  where  iddayShift={idDayShift} and status = 0 '
         mycursor.execute(sqlQuery)
-    def getListDayIsNotEmpty(self,idShift,status=2):
+
+    def getListDayIsNotEmpty(self, idShift, status=2):
         mydb = self.connector()
         mycursor = mydb.cursor()
         sqlQuery = f'SELECT iddayShift,dateShift from botshiftkari.dayshift  where  idShift={idShift}'
         if status is not None:
             sqlQuery += f' and status= {status} '
         mycursor.execute(sqlQuery)
-        resualt = mycursor.fetchall()
+        result = mycursor.fetchall()
+        return result
 
     def getListMember(self, sender, group=None):
         sqlQuery = ''
@@ -780,7 +786,7 @@ VALUES({idShift},\'{dateShift}\',\'{requster}\',0,{sendedForCreator});SELECT LAS
             sqlQuery = f"SELECT chat_id FROM botshiftkari.membership where not chat_id = '{sender}'"
         else:
             sqlQuery = f"SELECT chat_id FROM botshiftkari.membership where not chat_id = '{sender}'  and membership_type = {group}"
-        mydb=self.connector()
+        mydb = self.connector()
         mycursor = mydb.cursor()
         mycursor.execute(sqlQuery)
         result = mycursor.fetchall()
