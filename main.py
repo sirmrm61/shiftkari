@@ -748,7 +748,7 @@ def handle_new_messages(user_id, userName, update):
                     todayDate = datetime.date.today()
                     diffDay = relativedelta(dateMiladiIn, todayDate).days
                     if diffDay > 0:
-                        mydb.member_update('op', 11, message['chat']['id'])
+                        mydb.member_update('op', 13, message['chat']['id'])
                         mydb.shift_update('dateEndShift', '{0}-{1}'.format(year, spBtn[2]), message['chat']['id'])
                         bot.sendMessage(message['chat']['id'],
                                         'آیا {0} بعنوان تاریخ پایان شیفت صحیح است؟'.format(
@@ -799,7 +799,7 @@ def handle_new_messages(user_id, userName, update):
                 #todo: remove print
                 print(f'int(op) - int(opBtn)={int(op) - int(opBtn)}')
                 print(f'op={op}')
-                print(f'op={op}')
+                print(f'opBtn={opBtn}')
                 if (int(op) - int(opBtn)) > 1:
                     bot.sendMessage(user_id, msg.messageLib.erroOnBack.value)
                 if int(op) == 1:  # تاریخ پایان شیفت بعدا اضافه شد
