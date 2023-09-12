@@ -18,7 +18,7 @@ listDenyOP = [
     {"pr": 18, "op": 16, "msg": "عملیات نامعتبر است"}
 ]
 listCommand = ['/myoperation', '/start', '/myinfo', '/changeHrStudent', '/changeMinWage', '/changeMinLicenss',
-               '/CancelMessage', '/changeWFS']
+               '/CancelMessage', '/changeWFS','/changeShiftEmHr','/changePDEM','/changeTPDEM']
 
 
 class HelperFunder:
