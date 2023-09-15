@@ -492,7 +492,7 @@ def handle_new_messages(user_id, userName, update):
                             bot.sendMessage(user_id, msg.messageLib.errorNumber.value)
                             return
                         mydb.member_update('op', 7, message['chat']['id'])
-                        mydb.shift_update('wage', message['text'], message['chat']['id'])
+                        mydb.shift_update('wage', unidecode(message['text']), message['chat']['id'])
                         bot.sendMessage(message['chat']['id'],
                                         'آیا مبلغ {0} ریال بعنوان حق الزحمه صحیح است؟'.format(message['text']),
                                         reply_markup=menu.keyLib.kbCreateMenuYesNO(
@@ -508,7 +508,7 @@ def handle_new_messages(user_id, userName, update):
                             bot.sendMessage(user_id, msg.messageLib.errorNumber.value)
                             return
                         mydb.member_update('op', 9, message['chat']['id'])
-                        mydb.shift_update('wfStudent', message['text'], message['chat']['id'])
+                        mydb.shift_update('wfStudent', unidecode(message['text']), message['chat']['id'])
                         bot.sendMessage(message['chat']['id'],
                                         'آیا مبلغ {0} ریال بعنوان حق الزحمه دانشجو صحیح است؟'.format(message['text']),
                                         reply_markup=menu.keyLib.kbCreateMenuYesNO(
