@@ -425,101 +425,100 @@ def handle_new_messages(user_id, userName, update):
                                     tempMember.name + ' ' + tempMember.last_name),
                                 reply_markup=menu.keyLib.kbAdmin())
         elif tempMember.register_progress == 11:
-            if tempMember.membership_type == 2 or tempMember.membership_type == 1:
-                op = mydb.get_member_property_chatid('op', user_id)
-                if op is not None:
-                    if op == 0:
-                        try:
-                            yearIn = int(str(message['text'])[0:4])
-                            monthIn = int(str(message['text'])[4:6])
-                            dayIn = int(str(message['text'])[6:])
-                            dateMiladiIn = JalaliDate(yearIn, monthIn, dayIn).to_gregorian()
-                            todayDate = datetime.date.today()
-                            diffDay = relativedelta(dateMiladiIn, todayDate).days
-                            if diffDay > 0:
-                                mydb.member_update('op', 1, message['chat']['id'])
-                                mydb.shift_update('DateShift', message['text'], message['chat']['id'])
-                                bot.sendMessage(message['chat']['id'],
-                                                'آیا {0} بعنوان تاریخ شیفت صحیح است؟'.format(message['text']),
-                                                reply_markup=menu.keyLib.kbCreateMenuYesNO(
-                                                    chatId='{}'.format(op)))
-                            else:
-                                bot.sendMessage(message['chat']['id'], msg.messageLib.invalidDate.value)
-                                bot.sendMessage(message['chat']['id'], msg.messageLib.dateShift.value)
-                        except:
+            op = mydb.get_member_property_chatid('op', user_id)
+            if op is not None:
+                if op == 0:
+                    try:
+                        yearIn = int(str(message['text'])[0:4])
+                        monthIn = int(str(message['text'])[4:6])
+                        dayIn = int(str(message['text'])[6:])
+                        dateMiladiIn = JalaliDate(yearIn, monthIn, dayIn).to_gregorian()
+                        todayDate = datetime.date.today()
+                        diffDay = relativedelta(dateMiladiIn, todayDate).days
+                        if diffDay > 0:
+                            mydb.member_update('op', 1, message['chat']['id'])
+                            mydb.shift_update('DateShift', message['text'], message['chat']['id'])
+                            bot.sendMessage(message['chat']['id'],
+                                            'آیا {0} بعنوان تاریخ شیفت صحیح است؟'.format(message['text']),
+                                            reply_markup=menu.keyLib.kbCreateMenuYesNO(
+                                                chatId='{}'.format(op)))
+                        else:
                             bot.sendMessage(message['chat']['id'], msg.messageLib.invalidDate.value)
                             bot.sendMessage(message['chat']['id'], msg.messageLib.dateShift.value)
-                    if op == 2:
-                        try:
-                            hr, mi = map(int, str(message['text']).split(':'))
-                            if (0 <= hr <= 23) and (0 <= mi <= 59):
-                                mydb.member_update('op', 3, message['chat']['id'])
-                                mydb.shift_update('startTime', message['text'], message['chat']['id'])
-                                bot.sendMessage(message['chat']['id'],
-                                                'آیا {0} بعنوان ساعت شروع شیفت صحیح است؟'.format(message['text']),
-                                                reply_markup=menu.keyLib.kbCreateMenuYesNO(
-                                                    chatId='{}'.format(op)))
-                            else:
-                                bot.sendMessage(message['chat']['id'], msg.messageLib.invalidTime.value)
-                                bot.sendMessage(message['chat']['id'], msg.messageLib.shiftStartTime.value)
-                        except:
+                    except:
+                        bot.sendMessage(message['chat']['id'], msg.messageLib.invalidDate.value)
+                        bot.sendMessage(message['chat']['id'], msg.messageLib.dateShift.value)
+                if op == 2:
+                    try:
+                        hr, mi = map(int, str(message['text']).split(':'))
+                        if (0 <= hr <= 23) and (0 <= mi <= 59):
+                            mydb.member_update('op', 3, message['chat']['id'])
+                            mydb.shift_update('startTime', message['text'], message['chat']['id'])
+                            bot.sendMessage(message['chat']['id'],
+                                            'آیا {0} بعنوان ساعت شروع شیفت صحیح است؟'.format(message['text']),
+                                            reply_markup=menu.keyLib.kbCreateMenuYesNO(
+                                                chatId='{}'.format(op)))
+                        else:
                             bot.sendMessage(message['chat']['id'], msg.messageLib.invalidTime.value)
                             bot.sendMessage(message['chat']['id'], msg.messageLib.shiftStartTime.value)
-                    if op == 4:
-                        try:
-                            hr, mi = map(int, str(message['text']).split(':'))
-                            if (0 <= hr <= 23) and (0 <= mi <= 59):
-                                mydb.member_update('op', 5, message['chat']['id'])
-                                mydb.shift_update('endTime', message['text'], message['chat']['id'])
-                                bot.sendMessage(message['chat']['id'],
-                                                'آیا {0} بعنوان ساعت پایان شیفت صحیح است؟'.format(message['text']),
-                                                reply_markup=menu.keyLib.kbCreateMenuYesNO(
-                                                    chatId='{}'.format(op)))
-                            else:
-                                bot.sendMessage(message['chat']['id'], msg.messageLib.invalidTime.value)
-                                bot.sendMessage(message['chat']['id'], msg.messageLib.shiftEndTime.value)
-                        except:
+                    except:
+                        bot.sendMessage(message['chat']['id'], msg.messageLib.invalidTime.value)
+                        bot.sendMessage(message['chat']['id'], msg.messageLib.shiftStartTime.value)
+                if op == 4:
+                    try:
+                        hr, mi = map(int, str(message['text']).split(':'))
+                        if (0 <= hr <= 23) and (0 <= mi <= 59):
+                            mydb.member_update('op', 5, message['chat']['id'])
+                            mydb.shift_update('endTime', message['text'], message['chat']['id'])
+                            bot.sendMessage(message['chat']['id'],
+                                            'آیا {0} بعنوان ساعت پایان شیفت صحیح است؟'.format(message['text']),
+                                            reply_markup=menu.keyLib.kbCreateMenuYesNO(
+                                                chatId='{}'.format(op)))
+                        else:
                             bot.sendMessage(message['chat']['id'], msg.messageLib.invalidTime.value)
                             bot.sendMessage(message['chat']['id'], msg.messageLib.shiftEndTime.value)
-                    if op == 6:
-                        minWage = mydb.get_property_domain('wage')
-                        if str(message['text']).isnumeric():
-                            if int(minWage) > int(message['text']):
-                                bot.sendMessage(user_id, str(msg.messageLib.minWage.value).format(minWage))
-                                bot.sendMessage(user_id, msg.messageLib.shiftWage.value)
-                                return
-                        else:
-                            bot.sendMessage(user_id, msg.messageLib.errorNumber.value)
+                    except:
+                        bot.sendMessage(message['chat']['id'], msg.messageLib.invalidTime.value)
+                        bot.sendMessage(message['chat']['id'], msg.messageLib.shiftEndTime.value)
+                if op == 6:
+                    minWage = mydb.get_property_domain('wage')
+                    if str(message['text']).isnumeric():
+                        if int(minWage) > int(message['text']):
+                            bot.sendMessage(user_id, str(msg.messageLib.minWage.value).format(minWage))
+                            bot.sendMessage(user_id, msg.messageLib.shiftWage.value)
                             return
-                        mydb.member_update('op', 7, message['chat']['id'])
-                        mydb.shift_update('wage', unidecode(message['text']), message['chat']['id'])
-                        bot.sendMessage(message['chat']['id'],
-                                        'آیا مبلغ {0} ریال بعنوان حق الزحمه صحیح است؟'.format(message['text']),
-                                        reply_markup=menu.keyLib.kbCreateMenuYesNO(
-                                            chatId='{}'.format(op)))
-                    if op == 8:
-                        minWage = mydb.get_property_domain('studentWage')
-                        if str(message['text']).isnumeric():
-                            if int(minWage) > int(message['text']):
-                                bot.sendMessage(user_id, str(msg.messageLib.minWFStudent.value).format(minWage))
-                                bot.sendMessage(user_id, msg.messageLib.shiftWageStudent.value)
-                                return
-                        else:
-                            bot.sendMessage(user_id, msg.messageLib.errorNumber.value)
+                    else:
+                        bot.sendMessage(user_id, msg.messageLib.errorNumber.value)
+                        return
+                    mydb.member_update('op', 7, message['chat']['id'])
+                    mydb.shift_update('wage', unidecode(message['text']), message['chat']['id'])
+                    bot.sendMessage(message['chat']['id'],
+                                    'آیا مبلغ {0} ریال بعنوان حق الزحمه صحیح است؟'.format(message['text']),
+                                    reply_markup=menu.keyLib.kbCreateMenuYesNO(
+                                        chatId='{}'.format(op)))
+                if op == 8:
+                    minWage = mydb.get_property_domain('studentWage')
+                    if str(message['text']).isnumeric():
+                        if int(minWage) > int(message['text']):
+                            bot.sendMessage(user_id, str(msg.messageLib.minWFStudent.value).format(minWage))
+                            bot.sendMessage(user_id, msg.messageLib.shiftWageStudent.value)
                             return
-                        mydb.member_update('op', 9, message['chat']['id'])
-                        mydb.shift_update('wfStudent', unidecode(message['text']), message['chat']['id'])
-                        bot.sendMessage(message['chat']['id'],
-                                        'آیا مبلغ {0} ریال بعنوان حق الزحمه دانشجو صحیح است؟'.format(message['text']),
-                                        reply_markup=menu.keyLib.kbCreateMenuYesNO(
-                                            chatId='{}'.format(op)))
-                    if op == 10:
-                        mydb.member_update('op', 11, message['chat']['id'])
-                        rs = mydb.shift_update('pharmacyAddress', message['text'], message['chat']['id'])
-                        bot.sendMessage(message['chat']['id'],
-                                        'آیا آدرس {0} برای داروخانه صحیح است؟'.format(message['text']),
-                                        reply_markup=menu.keyLib.kbCreateMenuYesNO(
-                                            chatId='{0}_{1}'.format(11, rs[0])))
+                    else:
+                        bot.sendMessage(user_id, msg.messageLib.errorNumber.value)
+                        return
+                    mydb.member_update('op', 9, message['chat']['id'])
+                    mydb.shift_update('wfStudent', unidecode(message['text']), message['chat']['id'])
+                    bot.sendMessage(message['chat']['id'],
+                                    'آیا مبلغ {0} ریال بعنوان حق الزحمه دانشجو صحیح است؟'.format(message['text']),
+                                    reply_markup=menu.keyLib.kbCreateMenuYesNO(
+                                        chatId='{}'.format(op)))
+                if op == 10:
+                    mydb.member_update('op', 11, message['chat']['id'])
+                    rs = mydb.shift_update('pharmacyAddress', message['text'], message['chat']['id'])
+                    bot.sendMessage(message['chat']['id'],
+                                    'آیا آدرس {0} برای داروخانه صحیح است؟'.format(message['text']),
+                                    reply_markup=menu.keyLib.kbCreateMenuYesNO(
+                                        chatId='{0}_{1}'.format(11, rs[0])))
         elif tempMember.register_progress == 15:
             if tempMember.membership_type == 4:
                 chatIdUser = mydb.get_member_property_Adminchatid(fieldName='chat_id', chatid=message['chat']['id'])
