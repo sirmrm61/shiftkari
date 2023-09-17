@@ -764,7 +764,7 @@ def handle_new_messages(user_id, userName, update):
                     return
                 if spBtn[3] == '1':
                     year = mydb.get_shift_property(fieldName='DateShift', idShift=spBtn[4])
-                    if len(year) > 6:
+                    if len(year) > 7:
                         bot.sendMessage(user_id,msg.messageLib.noBussiness.value)
                         return
                     mydb.shift_update('DateShift', '{0}-{1}'.format(year, spBtn[2]), user_id)
@@ -789,7 +789,7 @@ def handle_new_messages(user_id, userName, update):
                                         reply_markup=menu.keyLib.kbCreateMenuYear(tag=1))
                 elif spBtn[3] == '2':
                     year = mydb.get_shift_property(fieldName='dateEndShift', idShift=spBtn[4])
-                    if len(year) > 6:
+                    if len(year) > 7:
                         bot.sendMessage(user_id,msg.messageLib.noBussiness.value)
                         return
                     mydb.shift_update_by_id('dateEndShift', '{0}-{1}'.format(year, spBtn[2]), spBtn[4])
@@ -814,7 +814,7 @@ def handle_new_messages(user_id, userName, update):
                                         reply_markup=menu.keyLib.kbCreateMenuYear(tag=2))
                 elif spBtn[3] == '4':
                     year = mydb.get_student_property(fieldName='start_date', chatid=user_id)
-                    if len(year) > 6:
+                    if len(year) > 7:
                         bot.sendMessage(user_id,msg.messageLib.noBussiness.value)
                         return
                     mydb.student_update('start_date', '{0}{1}'.format(year, spBtn[2]), user_id)
@@ -832,7 +832,7 @@ def handle_new_messages(user_id, userName, update):
                                         reply_markup=menu.keyLib.kbVerifyEditProfile(self=None, tag=user_id))
                 elif spBtn[3] == '5':
                     year = mydb.get_student_property(fieldName='end_date', chatid=user_id)
-                    if len(year) > 6:
+                    if len(year) > 7:
                         bot.sendMessage(user_id,msg.messageLib.noBussiness.value)
                         return
                     mydb.student_update('end_date', '{0}{1}'.format(year, spBtn[2]), user_id)
