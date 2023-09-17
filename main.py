@@ -492,7 +492,7 @@ def handle_new_messages(user_id, userName, update):
                             bot.sendMessage(user_id, msg.messageLib.errorNumber.value)
                             return
                         mydb.member_update('op', 7, message['chat']['id'])
-                        mydb.shift_update('wage', message['text'], message['chat']['id'])
+                        mydb.shift_update('wage', unidecode(message['text']), message['chat']['id'])
                         bot.sendMessage(message['chat']['id'],
                                         'آیا مبلغ {0} ریال بعنوان حق الزحمه صحیح است؟'.format(message['text']),
                                         reply_markup=menu.keyLib.kbCreateMenuYesNO(
@@ -508,7 +508,7 @@ def handle_new_messages(user_id, userName, update):
                             bot.sendMessage(user_id, msg.messageLib.errorNumber.value)
                             return
                         mydb.member_update('op', 9, message['chat']['id'])
-                        mydb.shift_update('wfStudent', message['text'], message['chat']['id'])
+                        mydb.shift_update('wfStudent', unidecode(message['text']), message['chat']['id'])
                         bot.sendMessage(message['chat']['id'],
                                         'آیا مبلغ {0} ریال بعنوان حق الزحمه دانشجو صحیح است؟'.format(message['text']),
                                         reply_markup=menu.keyLib.kbCreateMenuYesNO(
@@ -728,21 +728,33 @@ def handle_new_messages(user_id, userName, update):
                     return
                 if spBtn[3] == '1':
                     year = mydb.get_shift_property(fieldName='DateShift', idShift=spBtn[4])
+                    if len(year) != 4:
+                        bot.sendMessage(user_id,msg.messageLib.noBussiness.value)
+                        return
                     mydb.shift_update_by_id('DateShift', '{0}-{1}'.format(year, spBtn[2]), spBtn[4])
                     bot.sendMessage(chat_id=user_id, parse_mode='HTML', text='روز انتخاب کنید',
                                     reply_markup=menu.keyLib.kbCreateMenuDayInMonth(tag='1_{}'.format(spBtn[4])))
                 elif spBtn[3] == '2':
                     year = mydb.get_shift_property(fieldName='dateEndShift', idShift=spBtn[4])
+                    if len(year) != 4:
+                        bot.sendMessage(user_id,msg.messageLib.noBussiness.value)
+                        return
                     mydb.shift_update_by_id('dateEndShift', '{0}-{1}'.format(year, spBtn[2]), spBtn[4])
                     bot.sendMessage(chat_id=user_id, parse_mode='HTML', text='روز انتخاب کنید',
                                     reply_markup=menu.keyLib.kbCreateMenuDayInMonth(tag='2_{}'.format(spBtn[4])))
                 elif spBtn[3] == '4':
                     year = mydb.get_student_property(fieldName='start_date', chatid=user_id)
+                    if len(year) != 4:
+                        bot.sendMessage(user_id,msg.messageLib.noBussiness.value)
+                        return
                     mydb.student_update('start_date', '{0}{1}'.format(year, spBtn[2]), user_id)
                     bot.sendMessage(chat_id=user_id, parse_mode='HTML', text='روز انتخاب کنید',
                                     reply_markup=menu.keyLib.kbCreateMenuDayInMonth(tag='4_{}'.format(user_id)))
                 elif spBtn[3] == '5':
                     year = mydb.get_student_property(fieldName='end_date', chatid=user_id)
+                    if len(year) != 4:
+                        bot.sendMessage(user_id,msg.messageLib.noBussiness.value)
+                        return
                     mydb.student_update('end_date', '{0}{1}'.format(year, spBtn[2]), user_id)
                     bot.sendMessage(chat_id=user_id, parse_mode='HTML', text='روز انتخاب کنید',
                                     reply_markup=menu.keyLib.kbCreateMenuDayInMonth(tag='5_{}'.format(user_id)))
@@ -752,6 +764,9 @@ def handle_new_messages(user_id, userName, update):
                     return
                 if spBtn[3] == '1':
                     year = mydb.get_shift_property(fieldName='DateShift', idShift=spBtn[4])
+                    if len(year) > 6:
+                        bot.sendMessage(user_id,msg.messageLib.noBussiness.value)
+                        return
                     mydb.shift_update('DateShift', '{0}-{1}'.format(year, spBtn[2]), user_id)
                     yearIn = int(str(year)[0:4])
                     monthIn = int(str(year)[5:7])
@@ -774,6 +789,9 @@ def handle_new_messages(user_id, userName, update):
                                         reply_markup=menu.keyLib.kbCreateMenuYear(tag=1))
                 elif spBtn[3] == '2':
                     year = mydb.get_shift_property(fieldName='dateEndShift', idShift=spBtn[4])
+                    if len(year) > 6:
+                        bot.sendMessage(user_id,msg.messageLib.noBussiness.value)
+                        return
                     mydb.shift_update_by_id('dateEndShift', '{0}-{1}'.format(year, spBtn[2]), spBtn[4])
                     yearIn = int(str(year)[0:4])
                     monthIn = int(str(year)[5:7])
@@ -796,6 +814,9 @@ def handle_new_messages(user_id, userName, update):
                                         reply_markup=menu.keyLib.kbCreateMenuYear(tag=2))
                 elif spBtn[3] == '4':
                     year = mydb.get_student_property(fieldName='start_date', chatid=user_id)
+                    if len(year) > 6:
+                        bot.sendMessage(user_id,msg.messageLib.noBussiness.value)
+                        return
                     mydb.student_update('start_date', '{0}{1}'.format(year, spBtn[2]), user_id)
                     if tempMember.register_progress != 18:  # 18 is Edit Mode
                         bot.sendMessage(message['chat']['id'],
@@ -811,6 +832,9 @@ def handle_new_messages(user_id, userName, update):
                                         reply_markup=menu.keyLib.kbVerifyEditProfile(self=None, tag=user_id))
                 elif spBtn[3] == '5':
                     year = mydb.get_student_property(fieldName='end_date', chatid=user_id)
+                    if len(year) > 6:
+                        bot.sendMessage(user_id,msg.messageLib.noBussiness.value)
+                        return
                     mydb.student_update('end_date', '{0}{1}'.format(year, spBtn[2]), user_id)
                     # bot.sendMessage(message['chat']['id'],
                     #                 str(msg.messageLib.enterWorkoverPermitPhoto.value))
