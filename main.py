@@ -911,7 +911,7 @@ def handle_new_messages(user_id, userName, update):
                     print("{0} - {1} = {2} hour ".format(dateStart, dateNow, ((diffDay.days * 24) + diffDay.hours)))
                     print("{0} <= {1} ".format(((diffDay.days * 24) + diffDay.hours), int(hrEmShift)))
                     if ((diffDay.days * 24) + diffDay.hours) <= int(hrEmShift):
-                        date7ago = dateNow - datetime.timedelta(days=7)
+                        date7ago = dateNow - timedelta(days=7)
                         TSPDEM = mydb.get_property_domain('TSPDEM')  # تعداد مجاز شیفت در هردوره اضطراری
                         PDEM = mydb.get_property_domain('PDEM')  # دوره شیفت اضطراری هر چند روز
                         bot.sendMessage(user_id, str(msg.messageLib.emShiftMsg.value).format(PDEM, TSPDEM))
