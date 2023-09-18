@@ -3,8 +3,7 @@ import time
 from model.membership import Membership
 from persiantools.jdatetime import JalaliDate
 from dateutil.relativedelta import relativedelta
-import datetime
-from datetime import timedelta
+from datetime import timedelta,date,datetime,time
 import os
 from pprint import pprint
 import msg
@@ -32,10 +31,11 @@ bot = telepot.Bot(botKeyApi)
 # pprint(admins)
 # for admin in admins:
 #     pprint(bot.sendPhoto(admin[0], open(image, 'rb')))
-# date1 = JalaliDate(1402, 4, 18).to_gregorian()
-# date2 = datetime.date.today()
+# date1 = datetime.combine(JalaliDate(1402, 6, 29).to_gregorian(),time())
+# date2 = datetime.now()
+# delta = date1 - date2
 # diffDay = relativedelta(date1, date2)
-# print("{0} - {1} = {2} Day ".format(date1, date2, diffDay.days))
+# print("{0} - {1} = {2} hours ".format(date1, date2, (diffDay.days * 24)+ diffDay.hours))
 # todayDate=datetime.date.today()
 # jd=str(JalaliDate.to_jalali(todayDate.year,todayDate.month,todayDate.day)).split('-')
 # sjd= "{0}{1}{2}".format(jd[0],jd[1],jd[2])
@@ -903,12 +903,14 @@ def handle_new_messages(user_id, userName, update):
                     dateStartShift = mydb.get_shift_property('DateShift', spBtn[3])
                     dateStart = JalaliDate(int(dateStartShift[:4]), int(dateStartShift[5:7]),
                                            int(dateStartShift[8:])).to_gregorian()
-                    dateNow = datetime.date.today()
+                    dateStart = datetime.combine(dateStart,time())
+                    dateNow = datetime.now()
                     diffDay = relativedelta(dateStart, dateNow)
                     hrEmShift = mydb.get_property_domain(
                         'hrEmShift')  # از این زمان برای تشخیص شیفت اضطراری استفاده می شود
-                    print("{0} - {1} = {2} Day ".format(dateStart, dateNow, diffDay.hours))
-                    if diffDay.hours >= int(hrEmShift):
+                    print("{0} - {1} = {2} hour ".format(dateStart, dateNow, ((diffDay.days * 24) + diffDay.hours)))
+                    print("{0} >= {1} ".format(((diffDay.days * 24) + diffDay.hours), int(hrEmShift)))
+                    if ((diffDay.days * 24) + diffDay.hours) >= int(hrEmShift):
                         date7ago = dateNow - datetime.timedelta(days=7)
                         TSPDEM = mydb.get_property_domain('TSPDEM')  # تعداد مجاز شیفت در هردوره اضطراری
                         PDEM = mydb.get_property_domain('PDEM')  # دوره شیفت اضطراری هر چند روز
