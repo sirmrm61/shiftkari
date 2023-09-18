@@ -909,8 +909,8 @@ def handle_new_messages(user_id, userName, update):
                     hrEmShift = mydb.get_property_domain(
                         'hrEmShift')  # از این زمان برای تشخیص شیفت اضطراری استفاده می شود
                     print("{0} - {1} = {2} hour ".format(dateStart, dateNow, ((diffDay.days * 24) + diffDay.hours)))
-                    print("{0} >= {1} ".format(((diffDay.days * 24) + diffDay.hours), int(hrEmShift)))
-                    if ((diffDay.days * 24) + diffDay.hours) >= int(hrEmShift):
+                    print("{0} <= {1} ".format(((diffDay.days * 24) + diffDay.hours), int(hrEmShift)))
+                    if ((diffDay.days * 24) + diffDay.hours) <= int(hrEmShift):
                         date7ago = dateNow - datetime.timedelta(days=7)
                         TSPDEM = mydb.get_property_domain('TSPDEM')  # تعداد مجاز شیفت در هردوره اضطراری
                         PDEM = mydb.get_property_domain('PDEM')  # دوره شیفت اضطراری هر چند روز
