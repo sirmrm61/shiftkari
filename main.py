@@ -918,7 +918,7 @@ def handle_new_messages(user_id, userName, update):
                         totalEM = mydb.getTotalShiftEM(date7ago, dateNow, user_id)
                         if int(totalEM) < int(TSPDEM):
                             bot.sendMessage(user_id, msg.messageLib.emShiftRegister.value)
-                            helper.send_shift_to_student(spBtn[3], bot, user_id)
+                            helper.send_shift_to_studentEM(spBtn[3], bot, user_id)
                             mydb.shift_update_by_id('shiftIsEM', 1, spBtn[3])
                         else:
                             bot.sendMessage(user_id, msg.messageLib.emShiftFull.value)
