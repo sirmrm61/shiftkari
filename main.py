@@ -433,7 +433,7 @@ def handle_new_messages(user_id, userName, update):
                         monthIn = int(str(message['text'])[4:6])
                         dayIn = int(str(message['text'])[6:])
                         dateMiladiIn = JalaliDate(yearIn, monthIn, dayIn).to_gregorian()
-                        todayDate = datetime.date.today()
+                        todayDate = datetime.today()
                         diffDay = relativedelta(dateMiladiIn, todayDate).days
                         if diffDay > 0:
                             mydb.member_update('op', 1, message['chat']['id'])
@@ -699,7 +699,7 @@ def handle_new_messages(user_id, userName, update):
                     bot.sendMessage(user_id, msg.messageLib.noBussiness.value)
                     return
                 yearTemp = None
-                todayDate = datetime.date.today()
+                todayDate = datetime.today()
                 jd = str(JalaliDate.to_jalali(todayDate.year, todayDate.month, todayDate.day)).split('-')
                 if spBtn[2] == 'currntYear':
                     yearTemp = int(jd[0])
@@ -771,7 +771,7 @@ def handle_new_messages(user_id, userName, update):
                     monthIn = int(str(year)[5:7])
                     dayIn = int(str(spBtn[2]))
                     dateMiladiIn = JalaliDate(yearIn, monthIn, dayIn).to_gregorian()
-                    todayDate = datetime.date.today()
+                    todayDate = datetime.today()
                     diffDay = relativedelta(dateMiladiIn, todayDate).days
                     if diffDay >= 0:
                         mydb.member_update('op', 1, message['chat']['id'])
@@ -796,7 +796,7 @@ def handle_new_messages(user_id, userName, update):
                     monthIn = int(str(year)[5:7])
                     dayIn = int(str(spBtn[2]))
                     dateMiladiIn = JalaliDate(yearIn, monthIn, dayIn).to_gregorian()
-                    todayDate = datetime.date.today()
+                    todayDate = datetime.today()
                     diffDay = relativedelta(dateMiladiIn, todayDate).days
                     if diffDay >= 0:
                         mydb.member_update('op', 13, message['chat']['id'])
@@ -989,7 +989,7 @@ def handle_new_messages(user_id, userName, update):
                 # آپدیت کردن شیف
             elif spBtn[1] == 'cancelShift':
                 # ارسال شیفت هایی که شخص قبول کرده و تاریخ آنها نرسیده
-                todayDate = datetime.date.today()
+                todayDate = datetime.today()
                 jd = str(JalaliDate.to_jalali(todayDate.year, todayDate.month, todayDate.day)).split('-')
                 sjd = "{0}{1}{2}".format(jd[0], jd[1], jd[2])
                 helper.send_list_shift_Cancel(chatId=message['chat']['id'], bot=bot, todayDate=sjd)
