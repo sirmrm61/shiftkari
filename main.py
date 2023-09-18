@@ -621,7 +621,7 @@ def handle_new_messages(user_id, userName, update):
             elif spBtn[1] == 'shiftPD':
                 TSPDEM = mydb.get_property_domain('TSPDEM')
                 PDEM = mydb.get_property_domain('PDEM')
-                bot.sendMessage(user_id, str(msg.messageLib.pdLabel.value).format(PDEM,TSPDEM))
+                bot.sendMessage(user_id, str(msg.messageLib.pdLabel.value).format(PDEM, TSPDEM))
             elif spBtn[1] == 'minWFStudent':
                 studentWage = mydb.get_property_domain('studentWage')
                 bot.sendMessage(user_id, str(msg.messageLib.wfStudenMessage.value).format(studentWage))
@@ -728,7 +728,7 @@ def handle_new_messages(user_id, userName, update):
                 if spBtn[3] == '1':
                     year = mydb.get_shift_property(fieldName='DateShift', idShift=spBtn[4])
                     if len(year) != 4:
-                        bot.sendMessage(user_id,msg.messageLib.noBussiness.value)
+                        bot.sendMessage(user_id, msg.messageLib.noBussiness.value)
                         return
                     mydb.shift_update_by_id('DateShift', '{0}-{1}'.format(year, spBtn[2]), spBtn[4])
                     bot.sendMessage(chat_id=user_id, parse_mode='HTML', text='روز انتخاب کنید',
@@ -736,7 +736,7 @@ def handle_new_messages(user_id, userName, update):
                 elif spBtn[3] == '2':
                     year = mydb.get_shift_property(fieldName='dateEndShift', idShift=spBtn[4])
                     if len(year) != 4:
-                        bot.sendMessage(user_id,msg.messageLib.noBussiness.value)
+                        bot.sendMessage(user_id, msg.messageLib.noBussiness.value)
                         return
                     mydb.shift_update_by_id('dateEndShift', '{0}-{1}'.format(year, spBtn[2]), spBtn[4])
                     bot.sendMessage(chat_id=user_id, parse_mode='HTML', text='روز انتخاب کنید',
@@ -744,7 +744,7 @@ def handle_new_messages(user_id, userName, update):
                 elif spBtn[3] == '4':
                     year = mydb.get_student_property(fieldName='start_date', chatid=user_id)
                     if len(year) != 4:
-                        bot.sendMessage(user_id,msg.messageLib.noBussiness.value)
+                        bot.sendMessage(user_id, msg.messageLib.noBussiness.value)
                         return
                     mydb.student_update('start_date', '{0}{1}'.format(year, spBtn[2]), user_id)
                     bot.sendMessage(chat_id=user_id, parse_mode='HTML', text='روز انتخاب کنید',
@@ -752,7 +752,7 @@ def handle_new_messages(user_id, userName, update):
                 elif spBtn[3] == '5':
                     year = mydb.get_student_property(fieldName='end_date', chatid=user_id)
                     if len(year) != 4:
-                        bot.sendMessage(user_id,msg.messageLib.noBussiness.value)
+                        bot.sendMessage(user_id, msg.messageLib.noBussiness.value)
                         return
                     mydb.student_update('end_date', '{0}{1}'.format(year, spBtn[2]), user_id)
                     bot.sendMessage(chat_id=user_id, parse_mode='HTML', text='روز انتخاب کنید',
@@ -764,7 +764,7 @@ def handle_new_messages(user_id, userName, update):
                 if spBtn[3] == '1':
                     year = mydb.get_shift_property(fieldName='DateShift', idShift=spBtn[4])
                     if len(year) > 7:
-                        bot.sendMessage(user_id,msg.messageLib.noBussiness.value)
+                        bot.sendMessage(user_id, msg.messageLib.noBussiness.value)
                         return
                     mydb.shift_update('DateShift', '{0}-{1}'.format(year, spBtn[2]), user_id)
                     yearIn = int(str(year)[0:4])
@@ -773,7 +773,7 @@ def handle_new_messages(user_id, userName, update):
                     dateMiladiIn = JalaliDate(yearIn, monthIn, dayIn).to_gregorian()
                     todayDate = datetime.date.today()
                     diffDay = relativedelta(dateMiladiIn, todayDate).days
-                    if diffDay > 0:
+                    if diffDay >= 0:
                         mydb.member_update('op', 1, message['chat']['id'])
                         mydb.shift_update('DateShift', '{0}-{1}'.format(year, spBtn[2]), message['chat']['id'])
                         bot.sendMessage(message['chat']['id'],
@@ -789,7 +789,7 @@ def handle_new_messages(user_id, userName, update):
                 elif spBtn[3] == '2':
                     year = mydb.get_shift_property(fieldName='dateEndShift', idShift=spBtn[4])
                     if len(year) > 7:
-                        bot.sendMessage(user_id,msg.messageLib.noBussiness.value)
+                        bot.sendMessage(user_id, msg.messageLib.noBussiness.value)
                         return
                     mydb.shift_update_by_id('dateEndShift', '{0}-{1}'.format(year, spBtn[2]), spBtn[4])
                     yearIn = int(str(year)[0:4])
@@ -798,7 +798,7 @@ def handle_new_messages(user_id, userName, update):
                     dateMiladiIn = JalaliDate(yearIn, monthIn, dayIn).to_gregorian()
                     todayDate = datetime.date.today()
                     diffDay = relativedelta(dateMiladiIn, todayDate).days
-                    if diffDay > 0:
+                    if diffDay >= 0:
                         mydb.member_update('op', 13, message['chat']['id'])
                         mydb.shift_update('dateEndShift', '{0}-{1}'.format(year, spBtn[2]), message['chat']['id'])
                         bot.sendMessage(message['chat']['id'],
@@ -814,7 +814,7 @@ def handle_new_messages(user_id, userName, update):
                 elif spBtn[3] == '4':
                     year = mydb.get_student_property(fieldName='start_date', chatid=user_id)
                     if len(year) > 7:
-                        bot.sendMessage(user_id,msg.messageLib.noBussiness.value)
+                        bot.sendMessage(user_id, msg.messageLib.noBussiness.value)
                         return
                     mydb.student_update('start_date', '{0}{1}'.format(year, spBtn[2]), user_id)
                     if tempMember.register_progress != 18:  # 18 is Edit Mode
@@ -832,7 +832,7 @@ def handle_new_messages(user_id, userName, update):
                 elif spBtn[3] == '5':
                     year = mydb.get_student_property(fieldName='end_date', chatid=user_id)
                     if len(year) > 7:
-                        bot.sendMessage(user_id,msg.messageLib.noBussiness.value)
+                        bot.sendMessage(user_id, msg.messageLib.noBussiness.value)
                         return
                     mydb.student_update('end_date', '{0}{1}'.format(year, spBtn[2]), user_id)
                     # bot.sendMessage(message['chat']['id'],
@@ -900,6 +900,29 @@ def handle_new_messages(user_id, userName, update):
                     hrSendToStudent = mydb.get_property_domain('hrStudent')
                     bot.sendMessage(message['chat']['id'],
                                     str(msg.messageLib.endRegisterShift.value).format(hrSendToStudent))
+                    dateStartShift = mydb.get_shift_property('DateShift', spBtn[3])
+                    dateStart = JalaliDate(int(dateStartShift[:4]), int(dateStartShift[5:7]),
+                                           int(dateStartShift[8:])).to_gregorian()
+                    dateNow = datetime.date.today()
+                    diffDay = relativedelta(dateStart, dateNow)
+                    hrEmShift = mydb.get_property_domain(
+                        'hrEmShift')  # از این زمان برای تشخیص شیفت اضطراری استفاده می شود
+                    print("{0} - {1} = {2} Day ".format(dateStart, dateNow, diffDay.hours))
+                    if diffDay.hours >= int(hrEmShift):
+                        date7ago = dateNow - datetime.timedelta(days=7)
+                        TSPDEM = mydb.get_property_domain('TSPDEM')  # تعداد مجاز شیفت در هردوره اضطراری
+                        PDEM = mydb.get_property_domain('PDEM')  # دوره شیفت اضطراری هر چند روز
+                        bot.sendMessage(user_id, str(msg.messageLib.emShiftMsg.value).format(PDEM, TSPDEM))
+                        totalEM = mydb.getTotalShiftEM(date7ago, dateNow, user_id)
+                        if int(totalEM) < int(TSPDEM):
+                            bot.sendMessage(user_id, msg.messageLib.emShiftRegister.value)
+                            helper.send_shift_to_student(spBtn[3], bot, user_id)
+                            mydb.shift_update_by_id('shiftIsEM', 1, spBtn[3])
+                        else:
+                            bot.sendMessage(user_id, msg.messageLib.emShiftFull.value)
+                            mydb.shift_update_by_id('del', 1, spBtn[3])
+                            return
+                    # print("{0} - {1} = {2} Day ".format(date1, date2, diffDay.days))
                     helper.send_shift_to_technicalResponsible(spBtn[3], bot, user_id)
                     mydb.member_update('registration_progress', 10, user_id)
                     mydb.member_update('op', 0, user_id)
@@ -1061,7 +1084,6 @@ def handle_new_messages(user_id, userName, update):
                 bot.sendMessage(user_id, msg.messageLib.requesterNotify.value)
             elif spBtn[1] == 'listFunderManager':
                 resualt = mydb.get_all_member(tye=1)
-                print(resualt);
                 txtResualt = None
                 if len(resualt) > 0:
                     for item in resualt:

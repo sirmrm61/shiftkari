@@ -70,7 +70,8 @@ class keyLib:
              InlineKeyboardButton(text='ساخت شیفت', callback_data='btn_createSift_{}'.format(str(chatId)))],
             [InlineKeyboardButton(text='ویرایش پروفایل', callback_data='btn_epf_{}'.format(str(chatId))),
              InlineKeyboardButton(text='غیر فعال', callback_data='btn_removeProfile_{}'.format(str(chatId)))],
-            [InlineKeyboardButton(text='شیفت هایی که من ساخته ام', callback_data='btn_ownerShift_{}'.format(str(chatId))),]
+            [InlineKeyboardButton(text='شیفت هایی که من ساخته ام',
+                                  callback_data='btn_ownerShift_{}'.format(str(chatId))), ]
         ])
 
     def kbCreateMenuResponsible(self=None, chatId=None):
@@ -82,7 +83,8 @@ class keyLib:
              InlineKeyboardButton(text='ساخت شیفت', callback_data='btn_createSift_{}'.format(str(chatId))),
              InlineKeyboardButton(text='ویرایش پروفایل', callback_data='btn_epf_{}'.format(str(chatId)))],
             [InlineKeyboardButton(text='غیر فعال', callback_data='btn_removeProfile_{}'.format(str(chatId)))],
-            [InlineKeyboardButton(text='شیفت هایی که من ساخته ام', callback_data='btn_ownerShift_{}'.format(str(chatId))),]
+            [InlineKeyboardButton(text='شیفت هایی که من ساخته ام',
+                                  callback_data='btn_ownerShift_{}'.format(str(chatId))), ]
         ])
 
     def kbCreateMenuStudent(self=None, chatId=None):
@@ -91,8 +93,9 @@ class keyLib:
              InlineKeyboardButton(text='لیست شیفت', callback_data='btn_listSift_{}'.format(str(chatId))), ],
             [InlineKeyboardButton(text='ثبت شیفت', callback_data='btn_createSift_{}'.format(str(chatId))), ],
             [InlineKeyboardButton(text='غیر فعال', callback_data='btn_removeProfile_{}'.format(str(chatId))),
-             InlineKeyboardButton(text='ویرایش پروفایل', callback_data='btn_epf_{}'.format(str(chatId))),],
-            [InlineKeyboardButton(text='شیفت هایی که من ساخته ام', callback_data='btn_ownerShift_{}'.format(str(chatId))),]
+             InlineKeyboardButton(text='ویرایش پروفایل', callback_data='btn_epf_{}'.format(str(chatId))), ],
+            [InlineKeyboardButton(text='شیفت هایی که من ساخته ام',
+                                  callback_data='btn_ownerShift_{}'.format(str(chatId))), ]
         ])
 
     def kbCreateMenuManager(self=None, chatId=None):
@@ -101,24 +104,27 @@ class keyLib:
              InlineKeyboardButton(text='لیست مسئولان فنی', callback_data='btn_listresponsible_{}'.format(str(chatId))),
              InlineKeyboardButton(text='لیست دانشجویان', callback_data='btn_listStudent_{}'.format(str(chatId)))],
             [InlineKeyboardButton(text='زمان مسئول', callback_data='btn_hr_{}'.format(str(chatId))),
-             InlineKeyboardButton(text='حداقل دستمزد', callback_data='btn_minWage_{}'.format(str(chatId))),],
-             [InlineKeyboardButton(text='حداقل دستمزد دانشجو', callback_data='btn_minWFStudent_{}'.format(str(chatId))),
-              InlineKeyboardButton(text='قیمت مصوبه پروانه', callback_data='btn_licenss_{}'.format(str(chatId)))],
-            [InlineKeyboardButton(text='ساعت تشخیص شیفت اضطراری', callback_data='btn_shiftEMHr_{}'.format(str(chatId)))],
-            [InlineKeyboardButton(text='دوره شیفت اضطراری',callback_data='btn_shiftPD_{}'.format(str(chatId)))],
+             InlineKeyboardButton(text='حداقل دستمزد', callback_data='btn_minWage_{}'.format(str(chatId))), ],
+            [InlineKeyboardButton(text='حداقل دستمزد دانشجو', callback_data='btn_minWFStudent_{}'.format(str(chatId))),
+             InlineKeyboardButton(text='قیمت مصوبه پروانه', callback_data='btn_licenss_{}'.format(str(chatId)))],
+            [InlineKeyboardButton(text='ساعت تشخیص شیفت اضطراری',
+                                  callback_data='btn_shiftEMHr_{}'.format(str(chatId)))],
+            [InlineKeyboardButton(text='دوره شیفت اضطراری', callback_data='btn_shiftPD_{}'.format(str(chatId)))],
             [InlineKeyboardButton(text='تعداد شیفت اضطراری', callback_data='btn_shiftPD_{}'.format(str(chatId)))],
             [InlineKeyboardButton(text='ارسال پیام', callback_data='btn_sendMessage_{}'.format(str(chatId))),
              InlineKeyboardButton(text='لیست شیفت', callback_data='btn_listSiftManager_{}'.format(str(chatId))),
              InlineKeyboardButton(text='ویرایش پروفایل', callback_data='btn_epf_{}'.format(str(chatId)))]
         ])
-    def kbcreateSendMessage(self=None,chatId=None):
-            return InlineKeyboardMarkup(inline_keyboard=[
+
+    def kbcreateSendMessage(self=None, chatId=None):
+        return InlineKeyboardMarkup(inline_keyboard=[
             [InlineKeyboardButton(text='مدیران', callback_data='btn_SM_0_{}'.format(str(chatId))),
              InlineKeyboardButton(text='موسسان', callback_data='btn_SM_1_{}'.format(str(chatId)))],
-              [InlineKeyboardButton(text='مسئولان فنی', callback_data='btn_SM_2_{}'.format(str(chatId))),
+            [InlineKeyboardButton(text='مسئولان فنی', callback_data='btn_SM_2_{}'.format(str(chatId))),
              InlineKeyboardButton(text='دانشجویان', callback_data='btn_SM_3_{}'.format(str(chatId)))],
-              [InlineKeyboardButton(text='همه', callback_data='btn_SM_4_{}'.format(str(chatId)))]
+            [InlineKeyboardButton(text='همه', callback_data='btn_SM_4_{}'.format(str(chatId)))]
         ])
+
     def kbCreateMenuYesNO(self=None, chatId=None):
         return InlineKeyboardMarkup(inline_keyboard=[
             [InlineKeyboardButton(text='بله', callback_data='btn_yes_{}'.format(str(chatId))),
@@ -211,18 +217,18 @@ class keyLib:
 
     def kbCreateMenuMonthInYear(tag):
         return InlineKeyboardMarkup(inline_keyboard=[
-            [InlineKeyboardButton(text='فروردین', callback_data='btn_month_01_{}'.format(str(tag))),
+            [InlineKeyboardButton(text='خرداد', callback_data='btn_month_03_{}'.format(str(tag))),
              InlineKeyboardButton(text='اردیبهشت', callback_data='btn_month_02_{}'.format(str(tag))),
-             InlineKeyboardButton(text='خرداد', callback_data='btn_month_03_{}'.format(str(tag)))],
-            [InlineKeyboardButton(text='تیر', callback_data='btn_month_04_{}'.format(str(tag))),
+             InlineKeyboardButton(text='فروردین', callback_data='btn_month_01_{}'.format(str(tag))), ],
+            [InlineKeyboardButton(text='شهریور', callback_data='btn_month_06_{}'.format(str(tag))),
              InlineKeyboardButton(text='مرداد', callback_data='btn_month_05_{}'.format(str(tag))),
-             InlineKeyboardButton(text='شهریور', callback_data='btn_month_06_{}'.format(str(tag)))],
-            [InlineKeyboardButton(text='مهر', callback_data='btn_month_07_{}'.format(str(tag))),
+             InlineKeyboardButton(text='تیر', callback_data='btn_month_04_{}'.format(str(tag)))],
+            [InlineKeyboardButton(text='آذر', callback_data='btn_month_09_{}'.format(str(tag))),
              InlineKeyboardButton(text='آبان', callback_data='btn_month_08_{}'.format(str(tag))),
-             InlineKeyboardButton(text='آذر', callback_data='btn_month_09_{}'.format(str(tag)))],
-            [InlineKeyboardButton(text='دی', callback_data='btn_month_10_{}'.format(str(tag))),
+             InlineKeyboardButton(text='مهر', callback_data='btn_month_07_{}'.format(str(tag)))],
+            [InlineKeyboardButton(text='اسفند', callback_data='btn_month_12_{}'.format(str(tag))),
              InlineKeyboardButton(text='بهمن', callback_data='btn_month_11_{}'.format(str(tag))),
-             InlineKeyboardButton(text='اسفند', callback_data='btn_month_12_{}'.format(str(tag)))]])
+             InlineKeyboardButton(text='دی', callback_data='btn_month_10_{}'.format(str(tag)))]])
 
     def kbCreateMenuYear(tag):
         return InlineKeyboardMarkup(inline_keyboard=[
@@ -344,16 +350,17 @@ class keyLib:
         return InlineKeyboardMarkup(inline_keyboard=[
             [InlineKeyboardButton(text='تائید', callback_data='btn_sendToCreator_{}'.format(str(idShift)))]
         ])
+
     def createMenuFromListDayForApproveCreator(self, listDay, totalInRow=2):
         lk = []
-        listIdDay=''
+        listIdDay = ''
         for item in listDay:
             listIdDay += str(item[0]) + '#'
             lk.append(InlineKeyboardButton(text=item[1],
                                            callback_data='btn_dayApproveCreator_{}'.format(str(item[0]))))
         listIdDay = listIdDay[:-1]
-        if len(lk)>1: lk.append (InlineKeyboardButton(text="همه روزها",
-                                           callback_data='btn_approveAllDay_{}'.format(listIdDay)))
+        if len(lk) > 1: lk.append(InlineKeyboardButton(text="همه روزها",
+                                                       callback_data='btn_approveAllDay_{}'.format(listIdDay)))
         N = totalInRow
         res = []
         mod = 0

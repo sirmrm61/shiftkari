@@ -177,12 +177,20 @@ class HelperFunder:
         # If all conditions are met, return True
         return True
 
-    def send_shift_to_technicalResponsible(self, idshift, bot, creator=None):
-        shiftRow = mydb.get_all_property_shift_byId(idshift)
+    def send_shift_to_technicalResponsible(self, idShift, bot, creator=None):
+        shiftRow = mydb.get_all_property_shift_byId(idShift)
         ts = mydb.get_all_ts_chatid(creator)
         for t in ts:
             bot.sendMessage(t[0], self.formatShiftMessage(shiftRow, 2),
                             reply_markup=menu.keyLib.kbCreateMenuApproveShift(shiftId=shiftRow[9]))
+
+    def send_shift_to_student(self, idShift, bot, creator=None):
+        shiftRow = mydb.get_all_property_shift_byId(idShift)
+        st = mydb.get_all_student_chatid()
+        for s in st:
+            bot.sendMessage(s[0], self.formatShiftMessage(shiftRow, 2),
+                            reply_markup=menu.keyLib.kbCreateMenuApproveShift(shiftId=shiftRow[9]))
+        mydb.shift_update_by_id('send', 1, idShift)
 
     def send_shift_to_student(self, bot):
         shiftRows = mydb.get_list_shift_for_student()  # shift's for student
