@@ -688,8 +688,25 @@ def handle_new_messages(user_id, userName, update):
                 mydb.del_member_chatid(user_id)
                 mydb.member_update_chatid('registration_progress', 12, spBtn[2])  # 12 mean is deactivate
                 bot.sendMessage(user_id, msg.messageLib.afterDelete.value)
-            elif spBtn[1] == 'createSift':
-                bot.sendMessage(message['chat']['id'], msg.messageLib.dateShift.value)
+            elif spBtn[1] == 'createShiftEm':
+                dateNow = datetime.now()
+                date7ago = dateNow - timedelta(days=7)
+                TSPDEM = mydb.get_property_domain('TSPDEM')  # تعداد مجاز شیفت در هردوره اضطراری
+                PDEM = mydb.get_property_domain('PDEM')  # دوره شیفت اضطراری هر چند روز
+                bot.sendMessage(user_id, str(msg.messageLib.emShiftMsg.value).format(PDEM, TSPDEM))
+                totalEM = mydb.getTotalShiftEM(date7ago, dateNow, user_id)
+                if int(totalEM) < int(TSPDEM):
+                    bot.sendMessage(user_id, msg.messageLib.emShiftRegister.value)
+                    bot.sendMessage(user_id, msg.messageLib.dateShift.value)
+                    bot.sendMessage(chat_id=user_id, parse_mode='HTML', text='سال را انتخاب کنید',
+                                    reply_markup=menu.keyLib.kbCreateMenuYear(tag=6))
+                    mydb.member_update('registration_progress', 11, user_id)
+                    mydb.member_update('op', 0, message['chat']['id'])
+                else:
+                    bot.sendMessage(user_id, msg.messageLib.emShiftFull.value)
+                    return
+            elif spBtn[1] == 'createShift':
+                bot.sendMessage(user_id, msg.messageLib.dateShift.value)
                 bot.sendMessage(chat_id=user_id, parse_mode='HTML', text='سال را انتخاب کنید',
                                 reply_markup=menu.keyLib.kbCreateMenuYear(tag=1))
                 mydb.member_update('registration_progress', 11, user_id)
@@ -709,6 +726,11 @@ def handle_new_messages(user_id, userName, update):
                     rowid = mydb.shift_update('DateShift', yearTemp, user_id)
                     bot.sendMessage(chat_id=user_id, parse_mode='HTML', text='ماه انتخاب کنید',
                                     reply_markup=menu.keyLib.kbCreateMenuMonthInYear(tag='1_{}'.format(rowid[0])))
+                elif spBtn[3] == '6':
+                    rowid = mydb.shift_update('DateShift', yearTemp, user_id)
+                    mydb.shift_update_by_id('shiftIsEM', 1, rowid)
+                    bot.sendMessage(chat_id=user_id, parse_mode='HTML', text='ماه انتخاب کنید',
+                                    reply_markup=menu.keyLib.kbCreateMenuMonthInYear(tag='2_{}'.format(spBtn[4])))
                 elif spBtn[3] == '2':
                     mydb.shift_update_by_id('dateEndShift', yearTemp, spBtn[4])
                     bot.sendMessage(chat_id=user_id, parse_mode='HTML', text='ماه انتخاب کنید',
@@ -880,10 +902,11 @@ def handle_new_messages(user_id, userName, update):
                         mydb.removeShiftFromTable(spBtn[2])
                         mydb.member_update('op', 0, user_id)
                         mydb.member_update('registration_progress', 10, message['chat']['id'])
+                        return
                     else:
                         bot.sendMessage(message['chat']['id'], msg.messageLib.enterDateEnd.value)
                         bot.sendMessage(chat_id=user_id, parse_mode='HTML', text='سال را کنید',
-                                    reply_markup=menu.keyLib.kbCreateMenuYear(tag='2_{}'.format(spBtn[2])))
+                                        reply_markup=menu.keyLib.kbCreateMenuYear(tag='2_{}'.format(spBtn[2])))
                         mydb.member_update('op', 13, message['chat']['id'])
                 if int(op) == 13:
                     bot.sendMessage(message['chat']['id'], msg.messageLib.shiftStartTime.value)
@@ -918,10 +941,14 @@ def handle_new_messages(user_id, userName, update):
                         mydb.member_update('op', 10, message['chat']['id'])
                 if int(op) == 11:
                     # Send Shift to All Technical Responsible
+
                     hrSendToStudent = mydb.get_property_domain('hrStudent')
                     bot.sendMessage(message['chat']['id'],
                                     str(msg.messageLib.endRegisterShift.value).format(hrSendToStudent))
                     helper.send_shift_to_technicalResponsible(spBtn[3], bot, user_id)
+                    isShiftEm = mydb.get_shift_property('shiftIsEM', spBtn[3])
+                    if int(isShiftEm) is 1:
+                        helper.send_shift_to_studentEM(spBtn[3], bot, user_id)
                     mydb.member_update('registration_progress', 10, user_id)
                     mydb.member_update('op', 0, user_id)
                     mydb.shift_update('progress', 2, user_id)
