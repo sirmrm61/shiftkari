@@ -52,18 +52,18 @@ class mysqlconnector:
         sqlQuery = 'select * from `botshiftkari`.`membership` where chat_id = \'{}\''.format(member.chatId)
         mydb = self.connector()
         mydb.autocommit = True;
-        mycursor = mydb.cursor()
-        mycursor.execute(sqlQuery)
-        result = mycursor.fetchall()
-        mycursor.reset()
+        myCursor = mydb.cursor()
+        myCursor.execute(sqlQuery)
+        result = myCursor.fetchall()
+        myCursor.reset()
         if len(result) == 0:
             sql = '''insert into membership (name,last_name,phone_number,membership_type,membership_fee_paid,
                 registration_progress,username,chat_id,last_message_sent) VALUEs (%s,%s,%s,%s,%s,%s,%s,%s,%s)'''
             val = (
                 member.name, member.last_name, member.phone_number, member.membership_type, member.membership_fee_paid,
                 member.register_progress, member.userName, member.chatId, member.lastMessage)
-            result = mycursor.execute(sql, val)
-            mycursor.reset()
+            result = myCursor.execute(sql, val)
+            myCursor.reset()
         else:
             sql = 'UPDATE `botshiftkari`.`membership` SET'
             updateExp = ''
@@ -102,27 +102,27 @@ class mysqlconnector:
             if len(updateExp) > 0:
                 updateExp += ' WHERE `chat_id` = \'{0}\';'.format(member.chatId)
                 sql += updateExp
-                result = mycursor.execute(sql)
-        mycursor.reset()
+                result = myCursor.execute(sql)
+        myCursor.reset()
         mydb.close()
 
     def getAdmins(self):
         sqlQuery = '''select chat_id from `botshiftkari`.`membership` 
                             where membership_type = 4 and verifyAdmin =1 and del=0'''
         mydb = self.connector()
-        mycursor = mydb.cursor()
-        mycursor.execute(sqlQuery)
-        result = mycursor.fetchall()
-        mycursor.reset()
+        myCursor = mydb.cursor()
+        myCursor.execute(sqlQuery)
+        result = myCursor.fetchall()
+        myCursor.reset()
         return result
 
     def load_member(self, chatid):
         sqlQuery = 'select * from `botshiftkari`.`membership` where  chat_id = \'{}\''.format(chatid)
         mydb = self.connector()
-        mycursor = mydb.cursor()
-        mycursor.execute(sqlQuery)
-        result = mycursor.fetchone()
-        mycursor.reset()
+        myCursor = mydb.cursor()
+        myCursor.execute(sqlQuery)
+        result = myCursor.fetchone()
+        myCursor.reset()
         tempMember = Membership()
         if result != None:
             tempMember.name = result[1]
@@ -149,9 +149,9 @@ class mysqlconnector:
                                                                                                             chatid)
         mydb = self.connector()
         mydb.autocommit = True
-        mycursor = mydb.cursor()
-        result = mycursor.execute(sqlQuery)
-        mycursor.reset()
+        myCursor = mydb.cursor()
+        result = myCursor.execute(sqlQuery)
+        myCursor.reset()
         return result
 
     def member_update_chatid(self, fieldName, fieldValue, chatid):
@@ -160,9 +160,9 @@ class mysqlconnector:
                                                                                                             chatid)
         mydb = self.connector()
         mydb.autocommit = True
-        mycursor = mydb.cursor()
-        result = mycursor.execute(sqlQuery)
-        mycursor.reset()
+        myCursor = mydb.cursor()
+        result = myCursor.execute(sqlQuery)
+        myCursor.reset()
         return result
 
     def set_member_last_update_id(self, chatid, last_uid):
@@ -170,18 +170,18 @@ class mysqlconnector:
             chatid, last_uid)
         mydb = self.connector()
         mydb.autocommit = True
-        mycursor = mydb.cursor()
-        result = mycursor.execute(sqlQuery)
-        mycursor.reset()
+        myCursor = mydb.cursor()
+        result = myCursor.execute(sqlQuery)
+        myCursor.reset()
         return result
 
     def reactive_member_chatid(self, chatid):
         sqlQuery = 'select id from `botshiftkari`.`membership` where chat_id=\'{0}\''.format(chatid)
         mydb = self.connector()
         mydb.autocommit = True
-        mycursor = mydb.cursor()
-        mycursor.execute(sqlQuery)
-        result = mycursor.fetchone();
+        myCursor = mydb.cursor()
+        myCursor.execute(sqlQuery)
+        result = myCursor.fetchone();
         print(chatid)
         print(result[0])
         if result is None:
@@ -191,16 +191,16 @@ class mysqlconnector:
                             update `botshiftkari`.`founder` set del=0 WHERE idMember={0};
                             update `botshiftkari`.`student` set del=0 WHERE idMember ={0};
                             update `botshiftkari`.`technicalmanager` set del=0 WHERE idMember={0};'''.format(result[0])
-            mycursor.execute(sqlQuery)
+            myCursor.execute(sqlQuery)
             return result[0]
 
     def del_member_chatid(self, chatid):
         sqlQuery = 'select id from `botshiftkari`.`membership` where chat_id=\'{0}\''.format(chatid)
         mydb = self.connector()
         mydb.autocommit = True
-        mycursor = mydb.cursor()
-        mycursor.execute(sqlQuery)
-        result = mycursor.fetchone();
+        myCursor = mydb.cursor()
+        myCursor.execute(sqlQuery)
+        result = myCursor.fetchone();
         if result is None:
             return None
         else:
@@ -208,7 +208,7 @@ class mysqlconnector:
                           update `botshiftkari`.`founder` set del=1 WHERE idMember={0};
                           update `botshiftkari`.`student` set del=1 WHERE idMember ={0};
                           update `botshiftkari`.`technicalmanager` set del=1 WHERE idMember={0};'''.format(result[0])
-            mycursor.execute(sqlQuery)
+            myCursor.execute(sqlQuery)
             return result[0]
 
     def get_member_property_Adminchatid(self, fieldName, chatid):
@@ -217,9 +217,9 @@ class mysqlconnector:
             fieldName)
         mydb = self.connector()
         mydb.autocommit = True
-        mycursor = mydb.cursor()
-        mycursor.execute(sqlQuery)
-        result = mycursor.fetchone();
+        myCursor = mydb.cursor()
+        myCursor.execute(sqlQuery)
+        result = myCursor.fetchone();
         if result is None:
             return None
         else:
@@ -230,9 +230,9 @@ class mysqlconnector:
         print(sqlQuery)
         mydb = self.connector()
         mydb.autocommit = True
-        mycursor = mydb.cursor()
-        mycursor.execute(sqlQuery)
-        result = mycursor.fetchone();
+        myCursor = mydb.cursor()
+        myCursor.execute(sqlQuery)
+        result = myCursor.fetchone();
         if result is None:
             return None
         else:
@@ -242,31 +242,31 @@ class mysqlconnector:
         sqlQuery = 'select * from `botshiftkari`.`membership` where chat_id = \'{}\''.format(member.chatId)
         mydb = self.connector()
         mydb.autocommit = True;
-        mycursor = mydb.cursor()
-        mycursor.execute(sqlQuery)
-        result = mycursor.fetchall()
-        mycursor.reset()
+        myCursor = mydb.cursor()
+        myCursor.execute(sqlQuery)
+        result = myCursor.fetchall()
+        myCursor.reset()
         if len(result) == 0:
             sql = '''insert into membership (name,last_name,phone_number,membership_type,membership_fee_paid,
             registration_progress,username,chat_id,last_message_sent) VALUEs (%s,%s,%s,%s,%s,%s,%s,%s,%s)'''
             val = (
                 member.name, member.last_name, member.phone_number, member.membership_type, member.membership_fee_paid,
                 member.register_progress, member.userName, member.chatId, member.lastMessage)
-            result = mycursor.execute(sql, val)
-            mycursor.reset()
+            result = myCursor.execute(sql, val)
+            myCursor.reset()
         return member;
 
     def get_funder_property(self, fieldName, chatid):
         sqlQuery = 'select id from `botshiftkari`.`membership` where  chat_id = \'{0}\''.format(chatid)
         mydb = self.connector()
         mydb.autocommit = True
-        mycursor = mydb.cursor()
-        mycursor.execute(sqlQuery)
-        result = mycursor.fetchone();
+        myCursor = mydb.cursor()
+        myCursor.execute(sqlQuery)
+        result = myCursor.fetchone();
         idMember = result[0]
         sqlQuery = 'select {0} from `botshiftkari`.`founder` where idMember={1}'.format(fieldName, idMember)
-        mycursor.execute(sqlQuery)
-        result = mycursor.fetchone()
+        myCursor.execute(sqlQuery)
+        result = myCursor.fetchone()
         if result is None:
             return None
         else:
@@ -276,13 +276,13 @@ class mysqlconnector:
         sqlQuery = 'select id from `botshiftkari`.`membership` where  chat_id = \'{0}\''.format(chatid)
         mydb = self.connector()
         mydb.autocommit = True
-        mycursor = mydb.cursor()
-        mycursor.execute(sqlQuery)
-        result = mycursor.fetchone();
+        myCursor = mydb.cursor()
+        myCursor.execute(sqlQuery)
+        result = myCursor.fetchone();
         idMember = result[0]
         sqlQuery = 'select id from `botshiftkari`.`founder` where idMember={}'.format(idMember)
-        mycursor.execute(sqlQuery)
-        result = mycursor.fetchone()
+        myCursor.execute(sqlQuery)
+        result = myCursor.fetchone()
         if result is None:
             sqlQuery = 'insert into `botshiftkari`.`founder` (idMember,{0}) values ({1},\'{2}\')'.format(fieldName,
                                                                                                          idMember,
@@ -291,21 +291,21 @@ class mysqlconnector:
             sqlQuery = 'UPDATE `botshiftkari`.`founder` SET `{0}` = \'{1}\'  where idMember = \'{2}\''.format(fieldName,
                                                                                                               fieldValue,
                                                                                                               idMember)
-        mycursor.execute(sqlQuery)
-        mycursor.reset()
+        myCursor.execute(sqlQuery)
+        myCursor.reset()
         return result
 
     def get_student_property(self, fieldName, chatid):
         sqlQuery = 'select id from `botshiftkari`.`membership` where  chat_id = \'{0}\''.format(chatid)
         mydb = self.connector()
         mydb.autocommit = True
-        mycursor = mydb.cursor()
-        mycursor.execute(sqlQuery)
-        result = mycursor.fetchone()
+        myCursor = mydb.cursor()
+        myCursor.execute(sqlQuery)
+        result = myCursor.fetchone()
         idMember = result[0]
         sqlQuery = 'select {0} from `botshiftkari`.`student` where idMember={1}'.format(fieldName, idMember)
-        mycursor.execute(sqlQuery)
-        result = mycursor.fetchone()
+        myCursor.execute(sqlQuery)
+        result = myCursor.fetchone()
         if result is None:
             return None
         else:
@@ -315,13 +315,13 @@ class mysqlconnector:
         sqlQuery = 'select id from `botshiftkari`.`membership` where  chat_id = \'{0}\''.format(chatid)
         mydb = self.connector()
         mydb.autocommit = True
-        mycursor = mydb.cursor()
-        mycursor.execute(sqlQuery)
-        result = mycursor.fetchone();
+        myCursor = mydb.cursor()
+        myCursor.execute(sqlQuery)
+        result = myCursor.fetchone();
         idMember = result[0]
         sqlQuery = 'select id from `botshiftkari`.`student` where idMember={}'.format(idMember)
-        mycursor.execute(sqlQuery)
-        result = mycursor.fetchone()
+        myCursor.execute(sqlQuery)
+        result = myCursor.fetchone()
         if result is None:
             sqlQuery = 'insert into `botshiftkari`.`student` (idMember,{0}) values ({1},\'{2}\')'.format(fieldName,
                                                                                                          idMember,
@@ -330,21 +330,21 @@ class mysqlconnector:
             sqlQuery = 'UPDATE `botshiftkari`.`student` SET `{0}` = \'{1}\'  where idMember = \'{2}\''.format(fieldName,
                                                                                                               fieldValue,
                                                                                                               idMember)
-        mycursor.execute(sqlQuery)
-        mycursor.reset()
+        myCursor.execute(sqlQuery)
+        myCursor.reset()
         return result
 
     def get_technical_property(self, fieldName, chatid):
         sqlQuery = 'select id from `botshiftkari`.`membership` where  chat_id = \'{0}\''.format(chatid)
         mydb = self.connector()
         mydb.autocommit = True
-        mycursor = mydb.cursor()
-        mycursor.execute(sqlQuery)
-        result = mycursor.fetchone();
+        myCursor = mydb.cursor()
+        myCursor.execute(sqlQuery)
+        result = myCursor.fetchone();
         idMember = result[0]
         sqlQuery = 'select {0} from `botshiftkari`.`technicalmanager` where idMember={1}'.format(fieldName, idMember)
-        mycursor.execute(sqlQuery)
-        result = mycursor.fetchone()
+        myCursor.execute(sqlQuery)
+        result = myCursor.fetchone()
         if result is None:
             return None
         else:
@@ -354,70 +354,70 @@ class mysqlconnector:
         sqlQuery = 'select id from `botshiftkari`.`membership` where  chat_id = \'{0}\''.format(chatid)
         mydb = self.connector()
         mydb.autocommit = True
-        mycursor = mydb.cursor()
-        mycursor.execute(sqlQuery)
-        result = mycursor.fetchone();
+        myCursor = mydb.cursor()
+        myCursor.execute(sqlQuery)
+        result = myCursor.fetchone();
         idMember = result[0]
         sqlQuery = 'select id from `botshiftkari`.`technicalmanager` where idMember={}'.format(idMember)
-        mycursor.execute(sqlQuery)
-        result = mycursor.fetchone()
+        myCursor.execute(sqlQuery)
+        result = myCursor.fetchone()
         if result is None:
             sqlQuery = 'insert into `botshiftkari`.`technicalmanager` (idMember,{0}) values ({1},\'{2}\')'.format(
                 fieldName, idMember, fieldValue)
         else:
             sqlQuery = 'UPDATE `botshiftkari`.`technicalmanager` SET `{0}` = \'{1}\'  where idMember = \'{2}\''.format(
                 fieldName, fieldValue, idMember)
-        mycursor.execute(sqlQuery)
-        mycursor.reset()
+        myCursor.execute(sqlQuery)
+        myCursor.reset()
         return result
 
     def shift_update(self, fieldName, fieldValue, chatid):
         mydb = self.connector()
         mydb.autocommit = True
-        mycursor = mydb.cursor()
+        myCursor = mydb.cursor()
         sqlQuery = 'select idshift from `botshiftkari`.`shift` where progress=0 and Creator={}'.format(chatid)
-        mycursor.execute(sqlQuery)
-        result = mycursor.fetchone()
+        myCursor.execute(sqlQuery)
+        result = myCursor.fetchone()
         if result is None:
             sqlQuery = 'insert into `botshiftkari`.`shift` (Creator,{0}) values (\'{1}\',\'{2}\')'.format(fieldName,
                                                                                                           chatid,
                                                                                                           fieldValue)
-            result = mycursor.lastrowid
+            result = myCursor.lastrowid
         else:
             sqlQuery = 'UPDATE `botshiftkari`.`shift` SET `{0}` = \'{1}\'  where progress=0 and Creator = \'{2}\''.format(
                 fieldName, fieldValue, chatid)
-        mycursor.execute(sqlQuery)
-        mycursor.reset()
+        myCursor.execute(sqlQuery)
+        myCursor.reset()
         return result
 
     def shift_update_by_id(self, fieldName, fieldValue, idshift):
         mydb = self.connector()
         mydb.autocommit = True
-        mycursor = mydb.cursor()
+        myCursor = mydb.cursor()
         sqlQuery = 'UPDATE `botshiftkari`.`shift` SET `{0}` = \'{1}\'  where  idshift = \'{2}\''.format(
             fieldName, fieldValue, idshift)
-        mycursor.execute(sqlQuery)
-        mycursor.reset()
+        myCursor.execute(sqlQuery)
+        myCursor.reset()
         return None
 
     def shift_reserve_by_id(self, idshift, chatid):
         mydb = self.connector()
         mydb.autocommit = True
-        mycursor = mydb.cursor()
+        myCursor = mydb.cursor()
         sqlQuery = 'UPDATE `botshiftkari`.`shift` SET `progress` = 3,`approver`=\'{1}\'  where progress=2 and idshift = \'{0}\''.format(
             idshift, chatid)
         print(sqlQuery)
-        mycursor.execute(sqlQuery)
-        mycursor.reset()
+        myCursor.execute(sqlQuery)
+        myCursor.reset()
         return None
 
     def get_shift_property(self, fieldName, idShift):
         mydb = self.connector()
         mydb.autocommit = True
-        mycursor = mydb.cursor()
+        myCursor = mydb.cursor()
         sqlQuery = 'select {0} from `botshiftkari`.`shift` where idshift={1}'.format(fieldName, idShift)
-        mycursor.execute(sqlQuery)
-        result = mycursor.fetchone()
+        myCursor.execute(sqlQuery)
+        result = myCursor.fetchone()
         if result is None:
             return None
         else:
@@ -426,21 +426,21 @@ class mysqlconnector:
     def get_all_shift(self=None, progress=1, creator=0):
         mydb = self.connector()
         mydb.autocommit = True
-        mycursor = mydb.cursor()
+        myCursor = mydb.cursor()
         sqlQuery = '''SELECT concat(mem.name,mem.last_name) as fullname,creator,
                         DateShift,startTime,endTime,wage,pharmacyAddress,progress,approver,shi.idshift,
                         shi.dateEndShift
                         FROM botshiftkari.shift shi inner join botshiftkari.membership mem on
                          mem.chat_id = shi.Creator where not shi.creator = '{0}' and shi.progress={1}'''.format(creator,
                                                                                                                 progress)
-        mycursor.execute(sqlQuery)
-        result = mycursor.fetchall()
+        myCursor.execute(sqlQuery)
+        result = myCursor.fetchall()
         return result
 
     def get_shift_no_approve(self=None, progress=1, creator=0):
         mydb = self.connector()
         mydb.autocommit = True
-        mycursor = mydb.cursor()
+        myCursor = mydb.cursor()
         sqlQuery = '''SELECT concat(mem.name,mem.last_name) as fullname,creator,
                          DateShift,startTime,endTime,wage,pharmacyAddress,progress,approver,shi.idshift,
                          shi.dateEndShift
@@ -448,67 +448,67 @@ class mysqlconnector:
                           mem.chat_id = shi.Creator where approver is null and not shi.creator = '{0}' and shi.progress={1}'''.format(
             creator, progress)
         print(sqlQuery)
-        mycursor.execute(sqlQuery)
-        result = mycursor.fetchall()
+        myCursor.execute(sqlQuery)
+        result = myCursor.fetchall()
         return result
 
     def get_all_shift_by_creator(self=None, creator=0):
         mydb = self.connector()
         mydb.autocommit = True
-        mycursor = mydb.cursor()
+        myCursor = mydb.cursor()
         sqlQuery = '''SELECT concat(mem.name,mem.last_name) as fullname,creator,
                         DateShift,startTime,endTime,wage,pharmacyAddress,progress,approver,shi.idshift,
                         shi.dateEndShift,shi.wfStudent
                         FROM botshiftkari.shift shi inner join botshiftkari.membership mem on
                          mem.chat_id = shi.Creator where  shi.creator = '{0}' and (shi.progress=1 or shi.progress=2) and shi.del=0'''.format(
             creator)
-        mycursor.execute(sqlQuery)
-        result = mycursor.fetchall()
+        myCursor.execute(sqlQuery)
+        result = myCursor.fetchall()
         return result
 
     def get_all_shift_manager(self=None):
         mydb = self.connector()
         mydb.autocommit = True
-        mycursor = mydb.cursor()
+        myCursor = mydb.cursor()
         sqlQuery = '''SELECT concat(mem.name,mem.last_name) as fullname,creator,
                         DateShift,startTime,endTime,wage,pharmacyAddress,progress,approver,shi.idshift,
                         shi.dateEndShift,shi.wfStudent
                         FROM botshiftkari.shift shi inner join botshiftkari.membership mem on
                          mem.chat_id = shi.Creator and shi.del=0 '''
-        mycursor.execute(sqlQuery)
-        result = mycursor.fetchall()
+        myCursor.execute(sqlQuery)
+        result = myCursor.fetchall()
         return result
 
     def get_all_shift_managerForApprove(self=None):
         mydb = self.connector()
         mydb.autocommit = True
-        mycursor = mydb.cursor()
+        myCursor = mydb.cursor()
         sqlQuery = '''SELECT concat(mem.name,mem.last_name) as fullname,creator,
                         DateShift,startTime,endTime,wage,pharmacyAddress,progress,approver,shi.idshift,
                         shi.dateEndShift,shi.wfStudent
                         FROM botshiftkari.shift shi inner join botshiftkari.membership mem on
                          mem.chat_id = shi.Creator where progress = 1 and shi.del = 0'''
-        mycursor.execute(sqlQuery)
-        result = mycursor.fetchall()
+        myCursor.execute(sqlQuery)
+        result = myCursor.fetchall()
         return result
 
     def get_all_shift_managerApproved(self=None):
         mydb = self.connector()
         mydb.autocommit = True
-        mycursor = mydb.cursor()
+        myCursor = mydb.cursor()
         sqlQuery = '''SELECT concat(mem.name,mem.last_name) as fullname,creator,
                         DateShift,startTime,endTime,wage,pharmacyAddress,progress,approver,shi.idshift,
                         shi.dateEndShift,shi.wfStudent
                         FROM botshiftkari.shift shi inner join botshiftkari.membership mem on
                          mem.chat_id = shi.Creator where progress = 2 and shi.del = 0'''
-        mycursor.execute(sqlQuery)
-        result = mycursor.fetchall()
+        myCursor.execute(sqlQuery)
+        result = myCursor.fetchall()
         return result;
 
     def get_all_member(self=None, tye=None):
         mydb = self.connector()
         mydb.autocommit = True
-        mycursor = mydb.cursor()
+        myCursor = mydb.cursor()
         sqlQuery = None
         if tye is None:
             sqlQuery = '''select concat(mem.name,mem.last_name) as fullname,
@@ -533,40 +533,40 @@ class mysqlconnector:
                                         mem.phone_number
                                         from  botshiftkari.membership as mem  where mem.membership_type={}'''.format(
                 tye)
-        mycursor.execute(sqlQuery)
-        result = mycursor.fetchall()
+        myCursor.execute(sqlQuery)
+        result = myCursor.fetchall()
         return result
 
     def get_all_shift_by_approver(self=None, creator='0', dateShift=''):
         mydb = self.connector()
-        mycursor = mydb.cursor()
+        myCursor = mydb.cursor()
         sqlQuery = '''SELECT concat(mem.name,mem.last_name) as fullname,creator,
                         DateShift,startTime,endTime,wage,pharmacyAddress,progress,approver,shi.idshift,
                         shi.dateEndShift,shi.wfStudent
                         FROM botshiftkari.shift shi inner join botshiftkari.membership mem on
                          mem.chat_id = shi.Creator where  shi.approver = '{0}' and shi.DateShift> '{1}'
                           and (shi.progress=3 or shi.progress=4) and shi.del=0'''.format(creator, dateShift)
-        mycursor.execute(sqlQuery)
-        result = mycursor.fetchall()
+        myCursor.execute(sqlQuery)
+        result = myCursor.fetchall()
         return result
 
     def get_all_property_shift_byId(self=None, idshift=0):
         mydb = self.connector()
         mydb.autocommit = True
-        mycursor = mydb.cursor()
+        myCursor = mydb.cursor()
         sqlQuery = '''SELECT concat(mem.name,mem.last_name) as fullname,creator,
                         DateShift,startTime,endTime,wage,pharmacyAddress,progress,approver,shi.idshift,
                         shi.dateEndShift,shi.wfStudent
                         FROM botshiftkari.shift shi inner join botshiftkari.membership mem on
                          mem.chat_id = shi.Creator where  shi.idshift={0}'''.format(idshift)
-        mycursor.execute(sqlQuery)
-        result = mycursor.fetchone()
+        myCursor.execute(sqlQuery)
+        result = myCursor.fetchone()
         return result
 
     def get_all_ts_chatid(self, creator=None):
         mydb = self.connector()
         mydb.autocommit = True
-        mycursor = mydb.cursor()
+        myCursor = mydb.cursor()
         sqlQuery = None
         if creator is None:
             sqlQuery = '''SELECT mem.chat_id from botshiftkari.membership as mem where mem.del=0 and 
@@ -574,8 +574,8 @@ class mysqlconnector:
         else:
             sqlQuery = '''SELECT mem.chat_id from botshiftkari.membership as mem where mem.del=0 and 
                         mem.membership_type=2 and not mem.chat_id = \'{0}\''''.format(creator)
-        mycursor.execute(sqlQuery)
-        result = mycursor.fetchall()
+        myCursor.execute(sqlQuery)
+        result = myCursor.fetchall()
         return result
 
     def get_property_domain(self, key):
@@ -645,7 +645,7 @@ class mysqlconnector:
 
     def get_all_student_chatid(self, creator=None):
         mydb = self.connector()
-        mycursor = mydb.cursor()
+        myCursor = mydb.cursor()
         sqlQuery = ''
         if creator is None:
             sqlQuery = 'SELECT mem.chat_id from botshiftkari.membership as mem where mem.del=0 ' \
@@ -653,8 +653,8 @@ class mysqlconnector:
         else:
             sqlQuery = f'SELECT mem.chat_id from botshiftkari.membership as mem where mem.del=0 ' \
                        f'and mem.membership_type=3 and not mem.chat_id = \'{creator}\' '
-        mycursor.execute(sqlQuery)
-        result = mycursor.fetchall()
+        myCursor.execute(sqlQuery)
+        result = myCursor.fetchall()
         return result
 
     def checkExsistDetail(self, mem: Membership, newType):
@@ -720,10 +720,10 @@ VALUES({idShift},\'{dateShift}\',\'{requster}\',0,{sendedForCreator});SELECT LAS
 
     def getShiftDayProperty(self, fieldName, idDayShift):
         mydb = self.connector()
-        mycursor = mydb.cursor()
+        myCursor = mydb.cursor()
         sqlQuery = f'SELECT {fieldName} from botshiftkari.dayshift  where  idDayShift={idDayShift}'
-        mycursor.execute(sqlQuery)
-        result = mycursor.fetchone()
+        myCursor.execute(sqlQuery)
+        result = myCursor.fetchone()
         if result == None:
             return None
         else:
@@ -731,19 +731,19 @@ VALUES({idShift},\'{dateShift}\',\'{requster}\',0,{sendedForCreator});SELECT LAS
 
     def getEmptyDayOfShift(self, idShift):
         mydb = self.connector()
-        mycursor = mydb.cursor()
+        myCursor = mydb.cursor()
         sqlQuery = f'SELECT * from botshiftkari.dayshift  where  approveCreator=0 and idShift={idShift}'
-        mycursor.execute(sqlQuery)
-        result = mycursor.fetchall()
+        myCursor.execute(sqlQuery)
+        result = myCursor.fetchall()
         return result
 
     def getIdRegisterDayOfShift(self, idShift, dateShift, requsterShift):
         mydb = self.connector()
-        mycursor = mydb.cursor()
+        myCursor = mydb.cursor()
         sqlQuery = f'SELECT iddayShift from botshiftkari.dayshift  where  idShift={idShift} and dateShift=\'{dateShift}\'' + \
                    f' and requster=\'{requsterShift}\''
-        mycursor.execute(sqlQuery)
-        result = mycursor.fetchone()
+        myCursor.execute(sqlQuery)
+        result = myCursor.fetchone()
         if result is not None:
             return result[0]
         else:
@@ -751,28 +751,28 @@ VALUES({idShift},\'{dateShift}\',\'{requster}\',0,{sendedForCreator});SELECT LAS
 
     def isShiftDayFull(self, idShift, dateShift):
         mydb = self.connector()
-        mycursor = mydb.cursor()
+        myCursor = mydb.cursor()
         sqlQuery = f'SELECT count(iddayShift) from botshiftkari.dayshift  where  idShift={idShift} and dateShift=\'{dateShift}\'' + \
                    f' and status = 2 '
-        mycursor.execute(sqlQuery)
-        result = mycursor.fetchone()
+        myCursor.execute(sqlQuery)
+        result = myCursor.fetchone()
         return result[0]
 
     def getListDaySelection(self, idShift, requsterShift):
         mydb = self.connector()
-        mycursor = mydb.cursor()
+        myCursor = mydb.cursor()
         sqlQuery = f'SELECT iddayShift,dateShift from botshiftkari.dayshift  where  idShift={idShift} and status= 0 ' + \
                    f' and requster=\'{requsterShift}\''
-        mycursor.execute(sqlQuery)
-        result = mycursor.fetchall()
+        myCursor.execute(sqlQuery)
+        result = myCursor.fetchall()
         return result
 
     def getIdShiftFromDay(self, idDayShift):
         mydb = self.connector()
-        mycursor = mydb.cursor()
+        myCursor = mydb.cursor()
         sqlQuery = f'SELECT idshift from botshiftkari.dayshift  where  iddayShift={idDayShift} '
-        mycursor.execute(sqlQuery)
-        result = mycursor.fetchone()
+        myCursor.execute(sqlQuery)
+        result = myCursor.fetchone()
         if result is not None:
             return result[0]
         else:
@@ -780,19 +780,26 @@ VALUES({idShift},\'{dateShift}\',\'{requster}\',0,{sendedForCreator});SELECT LAS
 
     def removeFromSelection(self, idDayShift):
         mydb = self.connector()
-        mycursor = mydb.cursor()
+        myCursor = mydb.cursor()
         mydb.autocommit = True
         sqlQuery = f'delete from botshiftkari.dayshift  where  iddayShift={idDayShift} and status = 0 '
-        mycursor.execute(sqlQuery)
+        myCursor.execute(sqlQuery)
+
+    def removeShiftFromTable(self, idShift):
+        mydb = self.connector()
+        myCursor = mydb.cursor()
+        mydb.autocommit = True
+        sqlQuery = f'delete from botshiftkari.shift  where  idshift={idShift} and status = 0 '
+        myCursor.execute(sqlQuery)
 
     def getListDayIsNotEmpty(self, idShift, status=2):
         mydb = self.connector()
-        mycursor = mydb.cursor()
+        myCursor = mydb.cursor()
         sqlQuery = f'SELECT iddayShift,dateShift,requster from botshiftkari.dayshift  where  idShift={idShift}'
         if status is not None:
             sqlQuery += f' and status= {status} '
-        mycursor.execute(sqlQuery)
-        result = mycursor.fetchall()
+        myCursor.execute(sqlQuery)
+        result = myCursor.fetchall()
         return result
 
     def getListMember(self, sender, group=None):
@@ -802,7 +809,7 @@ VALUES({idShift},\'{dateShift}\',\'{requster}\',0,{sendedForCreator});SELECT LAS
         else:
             sqlQuery = f"SELECT chat_id FROM botshiftkari.membership where not chat_id = '{sender}'  and membership_type = {group}"
         mydb = self.connector()
-        mycursor = mydb.cursor()
-        mycursor.execute(sqlQuery)
-        result = mycursor.fetchall()
+        myCursor = mydb.cursor()
+        myCursor.execute(sqlQuery)
+        result = myCursor.fetchall()
         return result
