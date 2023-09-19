@@ -3,7 +3,7 @@ import time
 from model.membership import Membership
 from persiantools.jdatetime import JalaliDate
 from dateutil.relativedelta import relativedelta
-from datetime import timedelta,date,datetime,time
+from datetime import timedelta, date, datetime, time
 import os
 from pprint import pprint
 import msg
@@ -554,6 +554,7 @@ def handle_new_messages(user_id, userName, update):
     elif 'callback_query' in update:
         message = update['callback_query']['message']
         btn = update['callback_query']['data']
+
         spBtn = btn.split('_')
         print(spBtn)
         if len(spBtn) > 1:
@@ -859,11 +860,32 @@ def handle_new_messages(user_id, userName, update):
                 print(f'opBtn={opBtn}')
                 if (int(op) - int(opBtn)) > 1:
                     bot.sendMessage(user_id, msg.messageLib.erroOnBack.value)
-                if int(op) == 1:  # تاریخ پایان شیفت بعدا اضافه شد
-                    bot.sendMessage(message['chat']['id'], msg.messageLib.enterDateEnd.value)
-                    bot.sendMessage(chat_id=user_id, parse_mode='HTML', text='سال را کنید',
+                if int(op) == 1:
+                    dateStartShift = mydb.get_shift_property('DateShift', spBtn[2])
+                    dateStart = JalaliDate(int(dateStartShift[:4]), int(dateStartShift[5:7]),
+                                           int(dateStartShift[8:])).to_gregorian()
+                    dateStart = datetime.combine(dateStart, time())
+                    dateNow = datetime.now()
+                    diffDay = relativedelta(dateStart, dateNow)
+                    hrEmShift = mydb.get_property_domain(
+                        'hrEmShift')  # از این زمان برای تشخیص شیفت اضطراری استفاده می شود
+                    # todo: Remove Print command
+                    print("{0} - {1} = {2} hour ".format(dateStart, dateNow, ((diffDay.days * 24) + diffDay.hours)))
+                    print("{0} <= {1} ".format(((diffDay.days * 24) + diffDay.hours), int(hrEmShift)))
+                    if ((diffDay.days * 24) + diffDay.hours) <= int(hrEmShift):
+                        date7ago = dateNow - timedelta(days=7)
+                        TSPDEM = mydb.get_property_domain('TSPDEM')  # تعداد مجاز شیفت در هردوره اضطراری
+                        PDEM = mydb.get_property_domain('PDEM')  # دوره شیفت اضطراری هر چند روز
+                        bot.sendMessage(user_id, str(msg.messageLib.emShiftMsg.value).format(PDEM, TSPDEM))
+                        helper.send_operation(tempMember, bot, user_id)
+                        mydb.removeShiftFromTable(spBtn[2])
+                        mydb.member_update('op', 0, user_id)
+                        mydb.member_update('registration_progress', 10, message['chat']['id'])
+                    else:
+                        bot.sendMessage(message['chat']['id'], msg.messageLib.enterDateEnd.value)
+                        bot.sendMessage(chat_id=user_id, parse_mode='HTML', text='سال را کنید',
                                     reply_markup=menu.keyLib.kbCreateMenuYear(tag='2_{}'.format(spBtn[2])))
-                    mydb.member_update('op', 13, message['chat']['id'])
+                        mydb.member_update('op', 13, message['chat']['id'])
                 if int(op) == 13:
                     bot.sendMessage(message['chat']['id'], msg.messageLib.shiftStartTime.value)
                     mydb.member_update('op', 2, message['chat']['id'])
@@ -900,31 +922,6 @@ def handle_new_messages(user_id, userName, update):
                     hrSendToStudent = mydb.get_property_domain('hrStudent')
                     bot.sendMessage(message['chat']['id'],
                                     str(msg.messageLib.endRegisterShift.value).format(hrSendToStudent))
-                    dateStartShift = mydb.get_shift_property('DateShift', spBtn[3])
-                    dateStart = JalaliDate(int(dateStartShift[:4]), int(dateStartShift[5:7]),
-                                           int(dateStartShift[8:])).to_gregorian()
-                    dateStart = datetime.combine(dateStart,time())
-                    dateNow = datetime.now()
-                    diffDay = relativedelta(dateStart, dateNow)
-                    hrEmShift = mydb.get_property_domain(
-                        'hrEmShift')  # از این زمان برای تشخیص شیفت اضطراری استفاده می شود
-                    print("{0} - {1} = {2} hour ".format(dateStart, dateNow, ((diffDay.days * 24) + diffDay.hours)))
-                    print("{0} <= {1} ".format(((diffDay.days * 24) + diffDay.hours), int(hrEmShift)))
-                    if ((diffDay.days * 24) + diffDay.hours) <= int(hrEmShift):
-                        date7ago = dateNow - timedelta(days=7)
-                        TSPDEM = mydb.get_property_domain('TSPDEM')  # تعداد مجاز شیفت در هردوره اضطراری
-                        PDEM = mydb.get_property_domain('PDEM')  # دوره شیفت اضطراری هر چند روز
-                        bot.sendMessage(user_id, str(msg.messageLib.emShiftMsg.value).format(PDEM, TSPDEM))
-                        totalEM = mydb.getTotalShiftEM(date7ago, dateNow, user_id)
-                        if int(totalEM) < int(TSPDEM):
-                            bot.sendMessage(user_id, msg.messageLib.emShiftRegister.value)
-                            helper.send_shift_to_studentEM(spBtn[3], bot, user_id)
-                            mydb.shift_update_by_id('shiftIsEM', 1, spBtn[3])
-                        else:
-                            bot.sendMessage(user_id, msg.messageLib.emShiftFull.value)
-                            mydb.shift_update_by_id('del', 1, spBtn[3])
-                            return
-                    # print("{0} - {1} = {2} Day ".format(date1, date2, diffDay.days))
                     helper.send_shift_to_technicalResponsible(spBtn[3], bot, user_id)
                     mydb.member_update('registration_progress', 10, user_id)
                     mydb.member_update('op', 0, user_id)
