@@ -106,6 +106,8 @@ class HelperFunder:
                             reply_markup=menu.keyLib.kbCreateMenuShiftApproveFunder(shiftId=chatid))
 
     def send_operation(self, tempMember, bot, chatid):
+        mydb.member_update('registration_progress', 10, chatid)
+        mydb.member_update('op', 0, chatid)
         if tempMember.membership_type == 1:
             bot.sendMessage(chatid, msg.messageLib.yourOperation.value,
                             reply_markup=menu.keyLib.kbCreateMenuFunder(chatId=chatid))

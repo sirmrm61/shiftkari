@@ -67,9 +67,9 @@ class keyLib:
     def kbCreateMenuFunder(self=None, chatId=None):
         return InlineKeyboardMarkup(inline_keyboard=[
             [InlineKeyboardButton(text='حذف شیفت', callback_data='btn_deleteShift_{}'.format(str(chatId))),
-             InlineKeyboardButton(text='شیفت های من', callback_data='btn_createSift_{}'.format(str(chatId)))],
-            [InlineKeyboardButton(text='ثبت شیفت', callback_data='btn_createSift_{}'.format(str(chatId))),
-             InlineKeyboardButton(text='ثبت شیفت اضطراری', callback_data='btn_createSiftEm_{}'.format(str(chatId)))],
+             InlineKeyboardButton(text='شیفت های من', callback_data='btn_createShift_{}'.format(str(chatId)))],
+            [InlineKeyboardButton(text='ثبت شیفت اضطراری', callback_data='btn_createShiftEm_{}'.format(str(chatId))),
+             InlineKeyboardButton(text='ثبت شیفت', callback_data='btn_createShift_{}'.format(str(chatId)))],
             [InlineKeyboardButton(text='ویرایش پروفایل', callback_data='btn_epf_{}'.format(str(chatId))),
              InlineKeyboardButton(text='غیر فعال', callback_data='btn_removeProfile_{}'.format(str(chatId)))],
             [InlineKeyboardButton(text='شیفت هایی که من ساخته ام',
@@ -83,8 +83,8 @@ class keyLib:
              InlineKeyboardButton(text='درخواست پر کردن شیفت', callback_data='btn_repShift_{}'.format(str(chatId)))],
             [InlineKeyboardButton(text='حذف شیفت', callback_data='btn_deleteShift_{}'.format(str(chatId))),
              InlineKeyboardButton(text='ویرایش پروفایل', callback_data='btn_epf_{}'.format(str(chatId)))],
-            [InlineKeyboardButton(text='ثبت شیفت', callback_data='btn_createSift_{}'.format(str(chatId))),
-             InlineKeyboardButton(text='ثبت شیفت اضطراری', callback_data='btn_createSiftEm_{}'.format(str(chatId)))],
+            [InlineKeyboardButton(text='ثبت شیفت اضطراری', callback_data='btn_createShiftEm_{}'.format(str(chatId))),
+             InlineKeyboardButton(text='ثبت شیفت', callback_data='btn_createShift_{}'.format(str(chatId)))],
             [InlineKeyboardButton(text='غیر فعال', callback_data='btn_removeProfile_{}'.format(str(chatId)))],
             [InlineKeyboardButton(text='شیفت هایی که من ساخته ام',
                                   callback_data='btn_ownerShift_{}'.format(str(chatId))), ]
@@ -94,8 +94,8 @@ class keyLib:
         return InlineKeyboardMarkup(inline_keyboard=[
             [InlineKeyboardButton(text='کنسل کردن شیفت', callback_data='btn_cancelShift_{}'.format(str(chatId))),
              InlineKeyboardButton(text='لیست شیفت', callback_data='btn_listSift_{}'.format(str(chatId))), ],
-            [InlineKeyboardButton(text='ثبت شیفت', callback_data='btn_createSift_{}'.format(str(chatId))),
-             InlineKeyboardButton(text='ثبت شیفت اضطراری', callback_data='btn_createSiftEm_{}'.format(str(chatId)))],
+            [InlineKeyboardButton(text='ثبت شیفت اضطراری', callback_data='btn_createShiftEm_{}'.format(str(chatId))),
+             InlineKeyboardButton(text='ثبت شیفت', callback_data='btn_createShift_{}'.format(str(chatId)))],
             [InlineKeyboardButton(text='غیر فعال', callback_data='btn_removeProfile_{}'.format(str(chatId))),
              InlineKeyboardButton(text='ویرایش پروفایل', callback_data='btn_epf_{}'.format(str(chatId))), ],
             [InlineKeyboardButton(text='شیفت هایی که من ساخته ام',
