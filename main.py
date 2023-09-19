@@ -693,8 +693,9 @@ def handle_new_messages(user_id, userName, update):
                 date7ago = dateNow - timedelta(days=7)
                 TSPDEM = mydb.get_property_domain('TSPDEM')  # تعداد مجاز شیفت در هردوره اضطراری
                 PDEM = mydb.get_property_domain('PDEM')  # دوره شیفت اضطراری هر چند روز
-                bot.sendMessage(user_id, str(msg.messageLib.emShiftMsg.value).format(PDEM, TSPDEM))
+                bot.sendMessage(user_id, str(msg.messageLib.emShiftMsgCreate.value).format(PDEM, TSPDEM))
                 totalEM = mydb.getTotalShiftEM(date7ago, dateNow, user_id)
+                print(f'int(totalEM) < int(TSPDEM) ==>{totalEM} >{TSPDEM}')
                 if int(totalEM) < int(TSPDEM):
                     bot.sendMessage(user_id, msg.messageLib.emShiftRegister.value)
                     bot.sendMessage(user_id, msg.messageLib.dateShift.value)
