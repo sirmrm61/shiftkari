@@ -731,7 +731,7 @@ def handle_new_messages(user_id, userName, update):
                     rowid = mydb.shift_update('DateShift', yearTemp, user_id)
                     mydb.shift_update_by_id('shiftIsEM', 1, rowid[0])
                     bot.sendMessage(chat_id=user_id, parse_mode='HTML', text='ماه انتخاب کنید',
-                                    reply_markup=menu.keyLib.kbCreateMenuMonthInYear(tag='2_{}'.format(rowid[0])))
+                                    reply_markup=menu.keyLib.kbCreateMenuMonthInYear(tag='1_{}'.format(rowid[0])))
                 elif spBtn[3] == '2':
                     mydb.shift_update_by_id('dateEndShift', yearTemp, spBtn[4])
                     bot.sendMessage(chat_id=user_id, parse_mode='HTML', text='ماه انتخاب کنید',
