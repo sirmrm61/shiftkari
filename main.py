@@ -944,12 +944,16 @@ def handle_new_messages(user_id, userName, update):
                     # Send Shift to All Technical Responsible
 
                     hrSendToStudent = mydb.get_property_domain('hrStudent')
-                    bot.sendMessage(message['chat']['id'],
-                                    str(msg.messageLib.endRegisterShift.value).format(hrSendToStudent))
+
                     helper.send_shift_to_technicalResponsible(spBtn[3], bot, user_id)
                     isShiftEm = mydb.get_shift_property('shiftIsEM', spBtn[3])
                     if int(isShiftEm) == 1:
                         helper.send_shift_to_studentEM(spBtn[3], bot, user_id)
+                        bot.sendMessage(user_id,
+                                        str(msg.messageLib.endRegisterShift.value))
+                    else:
+                        bot.sendMessage(user_id,
+                                        str(msg.messageLib.endRegisterShift.value).format(hrSendToStudent))
                     mydb.member_update('registration_progress', 10, user_id)
                     mydb.member_update('op', 0, user_id)
                     mydb.shift_update('progress', 2, user_id)
