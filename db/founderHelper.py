@@ -122,6 +122,8 @@ class HelperFunder:
                             reply_markup=menu.keyLib.kbCreateMenuManager(chatId=chatid))
 
     def formatShiftMessage(self, shiftRow, memberType=None):
+        dr = shiftRow[12]
+        dateRegister = f'تاریخ ایجاد درخواست:{JalaliDate.to_jalali(dr.year, dr.month, dr.day)}'
         rowReq = 'درخواست دهنده: {}'.format(shiftRow[0])
         rowDate = 'تاریخ شروع : {}'.format(shiftRow[2])
         rowDateEnd = 'تاریخ پایان : {}'.format(shiftRow[10])
@@ -134,6 +136,7 @@ class HelperFunder:
         if memberType is None: rowWage += '{} حق الزحمه دانشجو  : {}'.format('\n', shiftRow[11])
         rowaddr = 'آدرس  : {}'.format(shiftRow[6])
         return '''
+{6}
 {0}
 {1}
 {6}
@@ -141,7 +144,7 @@ class HelperFunder:
 {3}
 {4}
 {5}
-'''.format(rowReq, rowDate, rowStartTime, rowEndTime, rowWage, rowaddr, rowDateEnd)
+'''.format(rowReq, rowDate, rowStartTime, rowEndTime, rowWage, rowaddr, rowDateEnd,dateRegister)
 
     def send_list_shift_Cancel(self, chatId, bot, todayDate):
         shifts = mydb.get_all_shift_by_approver(chatId, todayDate)

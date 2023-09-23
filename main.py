@@ -40,6 +40,9 @@ bot = telepot.Bot(botKeyApi)
 # jd=str(JalaliDate.to_jalali(todayDate.year,todayDate.month,todayDate.day)).split('-')
 # sjd= "{0}{1}{2}".format(jd[0],jd[1],jd[2])
 # print(sjd)
+# dr =mydb.get_shift_property('dateRegiter',24)
+# print(dr.day)
+# print(JalaliDate.to_jalali(dr.year, dr.month, dr.day))
 # exit(0)
 
 def handle_new_messages(user_id, userName, update):
