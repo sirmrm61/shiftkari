@@ -361,7 +361,7 @@ class HelperFunder:
             if self.validate_IR_mobile_number(mobile_number=phone):
                 mydb.member_update_chatid(fieldName='phone_number', fieldValue=phone, chatid=userId)
             else:
-                bot.sendMessage(userId, msg.messageLib.errorPhoneNumber)
+                bot.sendMessage(userId, msg.messageLib.errorPhoneNumber.value)
                 return
         elif op == 5:
             if mem.membership_type == 2:
@@ -369,13 +369,13 @@ class HelperFunder:
                 if self.validate_IR_national_id(nationCode):
                     mydb.technicalManager_update(fieldName='national_code', fieldValue=nationCode, chatid=userId)
                 else:
-                    bot.sendMessage(userId, msg.messageLib.errrorNation)
+                    bot.sendMessage(userId, msg.messageLib.errrorNation.value)
             elif mem.membership_type == 3:
                 nationCode = unidecode(newValue['text'])
                 if self.validate_IR_national_id(nationCode):
                     mydb.student_update(fieldName='national_code', fieldValue=nationCode, chatid=userId)
                 else:
-                    bot.sendMessage(userId, msg.messageLib.errrorNation)
+                    bot.sendMessage(userId, msg.messageLib.errrorNation.value)
             else:
                 mydb.founder_update(fieldName='pharmacy_name', fieldValue=newValue['text'], chatid=userId)
         elif op == 7:
