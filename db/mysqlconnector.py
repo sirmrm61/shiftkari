@@ -1,8 +1,11 @@
+import datetime
+
 import mysql.connector
 import db.env as helper
 from pprint import pprint
 from model.membership import Founder, Membership, Student, TechnicalManager
 from datetime import datetime as DT
+from persiantools.jdatetime import JalaliDate
 
 
 class mysqlconnector:
@@ -637,8 +640,8 @@ class mysqlconnector:
                         shi.dateEndShift,shi.wfStudent,shi.dateRegiter
                         FROM botshiftkari.shift shi inner join botshiftkari.membership mem on
                          mem.chat_id = shi.Creator where `progress` > '0'  and    `progress` < '3'  and 
-                         `send` = 0 and  date_add(shi.dateRegiter,interval {0} HOUR)<now()'''.format(
-            result[0])
+                         `send` = 0 and  date_add(shi.dateRegiter,interval {0} HOUR)<now() and dateShift > \'{1}\''''.format(
+            result[0], JalaliDate(datetime.datetime.now()))
         myCursor.execute(sqlQuery)
         result = myCursor.fetchall()
         return result

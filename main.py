@@ -43,7 +43,12 @@ bot = telepot.Bot(botKeyApi)
 # dr =mydb.get_shift_property('dateRegiter',24)
 # print(dr.day)
 # print(JalaliDate.to_jalali(dr.year, dr.month, dr.day))
-# exit(0)
+# print(JalaliDate(datetime.now()))
+#pprint(telepot.message_identifier(bot.sendMessage('6274361322', 'test3')))
+bot.deleteMessage((6274361322, 1725))
+bot.editMessageText((6274361322, 1724),'test3Edit')
+exit(0)
+
 
 def handle_new_messages(user_id, userName, update):
     tempMember = mydb.load_member(user_id)
@@ -1004,19 +1009,10 @@ def handle_new_messages(user_id, userName, update):
             # پذیرش شخصی که شیفت را رزرو کرده است
             elif spBtn[1] == 'approveShiftFunder':
                 requester = mydb.get_shift_property(fieldName='approver', idShift=spBtn[2])
+                shiftRow = mydb.get_all_property_shift_byId(spBtn[2])
                 mydb.shift_update('progress', 4, spBtn[2])
                 bot.sendMessage(requester, msg.messageLib.acceptShift.value)
-                rowDate = 'تاریخ  : {}'.format(mydb.get_shift_property('DateShift', spBtn[2]))
-                rowStartTime = 'ساعت شروع  : {}'.format(mydb.get_shift_property('startTime', spBtn[2]))
-                rowEndTime = 'ساعت پایان  : {}'.format(mydb.get_shift_property('endTime', spBtn[2]))
-                rowWage = 'حق الزحمه  : {}'.format(mydb.get_shift_property('wage', spBtn[2]))
-                rowaddr = 'آدرس  : {}'.format(mydb.get_shift_property('pharmacyAddress', spBtn[2]))
-                bot.sendMessage(requester, '''
-{0}
-{1}
-{2}
-{3}
-{4}'''.format(rowDate, rowStartTime, rowEndTime, rowWage, rowaddr))
+                bot.sendMessage(requester, helper.formatShiftMessage(shiftRow))
                 # آپدیت کردن شیف
             elif spBtn[1] == 'cancelShift':
                 # ارسال شیفت هایی که شخص قبول کرده و تاریخ آنها نرسیده

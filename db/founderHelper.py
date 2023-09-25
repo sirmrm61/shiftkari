@@ -18,7 +18,7 @@ listDenyOP = [
     {"pr": 18, "op": 16, "msg": "عملیات نامعتبر است"}
 ]
 listCommand = ['/myoperation', '/start', '/myinfo', '/changeHrStudent', '/changeMinWage', '/changeMinLicenss',
-               '/CancelMessage', '/changeWFS','/changeShiftEmHr','/changePDEM','/changeTPDEM']
+               '/CancelMessage', '/changeWFS', '/changeShiftEmHr', '/changePDEM', '/changeTPDEM']
 
 
 class HelperFunder:
@@ -144,7 +144,7 @@ class HelperFunder:
 {3}
 {4}
 {5}
-'''.format(rowReq, rowDate, rowStartTime, rowEndTime, rowWage, rowaddr, rowDateEnd,dateRegister)
+'''.format(rowReq, rowDate, rowStartTime, rowEndTime, rowWage, rowaddr, rowDateEnd, dateRegister)
 
     def send_list_shift_Cancel(self, chatId, bot, todayDate):
         shifts = mydb.get_all_shift_by_approver(chatId, todayDate)
@@ -345,6 +345,7 @@ class HelperFunder:
         date2 = DT.now()
         diffDay = relativedelta(date2, date1)
         op = int(mydb.get_member_property_chatid('op', userId))
+        Edited = 0
         # دریافت حداکثر زمان انتخاب مشخص تا تغییر مشخصه
         timeDiff = int(mydb.get_property_domain('timeDiff'))
         if diffDay.minutes > timeDiff:
@@ -356,13 +357,16 @@ class HelperFunder:
             return
         elif op == 1:
             mydb.member_update_chatid(fieldName='name', fieldValue=newValue['text'], chatid=userId)
+            Edited = 1
         elif op == 2:
             mydb.member_update_chatid(fieldName='last_name', fieldValue=newValue['text'], chatid=userId)
+            Edited = 1
         elif op == 4:
             phone = unidecode(newValue['text'])
             print(f'phoneNumber:{newValue["text"]}')
             if self.validate_IR_mobile_number(mobile_number=phone):
                 mydb.member_update_chatid(fieldName='phone_number', fieldValue=phone, chatid=userId)
+                Edited = 1
             else:
                 bot.sendMessage(userId, msg.messageLib.errorPhoneNumber.value)
                 return
@@ -371,18 +375,22 @@ class HelperFunder:
                 nationCode = unidecode(newValue['text'])
                 if self.validate_IR_national_id(nationCode):
                     mydb.technicalManager_update(fieldName='national_code', fieldValue=nationCode, chatid=userId)
+                    Edited = 1
                 else:
                     bot.sendMessage(userId, msg.messageLib.errrorNation.value)
             elif mem.membership_type == 3:
                 nationCode = unidecode(newValue['text'])
                 if self.validate_IR_national_id(nationCode):
                     mydb.student_update(fieldName='national_code', fieldValue=nationCode, chatid=userId)
+                    Edited = 1
                 else:
                     bot.sendMessage(userId, msg.messageLib.errrorNation.value)
             else:
                 mydb.founder_update(fieldName='pharmacy_name', fieldValue=newValue['text'], chatid=userId)
+                Edited = 1
         elif op == 7:
             mydb.founder_update(fieldName='pharmacy_address', fieldValue=newValue['text'], chatid=userId)
+            Edited = 1
         elif op == 8:
             if 'photo' in newValue:
                 file_id = newValue['photo'][-1]['file_id']
@@ -393,6 +401,7 @@ class HelperFunder:
                 bot.download_file(file_id, image_path)
                 mydb.founder_update('license_photo', '{0}{1}'.format(ufid, fileExtention),
                                     userId)
+                Edited = 1
             else:
                 bot.sendMessage(userId,
                                 str(msg.messageLib.errorSendFile.value))
@@ -406,11 +415,13 @@ class HelperFunder:
                 bot.download_file(file_id, image_path)
                 mydb.technicalManager_update('membership_card_photo', '{0}{1}'.format(ufid, fileExtention),
                                              userId)
+                Edited = 1
             else:
                 bot.sendMessage(userId,
                                 str(msg.messageLib.errorSendFile.value))
         elif op == 12:
             mydb.student_update(fieldName='hourPermit', fieldValue=newValue['text'], chatid=userId)
+            Edited = 1
         elif op == 14:
             if 'photo' in newValue:
                 file_id = newValue['photo'][-1]['file_id']
@@ -421,6 +432,7 @@ class HelperFunder:
                 bot.download_file(file_id, image_path)
                 mydb.student_update('overtime_license_photo', '{0}{1}'.format(ufid, fileExtention),
                                     userId)
+                Edited = 1
             else:
                 bot.sendMessage(userId,
                                 str(msg.messageLib.errorSendFile.value))
@@ -434,16 +446,17 @@ class HelperFunder:
                 bot.download_file(file_id, image_path)
                 mydb.student_update('personal_photo', '{0}{1}'.format(ufid, fileExtention),
                                     userId)
+                Edited = 1
             else:
                 bot.sendMessage(userId,
                                 str(msg.messageLib.errorSendFile.value))
         else:
             bot.sendMessage(userId, )
-
-        mydb.member_update_chatid(fieldName='verifyAdmin', fieldValue=0, chatid=userId)
-        # send message to user
-        bot.sendMessage(userId, msg.messageLib.afterEdit.value,
-                        reply_markup=menu.keyLib.kbVerifyEditProfile(self=None, tag=userId))
+        if Edited == 1:
+            mydb.member_update_chatid(fieldName='verifyAdmin', fieldValue=0, chatid=userId)
+            # send message to user
+            bot.sendMessage(userId, msg.messageLib.afterEdit.value,
+                            reply_markup=menu.keyLib.kbVerifyEditProfile(self=None, tag=userId))
 
     def msg_get_all_shift_approve(self, chatId, bot):
         shiftRows = mydb.get_all_shift_managerApproved()
