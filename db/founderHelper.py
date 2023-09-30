@@ -549,3 +549,33 @@ class HelperFunder:
             requesterShift = mydb.getShiftDayProperty('requster', idDay)
             bot.sendMessage(requesterShift, str(msg.messageLib.approvedDay.value).format(dateReq))
             return requesterShift
+
+    def sendCalendar(self, bot, user_id, msgId, yearC, monthC, dayC, endDay, idShift=0):
+        msgInfo = None
+        if msgId is None:
+            msgInfo = bot.sendMessage(user_id, msg.messageLib.choiceDays.value, parse_mode='HTML',
+                                      reply_markup=menu.keyLib.createMenuForSelectDay(None,
+                                                                                      yearC,
+                                                                                      monthC,
+                                                                                      dayC,
+                                                                                      endDay, idShift))
+        else:
+            try:
+                msgInfo = bot.editMessageText((user_id, msgId), msg.messageLib.choiceDays.value,
+                                              parse_mode='HTML',
+                                              reply_markup=menu.keyLib.createMenuForSelectDay(None,
+                                                                                              yearC,
+                                                                                              monthC,
+                                                                                              dayC,
+                                                                                              endDay,
+                                                                                              idShift))
+            except:
+                msgInfo = bot.sendMessage(user_id, msg.messageLib.choiceDays.value, parse_mode='HTML',
+                                          reply_markup=menu.keyLib.createMenuForSelectDay(None,
+                                                                                          yearC,
+                                                                                          monthC,
+                                                                                          dayC,
+                                                                                          endDay,
+                                                                                          idShift))
+        return msgInfo
+

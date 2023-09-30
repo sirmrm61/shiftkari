@@ -43,11 +43,14 @@ bot = telepot.Bot(botKeyApi)
 # dr =mydb.get_shift_property('dateRegiter',24)
 # print(dr.day)
 # print(JalaliDate.to_jalali(dr.year, dr.month, dr.day))
-# print(JalaliDate(datetime.now()))
-#pprint(telepot.message_identifier(bot.sendMessage('6274361322', 'test3')))
-bot.deleteMessage((6274361322, 1725))
-bot.editMessageText((6274361322, 1724),'test3Edit')
-exit(0)
+# splitDate = str(JalaliDate(datetime.now())).split('-')
+# print(splitDate)
+# dateEndMoth = JalaliDate(JalaliDate(1402, int(splitDate[1]) + 1, 1).to_gregorian() - timedelta(days=1))
+# print(dateEndMoth)
+# pprint(telepot.message_identifier(bot.sendMessage('6274361322', 'test3')))
+# bot.deleteMessage((6274361322, 1725))
+# bot.editMessageText((6274361322, 1724),'test3Edit')
+# exit(0)
 
 
 def handle_new_messages(user_id, userName, update):
@@ -715,11 +718,114 @@ def handle_new_messages(user_id, userName, update):
                     bot.sendMessage(user_id, msg.messageLib.emShiftFull.value)
                     return
             elif spBtn[1] == 'createShift':
-                bot.sendMessage(user_id, msg.messageLib.dateShift.value)
-                bot.sendMessage(chat_id=user_id, parse_mode='HTML', text='سال را انتخاب کنید',
-                                reply_markup=menu.keyLib.kbCreateMenuYear(tag=1))
-                mydb.member_update('registration_progress', 11, user_id)
-                mydb.member_update('op', 0, message['chat']['id'])
+                splitDate = str(JalaliDate(datetime.now())).split('-')
+                dateEndMonth = None
+                if int(splitDate[1]) < 12:
+                    dateEndMonth = JalaliDate(
+                        JalaliDate(int(splitDate[0]), int(splitDate[1]) + 1, 1).to_gregorian() - timedelta(days=1))
+                else:
+                    dateEndMonth = JalaliDate(
+                        JalaliDate(int(splitDate[0]) + 1, 1, 1).to_gregorian() - timedelta(days=1))
+                sde = str(dateEndMonth).split('-')
+                getMsgId = mydb.get_member_property_chatid('editMsgId', user_id)
+                msgInfo = helper.sendCalendar(bot, user_id, getMsgId, int(splitDate[0]), int(splitDate[1]),
+                                              int(splitDate[2]), int(sde[2]))
+                mydb.member_update_chatid('editMsgId', msgInfo["message_id"], user_id)
+                # bot.sendMessage(user_id, msg.messageLib.dateShift.value)
+                # bot.sendMessage(chat_id=user_id, parse_mode='HTML', text='سال را انتخاب کنید',
+                #                 reply_markup=menu.keyLib.kbCreateMenuYear(tag=1))
+                # mydb.member_update('registration_progress', 11, user_id)
+                # mydb.member_update('op', 0, message['chat']['id'])
+            elif spBtn[1] == 'nextMonth':
+                sd = str(spBtn[2]).split('#')
+                print(f'sd={sd}')
+                yearC = int(sd[0])
+                monthC = int(sd[1])
+                dayC = int(sd[2])
+                if monthC == 12:
+                    monthC = 1
+                    yearC += 1
+                else:
+                    monthC += 1
+                dateEndMonth = None
+                if monthC < 12:
+                    dateEndMonth = JalaliDate(
+                        JalaliDate(yearC, monthC + 1, 1).to_gregorian() - timedelta(days=1))
+                else:
+                    dateEndMonth = JalaliDate(
+                        JalaliDate(yearC + 1, 1, 1).to_gregorian() - timedelta(days=1))
+                print(dateEndMonth)
+                sde = str(dateEndMonth).split('-')
+                getMsgId = mydb.get_member_property_chatid('editMsgId', user_id)
+                msgInfo = helper.sendCalendar(bot, user_id, getMsgId, yearC, monthC, dayC, int(sde[2]), spBtn[3])
+                mydb.member_update_chatid('editMsgId', msgInfo["message_id"], user_id)
+            elif spBtn[1] == 'previousMonth':
+                sd = str(spBtn[2]).split('#')
+                yearC = int(sd[0])
+                monthC = int(sd[1])
+                dayC = int(sd[2])
+                if monthC == 1:
+                    monthC = 12
+                    yearC -= 1
+                else:
+                    monthC -= 1
+                dateEndMonth = None
+                if monthC == 12:
+                    dateEndMonth = JalaliDate(
+                        JalaliDate(yearC + 1, 1, 1).to_gregorian() - timedelta(days=1))
+                else:
+                    dateEndMonth = JalaliDate(
+                        JalaliDate(yearC, monthC + 1, 1).to_gregorian() - timedelta(days=1))
+                sde = str(dateEndMonth).split('-')
+                getMsgId = mydb.get_member_property_chatid('editMsgId', user_id)
+                msgInfo = helper.sendCalendar(bot, user_id, getMsgId, yearC, monthC, dayC, int(sde[2]), spBtn[3])
+                mydb.member_update_chatid('editMsgId', msgInfo["message_id"], user_id)
+            elif spBtn[1] == 'newDaySelect':
+                idShift = int(spBtn[3])
+                selectiveDate = str(spBtn[2]).split('#')
+                yearC = int(selectiveDate[0])
+                monthC = int(selectiveDate[1])
+                dayC = int(selectiveDate[2])
+                startDay = int(spBtn[4])
+                dateEndMonth = None
+                if int(monthC) < 12:
+                    dateEndMonth = JalaliDate(
+                        JalaliDate(yearC, monthC + 1, 1).to_gregorian() - timedelta(days=1))
+                else:
+                    dateEndMonth = JalaliDate(
+                        JalaliDate(yearC + 1, 1, 1).to_gregorian() - timedelta(days=1))
+                sde = str(dateEndMonth).split('-')
+                endDay = int(sde[2])
+                if idShift == 0:
+                    idShift = mydb.shift_update('send', 0, user_id)[0]
+                mydb.registerDetailShift(idShift, selectiveDate[0], selectiveDate[1], selectiveDate[2])
+                getMsgId = mydb.get_member_property_chatid('editMsgId', user_id)
+                msgInfo = helper.sendCalendar(bot, user_id, getMsgId, yearC, monthC, startDay, int(endDay), idShift)
+                mydb.member_update_chatid('editMsgId', msgInfo["message_id"], user_id)
+            elif spBtn[1] == 'removeDay':
+                idShift = int(spBtn[3])
+                selectiveDate = str(spBtn[2]).split('#')
+                yearC = int(selectiveDate[0])
+                monthC = int(selectiveDate[1])
+                dayC = int(selectiveDate[2])
+                startDay = int(spBtn[4])
+                dateEndMonth = None
+                if int(monthC) < 12:
+                    dateEndMonth = JalaliDate(
+                        JalaliDate(yearC, monthC + 1, 1).to_gregorian() - timedelta(days=1))
+                else:
+                    dateEndMonth = JalaliDate(
+                        JalaliDate(yearC + 1, 1, 1).to_gregorian() - timedelta(days=1))
+                sde = str(dateEndMonth).split('-')
+                endDay = int(sde[2])
+                mydb.removeDay(idShift, selectiveDate[0], selectiveDate[1], selectiveDate[2])
+                getMsgId = mydb.get_member_property_chatid('editMsgId', user_id)
+                msgInfo = helper.sendCalendar(bot, user_id, getMsgId, yearC, monthC, startDay, int(endDay), idShift)
+                mydb.member_update_chatid('editMsgId', msgInfo["message_id"], user_id)
+            elif spBtn[1] == 'endSelectDay':
+                bot.sendMessage(message['chat']['id'], msg.messageLib.shiftStartTime.value)
+                mydb.member_update('op', 2, message['chat']['id'])
+                mydb.member_update('registration_progress', 11, message['chat']['id'])
             elif spBtn[1] == 'year':
                 if tempMember.register_progress not in (11, 5):
                     bot.sendMessage(user_id, msg.messageLib.noBussiness.value)
@@ -884,10 +990,6 @@ def handle_new_messages(user_id, userName, update):
                     return
                 opBtn = int(spBtn[2])
                 op = mydb.get_member_property_chatid('op', message['chat']['id'])
-                # todo: remove print
-                print(f'int(op) - int(opBtn)={int(op) - int(opBtn)}')
-                print(f'op={op}')
-                print(f'opBtn={opBtn}')
                 if (int(op) - int(opBtn)) > 1:
                     bot.sendMessage(user_id, msg.messageLib.erroOnBack.value)
                 if int(op) == 1:
@@ -900,8 +1002,6 @@ def handle_new_messages(user_id, userName, update):
                     hrEmShift = mydb.get_property_domain(
                         'hrEmShift')  # از این زمان برای تشخیص شیفت اضطراری استفاده می شود
                     # todo: Remove Print command
-                    print("{0} - {1} = {2} hour ".format(dateStart, dateNow, ((diffDay.days * 24) + diffDay.hours)))
-                    print("{0} <= {1} ".format(((diffDay.days * 24) + diffDay.hours), int(hrEmShift)))
                     if ((diffDay.days * 24) + diffDay.hours) <= int(hrEmShift):
                         date7ago = dateNow - timedelta(days=7)
                         TSPDEM = mydb.get_property_domain('TSPDEM')  # تعداد مجاز شیفت در هردوره اضطراری
