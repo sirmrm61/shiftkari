@@ -1,6 +1,8 @@
+import datetime
+
 from telepot.namedtuple import InlineKeyboardMarkup, InlineKeyboardButton
 import db.mysqlconnector as msc
-from enum import Enum
+from persiantools.jdatetime import JalaliDate
 
 mydb = msc.mysqlconnector()
 listTypeMember = [InlineKeyboardButton(text='موسسان', callback_data='btnFounder'),
@@ -371,4 +373,79 @@ class keyLib:
         if (len(lk) % N) > 0: mod = 1
         for idx in range(0, (len(lk) // N) + mod):
             res.append(lk[idx * N: (idx + 1) * N])  # ToDo: check day is empty
+        return InlineKeyboardMarkup(inline_keyboard=res)
+
+    def createMenuForSelectDay(self, year, month, startDay, endDay,idShift=0, totalInRow=7):
+        selectedDay = []
+        if idShift != 0:
+            tmp = mydb.getListSelectedDay(idShift)
+            selectedDay = [item[0] for item in tmp]
+        currentDate = str(JalaliDate(datetime.datetime.now())).split('-')
+        dayValid = int(currentDate[2])
+        if int(currentDate[1]) < month:
+            dayValid = 0
+        elif int(currentDate[1]) > month:
+            dayValid = 32
+        else:
+            startDay = int(currentDate[2])
+        listDay = []
+        listDay.append(InlineKeyboardButton(text=f'شنبه', callback_data='spare'))
+        listDay.append(InlineKeyboardButton(text=f'یکشنبه', callback_data='spare'))
+        listDay.append(InlineKeyboardButton(text=f'دو شنبه', callback_data='spare'))
+        listDay.append(InlineKeyboardButton(text=f'سه شنبه', callback_data='spare'))
+        listDay.append(InlineKeyboardButton(text=f'چهار شنبه', callback_data='spare'))
+        listDay.append(InlineKeyboardButton(text=f'پنج شنبه', callback_data='spare'))
+        listDay.append(InlineKeyboardButton(text=f'جمعه', callback_data='spare'))
+        monthList = ['فروردین', 'اردیبهشت', 'خرداد',
+                     'تیر', 'مرداد', 'شهریور',
+                     'مهر', 'آبان', 'آذر',
+                     'دی', 'بهمن', 'اسفند']
+        dayList = ["0", "شنبه", "یکشنه", "دوشنبه", "سه شنبه", "چهارشنبه", "پنج شنبه", "جمعه"]
+        dateStartMonth = JalaliDate(year, month, 1).to_gregorian()
+        dateEndMonth = JalaliDate(year, month, endDay).to_gregorian()
+        dayStart = dateStartMonth.isoweekday()
+        dayEnd = dateEndMonth.isoweekday()
+        if dayStart > 5:
+            dayStart -= 5
+        else:
+            dayStart += 2
+        if dayEnd > 5:
+            dayEnd -= 5
+        else:
+            dayEnd += 2
+        if dayValid == 0:
+            startDay = 1
+            endDay += 1
+        elif dayValid == 32:
+            startDay = dayValid
+        else:
+            endDay += 1
+        for idx in range(1, dayStart):
+            listDay.append(InlineKeyboardButton(text='-', callback_data='spare'))
+        for idx in range(1, startDay):
+            listDay.append(InlineKeyboardButton(text=f'🙅{idx}', callback_data='spare'))
+        for day in range(startDay, endDay):
+            if f'{year}-{month}-{day}' in selectedDay:
+                listDay.append(InlineKeyboardButton(text=f'💕{day}',
+                                                    callback_data=f'btn_removeDay_{year}#{month}#{day}_{idShift}_{startDay}_{endDay}'))
+            else:
+                listDay.append(InlineKeyboardButton(text=f'👍{day}',
+                                                callback_data=f'btn_newDaySelect_{year}#{month}#{day}_{idShift}_{startDay}_{endDay}'))
+        for idx in range(dayEnd, 7):
+            listDay.append(InlineKeyboardButton(text='-', callback_data='spare'))
+        N = totalInRow
+        res = []
+        res.append([InlineKeyboardButton(text=f'{monthList[month - 1]}-{year}', callback_data='spare')])
+        mod = 0
+        if (len(listDay) % N) > 0: mod = 1
+        for idx in range(0, (len(listDay) // N) + mod):
+            res.append(listDay[idx * N: (idx + 1) * N])  # ToDo: check day is empty
+        res.append(
+            [InlineKeyboardButton(text='ماه قبل >>', callback_data=f'btn_previousMonth_{year}#{month}#{startDay}_{idShift}'),
+             InlineKeyboardButton(text='<< ماه بعد', callback_data=f'btn_nextMonth_{year}#{month}#{startDay}_{idShift}')])
+        res.append(
+            [InlineKeyboardButton(text='پایان انتخاب روز های شیفت',
+                                  callback_data=f'btn_endSelectDay_{idShift}')])
+
+
         return InlineKeyboardMarkup(inline_keyboard=res)

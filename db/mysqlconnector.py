@@ -1,8 +1,11 @@
+import datetime
+
 import mysql.connector
 import db.env as helper
 from pprint import pprint
 from model.membership import Founder, Membership, Student, TechnicalManager
 from datetime import datetime as DT
+from persiantools.jdatetime import JalaliDate
 
 
 class mysqlconnector:
@@ -637,8 +640,8 @@ class mysqlconnector:
                         shi.dateEndShift,shi.wfStudent,shi.dateRegiter
                         FROM botshiftkari.shift shi inner join botshiftkari.membership mem on
                          mem.chat_id = shi.Creator where `progress` > '0'  and    `progress` < '3'  and 
-                         `send` = 0 and  date_add(shi.dateRegiter,interval {0} HOUR)<now()'''.format(
-            result[0])
+                         `send` = 0 and  date_add(shi.dateRegiter,interval {0} HOUR)<now() and dateShift > \'{1}\''''.format(
+            result[0], JalaliDate(datetime.datetime.now()))
         myCursor.execute(sqlQuery)
         result = myCursor.fetchall()
         return result
@@ -703,10 +706,18 @@ VALUES({idShift},\'{dateShift}\',\'{requster}\',0,{sendedForCreator});SELECT LAS
             `requster`,
             `approveCreator`,
             `sendedForCreator`,status)
-            VALUES({idShift},\'{dateShift}\',\'{requster}\',0,{sendedForCreator},{status});SELECT LAST_INSERT_ID();'''
+            VALUES({idShift},\'{dateShift}\',\'{requster}\',0,{sendedForCreator},{status})'''
         myCursor.execute(sqlQuery)
-        res = myCursor.fetchone()
-        return res
+        return myCursor.lastrowid
+
+    def registerDetailShift(self, idShift, year, month, day):
+        sqlQuery = f'insert into  `botshiftkari`.`detailshift` (idShift,year,month,day)values' \
+                   f'({idShift},{year},{month},{day})'
+        mydb = self.connector()
+        myCursor = mydb.cursor()
+        mydb.autocommit = True
+        myCursor.execute(sqlQuery)
+        return myCursor.lastrowid
 
     def updateShiftDay(self, fieldName, fieldValue, idDayShift):
         mydb = self.connector()
@@ -813,3 +824,21 @@ VALUES({idShift},\'{dateShift}\',\'{requster}\',0,{sendedForCreator});SELECT LAS
         myCursor.execute(sqlQuery)
         result = myCursor.fetchall()
         return result
+
+    def getListSelectedDay(self, idShift):
+        sqlQuery = f'SELECT CONCAT(ds.year,\'-\',ds.month,\'-\',ds.day) as dateS FROM botshiftkari.detailshift as ds' \
+                   f' where idShift = {idShift}'
+        mydb = self.connector()
+        myCursor = mydb.cursor()
+        myCursor.execute(sqlQuery)
+        result = myCursor.fetchall()
+        return result
+
+    def removeDay(self, idShift, year, month, day):
+        sqlQuery = f'delete from  botshiftkari.detailshift as ds where ds.idShift = {idShift} and ds.year={year} and' \
+                   f' ds.month={month} and ds.day = {day}'
+        mydb = self.connector()
+        mydb.autocommit = True
+        myCursor = mydb.cursor()
+        myCursor.execute(sqlQuery)
+        return
