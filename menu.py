@@ -446,6 +446,24 @@ class keyLib:
         res.append(
             [InlineKeyboardButton(text='پایان انتخاب روز های شیفت',
                                   callback_data=f'btn_endSelectDay_{idShift}')])
-
-
+        return InlineKeyboardMarkup(inline_keyboard=res)
+    def createMenuFromListDayForApproveCreatorNew(self, listDay, totalInRow=2, ability=0):
+        lk = []
+        listIdDay = ''
+        for item in listDay:
+            listIdDay += str(item[1]) + '#'
+            actionText = 'spare'
+            if ability == 1:
+                actionText = f'btn_dayApproveNew_{str(item[1])}'
+            lk.append(InlineKeyboardButton(text=item[0],
+                                           callback_data=actionText))
+        listIdDay = listIdDay[:-1]
+        if len(lk) > 1: lk.append(InlineKeyboardButton(text="همه روزها",
+                                                       callback_data='btn_approveAllDayNew_{}'.format(listIdDay)))
+        N = totalInRow
+        res = []
+        mod = 0
+        if (len(lk) % N) > 0: mod = 1
+        for idx in range(0, (len(lk) // N) + mod):
+            res.append(lk[idx * N: (idx + 1) * N])  # ToDo: check day is empty
         return InlineKeyboardMarkup(inline_keyboard=res)

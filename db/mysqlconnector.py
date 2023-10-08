@@ -826,7 +826,7 @@ VALUES({idShift},\'{dateShift}\',\'{requster}\',0,{sendedForCreator});SELECT LAS
         return result
 
     def getListSelectedDay(self, idShift):
-        sqlQuery = f'SELECT CONCAT(ds.year,\'-\',ds.month,\'-\',ds.day) as dateS FROM botshiftkari.detailshift as ds' \
+        sqlQuery = f'SELECT CONCAT(ds.year,\'-\',ds.month,\'-\',ds.day) as dateS,ds.idDetailShift,ds.idShift FROM botshiftkari.detailshift as ds' \
                    f' where idShift = {idShift}'
         mydb = self.connector()
         myCursor = mydb.cursor()
