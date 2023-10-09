@@ -842,3 +842,15 @@ VALUES({idShift},\'{dateShift}\',\'{requster}\',0,{sendedForCreator});SELECT LAS
         myCursor = mydb.cursor()
         myCursor.execute(sqlQuery)
         return
+    def setMinMaxDate(self,idShift):
+        sqlQuery = f'SELECT * FROM botshiftkari.detailshift where idShift={idShift} order by year,month,day'
+        mydb = self.connector()
+        mydb.autocommit = True
+        myCursor = mydb.cursor()
+        myCursor.execute(sqlQuery)
+        result = myCursor.fetchall()
+        firstDate = f'{str(result[1](2)).zfill(4)}-{str(result[1](3)).zfill(2)}-{str(result[1](4)).zfill(2)}'
+        lastDate = f'{str(result[-1](2)).zfill(4)}-{str(result[-1](3)).zfill(2)}-{str(result[-1](4)).zfill(2)}'
+        self.shift_update_by_id('DateShift',firstDate,idShift)
+        self.shift_update_by_id('dateEndShift',lastDate,idShift)
+        
