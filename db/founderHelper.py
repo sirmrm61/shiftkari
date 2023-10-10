@@ -121,10 +121,12 @@ class HelperFunder:
             bot.sendMessage(chatid, msg.messageLib.yourOperation.value,
                             reply_markup=menu.keyLib.kbCreateMenuManager(chatId=chatid))
 
-    def formatShiftMessage(self, shiftRow, idShift, memberType=None):
+    def formatShiftMessage(self, shiftRow, memberType=None):
         dr = shiftRow[12]
         dateRegister = f'تاریخ ایجاد درخواست:{JalaliDate.to_jalali(dr.year, dr.month, dr.day)}'
         rowReq = 'درخواست دهنده: {}'.format(shiftRow[0])
+        rowStartDate = 'تاریخ شروع شیفت: {}'.format(shiftRow[2])
+        rowEndDate = 'تاریخ پایان شیفت: {}'.format(shiftRow[10])
         rowStartTime = 'ساعت شروع  : {}'.format(shiftRow[3])
         rowEndTime = 'ساعت پایان  : {}'.format(shiftRow[4])
         if memberType != 3:
@@ -133,14 +135,16 @@ class HelperFunder:
             rowWage = 'حق الزحمه  : {}'.format(shiftRow[11])
         if memberType is None: rowWage += '{} حق الزحمه دانشجو  : {}'.format('\n', shiftRow[11])
         rowaddr = 'آدرس  : {}'.format(shiftRow[6])
-        return '''
-{5}
-{0}
-{1}
-{2}
-{3}
-{4}
-'''.format(rowReq,  rowStartTime, rowEndTime, rowWage, rowaddr,  dateRegister)
+        return f'''
+{rowReq}
+{dateRegister}
+{rowStartDate}
+{rowEndDate}
+{rowStartTime}
+{rowEndTime}
+{rowWage}
+{rowaddr}
+'''
 
     def send_list_shift_Cancel(self, chatId, bot, todayDate):
         shifts = mydb.get_all_shift_by_approver(chatId, todayDate)
@@ -183,7 +187,10 @@ class HelperFunder:
         ts = mydb.get_all_ts_chatid(creator)
         for t in ts:
             bot.sendMessage(t[0], self.formatShiftMessage(shiftRow, 2),
-                            reply_markup=menu.keyLib.kbCreateMenuApproveShift(shiftId=shiftRow[9]))
+                            reply_markup=menu.keyLib.createMenuFromListDayForApproveCreatorNew(
+                                self=None,
+                                idShift=shiftRow[9],
+                                ability=2))
 
     def send_shift_to_studentEM(self, idShift, bot, creator=None):
         shiftRow = mydb.get_all_property_shift_byId(idShift)
@@ -558,20 +565,13 @@ class HelperFunder:
         else:
             try:
                 msgInfo = bot.editMessageText((user_id, msgId), msg.messageLib.choiceDays.value,
-                                              parse_mode='HTML',
-                                              reply_markup=menu.keyLib.createMenuForSelectDay(None,
-                                                                                              yearC,
-                                                                                              monthC,
-                                                                                              dayC,
-                                                                                              endDay,
-                                                                                              idShift))
-            except:
-                msgInfo = bot.sendMessage(user_id, msg.messageLib.choiceDays.value, parse_mode='HTML',
+                                          parse_mode='HTML',
                                           reply_markup=menu.keyLib.createMenuForSelectDay(None,
                                                                                           yearC,
                                                                                           monthC,
                                                                                           dayC,
                                                                                           endDay,
                                                                                           idShift))
+            except:
+                print('Error Edit Message')
         return msgInfo
-

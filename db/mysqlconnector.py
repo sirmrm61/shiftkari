@@ -806,7 +806,7 @@ VALUES({idShift},\'{dateShift}\',\'{requster}\',0,{sendedForCreator});SELECT LAS
     def getListDayIsNotEmpty(self, idShift, status=2):
         mydb = self.connector()
         myCursor = mydb.cursor()
-        sqlQuery = f'SELECT iddayShift,dateShift,requster from botshiftkari.dayshift  where  idShift={idShift}'
+        sqlQuery = f'SELECT iddayShift,dateShift,requster,idDetailShift from botshiftkari.dayshift  where  idShift={idShift}'
         if status is not None:
             sqlQuery += f' and status= {status} '
         myCursor.execute(sqlQuery)
@@ -826,8 +826,9 @@ VALUES({idShift},\'{dateShift}\',\'{requster}\',0,{sendedForCreator});SELECT LAS
         return result
 
     def getListSelectedDay(self, idShift):
-        sqlQuery = f'SELECT CONCAT(ds.year,\'-\',ds.month,\'-\',ds.day) as dateS,ds.idDetailShift,ds.idShift FROM botshiftkari.detailshift as ds' \
-                   f' where idShift = {idShift}'
+        sqlQuery = f'SELECT CONCAT(lpad(ds.year,4,\'0\'),\'-\',lpad(ds.month,2,\'0\'),\'-\',lpad(ds.day,2,\'0\')) as ' \
+                   f'dateS,ds.idDetailShift,ds.idShift FROM botshiftkari.detailshift as ds ' \
+                   f' where idShift = {idShift}  order by ds.year,ds.month,ds.day'
         mydb = self.connector()
         myCursor = mydb.cursor()
         myCursor.execute(sqlQuery)
@@ -842,15 +843,16 @@ VALUES({idShift},\'{dateShift}\',\'{requster}\',0,{sendedForCreator});SELECT LAS
         myCursor = mydb.cursor()
         myCursor.execute(sqlQuery)
         return
-    def setMinMaxDate(self,idShift):
-        sqlQuery = f'SELECT * FROM botshiftkari.detailshift where idShift={idShift} order by year,month,day'
+
+    def setMinMaxDate(self, idShift):
+        sqlQuery = f'select * from  botshiftkari.detailshift where idShift= {idShift} order by year,month,day;'
         mydb = self.connector()
-        mydb.autocommit = True
         myCursor = mydb.cursor()
         myCursor.execute(sqlQuery)
         result = myCursor.fetchall()
-        firstDate = f'{str(result[1](2)).zfill(4)}-{str(result[1](3)).zfill(2)}-{str(result[1](4)).zfill(2)}'
-        lastDate = f'{str(result[-1](2)).zfill(4)}-{str(result[-1](3)).zfill(2)}-{str(result[-1](4)).zfill(2)}'
-        self.shift_update_by_id('DateShift',firstDate,idShift)
-        self.shift_update_by_id('dateEndShift',lastDate,idShift)
-        
+        startDate = endDate = '0001-01-01'
+        if len(result) > 0:
+            startDate = f'{str(result[0][2]).zfill(4)}-{str(result[0][3]).zfill(2)}-{str(result[0][4]).zfill(2)}'
+            endDate = f'{str(result[-1][2]).zfill(4)}-{str(result[-1][3]).zfill(2)}-{str(result[-1][4]).zfill(2)}'
+        self.shift_update_by_id('DateShift', startDate, idShift)
+        self.shift_update_by_id('dateEndShift', endDate, idShift)
