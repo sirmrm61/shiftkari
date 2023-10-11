@@ -684,8 +684,8 @@ class mysqlconnector:
         else:
             return False
 
-    def registerDayShift(self, idShift, dateShift, requster, sendedForCreator, status=None):
-        tmpIdDayShift = self.getIdRegisterDayOfShift(idShift, dateShift, requster)
+    def registerDayShift(self, idShift, dateShift, requster, sendedForCreator,idDetailShift, status=None):
+        tmpIdDayShift = self.getIdRegisterDayOfShift(idShift, dateShift, requster,idDetailShift)
         if tmpIdDayShift != 0:
             return tmpIdDayShift
         mydb = self.connector()
@@ -697,16 +697,17 @@ class mysqlconnector:
 `dateShift`,
 `requster`,
 `approveCreator`,
-`sendedForCreator`)
-VALUES({idShift},\'{dateShift}\',\'{requster}\',0,{sendedForCreator});SELECT LAST_INSERT_ID();'''
+`sendedForCreator`,
+`idDetailShift`)
+VALUES({idShift},\'{dateShift}\',\'{requster}\',0,{sendedForCreator},{idDetailShift})'''
         else:
             sqlQuery = f'''INSERT INTO `botshiftkari`.`dayshift`
             (`idShift`,
             `dateShift`,
             `requster`,
             `approveCreator`,
-            `sendedForCreator`,status)
-            VALUES({idShift},\'{dateShift}\',\'{requster}\',0,{sendedForCreator},{status})'''
+            `sendedForCreator`,`status`,`idDetailShift`)
+            VALUES({idShift},\'{dateShift}\',\'{requster}\',0,{sendedForCreator},{status},{idDetailShift})'''
         myCursor.execute(sqlQuery)
         return myCursor.lastrowid
 
@@ -748,11 +749,11 @@ VALUES({idShift},\'{dateShift}\',\'{requster}\',0,{sendedForCreator});SELECT LAS
         result = myCursor.fetchall()
         return result
 
-    def getIdRegisterDayOfShift(self, idShift, dateShift, requsterShift):
+    def getIdRegisterDayOfShift(self, idShift, dateShift, requsterShift,idDetailShift):
         mydb = self.connector()
         myCursor = mydb.cursor()
         sqlQuery = f'SELECT iddayShift from botshiftkari.dayshift  where  idShift={idShift} and dateShift=\'{dateShift}\'' + \
-                   f' and requster=\'{requsterShift}\''
+                   f' and requster=\'{requsterShift}\' and idDetailShift={idDetailShift}'
         myCursor.execute(sqlQuery)
         result = myCursor.fetchone()
         if result is not None:
@@ -760,11 +761,10 @@ VALUES({idShift},\'{dateShift}\',\'{requster}\',0,{sendedForCreator});SELECT LAS
         else:
             return 0
 
-    def isShiftDayFull(self, idShift, dateShift):
+    def isShiftDayFull(self, idDetailShift):
         mydb = self.connector()
         myCursor = mydb.cursor()
-        sqlQuery = f'SELECT count(iddayShift) from botshiftkari.dayshift  where  idShift={idShift} and dateShift=\'{dateShift}\'' + \
-                   f' and status = 2 '
+        sqlQuery = f'SELECT count(*) from botshiftkari.detailshift  where  idDetailShift={idDetailShift} and status=1'
         myCursor.execute(sqlQuery)
         result = myCursor.fetchone()
         return result[0]
@@ -772,7 +772,7 @@ VALUES({idShift},\'{dateShift}\',\'{requster}\',0,{sendedForCreator});SELECT LAS
     def getListDaySelection(self, idShift, requsterShift):
         mydb = self.connector()
         myCursor = mydb.cursor()
-        sqlQuery = f'SELECT iddayShift,dateShift from botshiftkari.dayshift  where  idShift={idShift} and status= 0 ' + \
+        sqlQuery = f'SELECT iddayShift,dateShift,idDetailShift from botshiftkari.dayshift  where  idShift={idShift} and status= 0 ' + \
                    f' and requster=\'{requsterShift}\''
         myCursor.execute(sqlQuery)
         result = myCursor.fetchall()
@@ -825,10 +825,14 @@ VALUES({idShift},\'{dateShift}\',\'{requster}\',0,{sendedForCreator});SELECT LAS
         result = myCursor.fetchall()
         return result
 
-    def getListSelectedDay(self, idShift):
+    def getListSelectedDay(self, idShift,status=-1):
         sqlQuery = f'SELECT CONCAT(lpad(ds.year,4,\'0\'),\'-\',lpad(ds.month,2,\'0\'),\'-\',lpad(ds.day,2,\'0\')) as ' \
                    f'dateS,ds.idDetailShift,ds.idShift FROM botshiftkari.detailshift as ds ' \
-                   f' where idShift = {idShift}  order by ds.year,ds.month,ds.day'
+                   f' where idShift = {idShift}  '
+        if status > -1:
+            sqlQuery += f' and status = {status} order by ds.year,ds.month,ds.day'
+        else:
+            sqlQuery += ' order by ds.year,ds.month,ds.day'
         mydb = self.connector()
         myCursor = mydb.cursor()
         myCursor.execute(sqlQuery)
@@ -856,3 +860,20 @@ VALUES({idShift},\'{dateShift}\',\'{requster}\',0,{sendedForCreator});SELECT LAS
             endDate = f'{str(result[-1][2]).zfill(4)}-{str(result[-1][3]).zfill(2)}-{str(result[-1][4]).zfill(2)}'
         self.shift_update_by_id('DateShift', startDate, idShift)
         self.shift_update_by_id('dateEndShift', endDate, idShift)
+
+    def getTotalDayShift(self, idShift, status=0):
+        sqlQuery = f'select count(*) from botshiftkari.detailshift where idShift = {idShift} and status = {status} '
+        mydb = self.connector()
+        myCursor = mydb.cursor()
+        myCursor.execute(sqlQuery)
+        result = myCursor.fetchone()
+        return result[0]
+    def detailShift_update_by_id(self, fieldName, fieldValue, idDetailShift):
+        mydb = self.connector()
+        mydb.autocommit = True
+        myCursor = mydb.cursor()
+        sqlQuery = 'UPDATE `botshiftkari`.`detailshift` SET `{0}` = \'{1}\'  where  idDetailShift = \'{2}\''.format(
+            fieldName, fieldValue, idDetailShift)
+        myCursor.execute(sqlQuery)
+        myCursor.reset()
+        return None

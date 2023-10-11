@@ -514,41 +514,32 @@ class HelperFunder:
             mydb.registerDayShift(idShift, txtTmp, requester, 0, 2)
 
     def NOApproveAllShift(self, idShift, userID, bot):
-        dateStart = str(mydb.get_shift_property('DateShift', idShift)).split('-')
-        dateEnd = str(mydb.get_shift_property('dateEndShift', idShift)).split('-')
-        dsG = JalaliDate(int(dateStart[0]), int(dateStart[1]), int(dateStart[2])).to_gregorian()
-        deG = JalaliDate(int(dateEnd[0]), int(dateEnd[1]), int(dateEnd[2])).to_gregorian()
-        delta = deG - dsG
-        listFullDay = mydb.getListDayIsNotEmpty(idShift)
-        if len(listFullDay) > 0:
-            listFullDay = list(zip(*listFullDay))[1]
+        listDayShift = mydb.getListSelectedDay(idShift, 0)
         listDay = []
-        for i in range(delta.days + 1):
+        for dayItem in listDayShift:
             tempDic = {}
-            day = dsG + timedelta(days=i)
-            tmp = JalaliDate.to_jalali(day.year, day.month, day.day)
-            txtTmp = str(tmp).replace('-', '.')
-            if txtTmp not in listFullDay:
-                tempDic['text'] = str(tmp).replace('-', '.')
-                tempDic['key'] = str(tmp).replace('-', '.') + f'={idShift}'
-                listDay.append(tempDic)
+            tempDic['text'] = dayItem[0]
+            tempDic['key'] = str(dayItem[0]).replace('-', '.') + f'={idShift}={dayItem[1]}'
+            listDay.append(tempDic)
         bot.sendMessage(userID,
                         msg.messageLib.shiftSelectDay.value
                         , reply_markup=menu.keyLib.createMenuFromList(listMenu=listDay))
         bot.sendMessage(userID, str(msg.messageLib.endShiftSelection.value),
                         reply_markup=menu.keyLib.kbCreateMenuEndSelection(idShift=idShift))
 
-    def registerDay(self, idDay, bot, userId):
+    def registerDay(self, idDay, bot, userId, idDetailShift):
         statusDay = mydb.getShiftDayProperty('status', idDay)
         if statusDay == None:
             bot.sendMessage('6274361322', f'Can not find {idDay} in id to dayshift table')
             return None
         dateReq = mydb.getShiftDayProperty('dateShift', idDay)
-        if mydb.isShiftDayFull(idDay, dateReq) > 0:
+        if mydb.isShiftDayFull(idDetailShift) > 0:
             bot.sendMessage(userId, msg.messageLib.invalidApproveDate.value)
             return None
         if (int(statusDay) != 2):
             mydb.updateShiftDay(fieldName='status', fieldValue=2, idDayShift=idDay)
+            mydb.detailShift_update_by_id('status', 1, idDetailShift)
+            print(idDay)
             requesterShift = mydb.getShiftDayProperty('requster', idDay)
             bot.sendMessage(requesterShift, str(msg.messageLib.approvedDay.value).format(dateReq))
             return requesterShift
@@ -565,13 +556,13 @@ class HelperFunder:
         else:
             try:
                 msgInfo = bot.editMessageText((user_id, msgId), msg.messageLib.choiceDays.value,
-                                          parse_mode='HTML',
-                                          reply_markup=menu.keyLib.createMenuForSelectDay(None,
-                                                                                          yearC,
-                                                                                          monthC,
-                                                                                          dayC,
-                                                                                          endDay,
-                                                                                          idShift))
+                                              parse_mode='HTML',
+                                              reply_markup=menu.keyLib.createMenuForSelectDay(None,
+                                                                                              yearC,
+                                                                                              monthC,
+                                                                                              dayC,
+                                                                                              endDay,
+                                                                                              idShift))
             except:
                 print('Error Edit Message')
         return msgInfo

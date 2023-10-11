@@ -139,8 +139,8 @@ class keyLib:
 
     def kbApproveAllShiftYesNO(self=None, shiftId=None):
         return InlineKeyboardMarkup(inline_keyboard=[
-            [InlineKeyboardButton(text='بله', callback_data='btn_yesApproveAllShift_{}'.format(str(shiftId))),
-             InlineKeyboardButton(text='خیر', callback_data='btn_NOApproveAllShift_{}'.format(str(shiftId)))]
+            [InlineKeyboardButton(text='خیر', callback_data='btn_NOApproveAllShift_{}'.format(str(shiftId))),
+             InlineKeyboardButton(text='بله', callback_data='btn_yesApproveAllShift_{}'.format(str(shiftId)))]
         ])
 
     def kbCreateMenuDeleteShift(self=None, shiftId=None):
@@ -349,16 +349,17 @@ class keyLib:
 
     def kbCreateMenuSendForCreator(self=None, idShift=None):
         return InlineKeyboardMarkup(inline_keyboard=[
-            [InlineKeyboardButton(text='تائید', callback_data='btn_sendToCreator_{}'.format(str(idShift)))]
+            [InlineKeyboardButton(text='ارسال', callback_data='btn_sendToCreator_{}'.format(str(idShift)))]
         ])
 
     def createMenuFromListDayForApproveCreator(self, listDay, totalInRow=2):
         lk = []
         listIdDay = ''
+        print(listDay)
         for item in listDay:
-            listIdDay += str(item[0]) + '#'
+            listIdDay += str(item[0]) + '=' + str(item[2]) + '#'
             lk.append(InlineKeyboardButton(text=item[1],
-                                           callback_data='btn_dayApproveCreator_{}'.format(str(item[0]))))
+                                           callback_data='btn_dayApproveCreator_{}'.format(str(item[0])+'='+str(item[2]))))
         listIdDay = listIdDay[:-1]
         if len(lk) > 1: lk.append(InlineKeyboardButton(text="همه روزها",
                                                        callback_data='btn_approveAllDay_{}'.format(listIdDay)))
