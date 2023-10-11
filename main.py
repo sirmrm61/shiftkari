@@ -1624,23 +1624,21 @@ def handle_updates(updates):
 
 
 # شروع برنامه
-def main():
-    lui = 0
+def main(lui=0):
     # HTML کد پیام
     # html_message = '<table><tr><th>نام</th><th>سن</th></tr>''<tr><td>علی</td><td>30</td></tr><tr><td>محمد</td><td>25</td></tr></table>'
-    # try:
-    while True:
-        # دریافت تمامی پیام های دریافتی
-        helper.send_shift_to_student(bot=bot)
-        updates = bot.getUpdates(timeout=10, offset=lui)
-        if updates:
-            lui = int(updates[-1]['update_id']) + 1
-            handle_updates(updates)
-    # except Exception as e:
-    #     print(e)
-    #     lui = lui + 1
-    #     bot.sendMessage('6274361322', str(e))
-    #     main()
+    try:
+        while True:
+            # دریافت تمامی پیام های دریافتی
+            helper.send_shift_to_student(bot=bot)
+            updates = bot.getUpdates(timeout=10, offset=lui)
+            if updates:
+                lui = int(updates[-1]['update_id']) + 1
+                handle_updates(updates)
+    except Exception as e:
+        lui = lui + 1
+        bot.sendMessage('6274361322', str(e))
+        main(lui)
 
 
 if __name__ == '__main__':
