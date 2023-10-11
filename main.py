@@ -1,3 +1,4 @@
+import traceback
 import telepot
 import time
 from model.membership import Membership
@@ -1637,7 +1638,7 @@ def main(lui=0):
                 handle_updates(updates)
     except Exception as e:
         lui = lui + 1
-        bot.sendMessage('6274361322', str(e))
+        bot.sendMessage('6274361322', traceback.format_exc())
         main(lui)
 
 
