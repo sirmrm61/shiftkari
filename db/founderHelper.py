@@ -125,8 +125,8 @@ class HelperFunder:
         dr = shiftRow[12]
         dateRegister = f'تاریخ ایجاد درخواست:{JalaliDate.to_jalali(dr.year, dr.month, dr.day)}'
         rowReq = 'درخواست دهنده: {}'.format(shiftRow[0])
-        rowDate = 'تاریخ شروع : {}'.format(shiftRow[2])
-        rowDateEnd = 'تاریخ پایان : {}'.format(shiftRow[10])
+        rowStartDate = 'تاریخ شروع شیفت: {}'.format(shiftRow[2])
+        rowEndDate = 'تاریخ پایان شیفت: {}'.format(shiftRow[10])
         rowStartTime = 'ساعت شروع  : {}'.format(shiftRow[3])
         rowEndTime = 'ساعت پایان  : {}'.format(shiftRow[4])
         if memberType != 3:
@@ -135,16 +135,16 @@ class HelperFunder:
             rowWage = 'حق الزحمه  : {}'.format(shiftRow[11])
         if memberType is None: rowWage += '{} حق الزحمه دانشجو  : {}'.format('\n', shiftRow[11])
         rowaddr = 'آدرس  : {}'.format(shiftRow[6])
-        return '''
-{6}
-{0}
-{1}
-{6}
-{2}
-{3}
-{4}
-{5}
-'''.format(rowReq, rowDate, rowStartTime, rowEndTime, rowWage, rowaddr, rowDateEnd, dateRegister)
+        return f'''
+{rowReq}
+{dateRegister}
+{rowStartDate}
+{rowEndDate}
+{rowStartTime}
+{rowEndTime}
+{rowWage}
+{rowaddr}
+'''
 
     def send_list_shift_Cancel(self, chatId, bot, todayDate):
         shifts = mydb.get_all_shift_by_approver(chatId, todayDate)
@@ -187,7 +187,10 @@ class HelperFunder:
         ts = mydb.get_all_ts_chatid(creator)
         for t in ts:
             bot.sendMessage(t[0], self.formatShiftMessage(shiftRow, 2),
-                            reply_markup=menu.keyLib.kbCreateMenuApproveShift(shiftId=shiftRow[9]))
+                            reply_markup=menu.keyLib.createMenuFromListDayForApproveCreatorNew(
+                                self=None,
+                                idShift=shiftRow[9],
+                                ability=2))
 
     def send_shift_to_studentEM(self, idShift, bot, creator=None):
         shiftRow = mydb.get_all_property_shift_byId(idShift)
@@ -511,41 +514,32 @@ class HelperFunder:
             mydb.registerDayShift(idShift, txtTmp, requester, 0, 2)
 
     def NOApproveAllShift(self, idShift, userID, bot):
-        dateStart = str(mydb.get_shift_property('DateShift', idShift)).split('-')
-        dateEnd = str(mydb.get_shift_property('dateEndShift', idShift)).split('-')
-        dsG = JalaliDate(int(dateStart[0]), int(dateStart[1]), int(dateStart[2])).to_gregorian()
-        deG = JalaliDate(int(dateEnd[0]), int(dateEnd[1]), int(dateEnd[2])).to_gregorian()
-        delta = deG - dsG
-        listFullDay = mydb.getListDayIsNotEmpty(idShift)
-        if len(listFullDay) > 0:
-            listFullDay = list(zip(*listFullDay))[1]
+        listDayShift = mydb.getListSelectedDay(idShift, 0)
         listDay = []
-        for i in range(delta.days + 1):
+        for dayItem in listDayShift:
             tempDic = {}
-            day = dsG + timedelta(days=i)
-            tmp = JalaliDate.to_jalali(day.year, day.month, day.day)
-            txtTmp = str(tmp).replace('-', '.')
-            if txtTmp not in listFullDay:
-                tempDic['text'] = str(tmp).replace('-', '.')
-                tempDic['key'] = str(tmp).replace('-', '.') + f'={idShift}'
-                listDay.append(tempDic)
+            tempDic['text'] = dayItem[0]
+            tempDic['key'] = str(dayItem[0]).replace('-', '.') + f'={idShift}={dayItem[1]}'
+            listDay.append(tempDic)
         bot.sendMessage(userID,
                         msg.messageLib.shiftSelectDay.value
                         , reply_markup=menu.keyLib.createMenuFromList(listMenu=listDay))
         bot.sendMessage(userID, str(msg.messageLib.endShiftSelection.value),
                         reply_markup=menu.keyLib.kbCreateMenuEndSelection(idShift=idShift))
 
-    def registerDay(self, idDay, bot, userId):
+    def registerDay(self, idDay, bot, userId, idDetailShift):
         statusDay = mydb.getShiftDayProperty('status', idDay)
         if statusDay == None:
             bot.sendMessage('6274361322', f'Can not find {idDay} in id to dayshift table')
             return None
         dateReq = mydb.getShiftDayProperty('dateShift', idDay)
-        if mydb.isShiftDayFull(idDay, dateReq) > 0:
+        if mydb.isShiftDayFull(idDetailShift) > 0:
             bot.sendMessage(userId, msg.messageLib.invalidApproveDate.value)
             return None
         if (int(statusDay) != 2):
             mydb.updateShiftDay(fieldName='status', fieldValue=2, idDayShift=idDay)
+            mydb.detailShift_update_by_id('status', 1, idDetailShift)
+            print(idDay)
             requesterShift = mydb.getShiftDayProperty('requster', idDay)
             bot.sendMessage(requesterShift, str(msg.messageLib.approvedDay.value).format(dateReq))
             return requesterShift
@@ -570,12 +564,5 @@ class HelperFunder:
                                                                                               endDay,
                                                                                               idShift))
             except:
-                msgInfo = bot.sendMessage(user_id, msg.messageLib.choiceDays.value, parse_mode='HTML',
-                                          reply_markup=menu.keyLib.createMenuForSelectDay(None,
-                                                                                          yearC,
-                                                                                          monthC,
-                                                                                          dayC,
-                                                                                          endDay,
-                                                                                          idShift))
+                print('Error Edit Message')
         return msgInfo
-

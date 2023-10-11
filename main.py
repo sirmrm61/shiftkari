@@ -24,8 +24,8 @@ mydb = msc.mysqlconnector()
 idFromFile = None
 botKeyApi = mydb.get_property_domain('botkey')
 bot = telepot.Bot(botKeyApi)
-
-
+# helper.send_shift_to_technicalResponsible(29, bot )
+# exit()
 # admins = mydb.getAdmins()
 # image = 'download/2c3809f7-8e48-4cbf-acb7-bc7b0c9d1cd4.jpg'
 # pprint(admins)
@@ -49,7 +49,7 @@ bot = telepot.Bot(botKeyApi)
 # print(dateEndMoth)
 # pprint(telepot.message_identifier(bot.sendMessage('6274361322', 'test3')))
 # bot.deleteMessage((6274361322, 1725))
-# bot.editMessageText((6274361322, 1724),'test3Edit')
+# bot.editMessageText((6274361322, 2336),'test3Edit')
 # exit(0)
 
 
@@ -597,13 +597,17 @@ def handle_new_messages(user_id, userName, update):
                     bot.sendMessage(creatorChatID, str(msg.messageLib.senndAcceptAllDayInShift.value).format(fullName),
                                     reply_markup=menu.keyLib.kbCreateMenuShiftApproveManager(shiftId=spBtn[2]))
             elif spBtn[1] == 'dayApproveCreator':
-                requsterSift = helper.registerDay(spBtn[2], bot, user_id)
-                bot.sendMessage(requsterSift, msg.messageLib.propertyShiftCreator.value)
-                helper.send_profile(user_id, bot, requsterSift)
+                ids = str(spBtn[2]).split('=')
+                requsterSift = helper.registerDay(ids[0], bot, user_id,ids[1])
+                if requsterSift is not None:
+                    bot.sendMessage(requsterSift, msg.messageLib.propertyShiftCreator.value)
+                    helper.send_profile(user_id, bot, requsterSift)
+                    bot.sendMessage(user_id,msg.messageLib.requesterNotify.value)
             elif spBtn[1] == 'approveAllDay':
                 listIdDay = str(spBtn[2]).split('#')
                 for item in listIdDay:
-                    requsterSift = helper.registerDay(item, bot, user_id)
+                    ids = str(item).split('=')
+                    requsterSift = helper.registerDay(ids[0], bot, user_id,ids[1])
                 bot.sendMessage(requsterSift, msg.messageLib.propertyShiftCreator.value)
                 helper.send_profile(user_id, bot, requsterSift)
             elif spBtn[1] == 'editProfile':
@@ -728,7 +732,7 @@ def handle_new_messages(user_id, userName, update):
                         JalaliDate(int(splitDate[0]) + 1, 1, 1).to_gregorian() - timedelta(days=1))
                 sde = str(dateEndMonth).split('-')
                 getMsgId = mydb.get_member_property_chatid('editMsgId', user_id)
-                msgInfo = helper.sendCalendar(bot, user_id, getMsgId, int(splitDate[0]), int(splitDate[1]),
+                msgInfo = helper.sendCalendar(bot, user_id, None, int(splitDate[0]), int(splitDate[1]),
                                               int(splitDate[2]), int(sde[2]))
                 mydb.member_update_chatid('editMsgId', msgInfo["message_id"], user_id)
                 # bot.sendMessage(user_id, msg.messageLib.dateShift.value)
@@ -798,10 +802,11 @@ def handle_new_messages(user_id, userName, update):
                 endDay = int(sde[2])
                 if idShift == 0:
                     idShift = mydb.shift_update('send', 0, user_id)[0]
-                mydb.registerDetailShift(idShift, selectiveDate[0], selectiveDate[1], selectiveDate[2])
+                re = mydb.registerDetailShift(idShift, selectiveDate[0], selectiveDate[1], selectiveDate[2])
                 getMsgId = mydb.get_member_property_chatid('editMsgId', user_id)
                 msgInfo = helper.sendCalendar(bot, user_id, getMsgId, yearC, monthC, startDay, int(endDay), idShift)
-                mydb.member_update_chatid('editMsgId', msgInfo["message_id"], user_id)
+                if msgInfo is not None:
+                    mydb.member_update_chatid('editMsgId', msgInfo["message_id"], user_id)
             elif spBtn[1] == 'removeDay':
                 idShift = int(spBtn[3])
                 selectiveDate = str(spBtn[2]).split('#')
@@ -1050,9 +1055,8 @@ def handle_new_messages(user_id, userName, update):
                         mydb.member_update('op', 10, message['chat']['id'])
                 if int(op) == 11:
                     # Send Shift to All Technical Responsible
-
+                    mydb.setMinMaxDate(spBtn[3])
                     hrSendToStudent = mydb.get_property_domain('hrStudent')
-
                     helper.send_shift_to_technicalResponsible(spBtn[3], bot, user_id)
                     isShiftEm = mydb.get_shift_property('shiftIsEM', spBtn[3])
                     if int(isShiftEm) == 1:
@@ -1064,6 +1068,7 @@ def handle_new_messages(user_id, userName, update):
                                         str(msg.messageLib.endRegisterShift.value).format(hrSendToStudent))
                     mydb.member_update('registration_progress', 10, user_id)
                     mydb.member_update('op', 0, user_id)
+                    mydb.member_update('editMsgId', '', user_id)
                     mydb.shift_update('progress', 2, user_id)
             elif spBtn[1] == 'NO':
                 if tempMember.register_progress != 11:
@@ -1100,7 +1105,10 @@ def handle_new_messages(user_id, userName, update):
                     bot.sendMessage(user_id, msg.messageLib.emptyList.value)
                 else:
                     for shiftRow in allShift:
-                        bot.sendMessage(user_id, helper.formatShiftMessage(shiftRow))
+                        bot.sendMessage(user_id, helper.formatShiftMessage(shiftRow),
+                                        reply_markup=menu.keyLib.createMenuFromListDayForApproveCreatorNew(
+                                            self=None,
+                                            idSift=shiftRow[9]))
             elif spBtn[1] == 'epf':
                 bot.sendMessage(user_id, msg.messageLib.editMessag.value)
                 helper.send_profile(chatid=user_id, bot=bot)
@@ -1139,14 +1147,10 @@ def handle_new_messages(user_id, userName, update):
             #             پس از فشردن کلید شیفت را می پذیرم اجرا می شود
             elif spBtn[1] == 'shiftApprove':
                 # todo: new approve shift
-                listDayFull = mydb.getListDayIsNotEmpty(spBtn[2])
-                if len(listDayFull) == 0:
-                    dateStart = str(mydb.get_shift_property('DateShift', spBtn[2])).split('-')
-                    dateEnd = str(mydb.get_shift_property('dateEndShift', spBtn[2])).split('-')
-                    dsG = JalaliDate(int(dateStart[0]), int(dateStart[1]), int(dateStart[2])).to_gregorian()
-                    deG = JalaliDate(int(dateEnd[0]), int(dateEnd[1]), int(dateEnd[2])).to_gregorian()
-                    diffDay = relativedelta(deG, dsG)
-                    bot.sendMessage(user_id, str(msg.messageLib.shiftTotalDay.value).format(diffDay.days + 1),
+                tds = mydb.getTotalDayShift(spBtn[2], 1)
+                if tds == 0:
+                    tds = mydb.getTotalDayShift(spBtn[2], 0)
+                    bot.sendMessage(user_id, str(msg.messageLib.shiftTotalDay.value).format(tds),
                                     reply_markup=menu.keyLib.kbApproveAllShiftYesNO(shiftId=spBtn[2]))
                 else:
                     helper.NOApproveAllShift(spBtn[2], user_id, bot)
@@ -1161,11 +1165,12 @@ def handle_new_messages(user_id, userName, update):
                 tmp = str(spBtn[2]).split('=')
                 dateStr = tmp[0]
                 idShiftStr = tmp[1]
-                if mydb.isShiftDayFull(idShiftStr, dateStr) > 0:
+                idDetailShift = tmp[2]
+                if mydb.isShiftDayFull(idDetailShift) > 0:
                     bot.sendMessage(user_id, str(msg.messageLib.shiftDayIsFull.value))
                     return
-                tmpRes = mydb.registerDayShift(idShiftStr, dateStr, user_id, 0)
-                if tmpRes == 0:
+                tmpRes = mydb.registerDayShift(idShiftStr, dateStr, user_id,0, idDetailShift )
+                if tmpRes != 0:
                     bot.sendMessage(user_id, str(msg.messageLib.afterDaySelction.value).format(dateStr))
                 else:
                     bot.sendMessage(user_id, str(msg.messageLib.repeatedDay.value))
@@ -1623,19 +1628,19 @@ def main():
     lui = 0
     # HTML کد پیام
     # html_message = '<table><tr><th>نام</th><th>سن</th></tr>''<tr><td>علی</td><td>30</td></tr><tr><td>محمد</td><td>25</td></tr></table>'
-    try:
-        while True:
-            # دریافت تمامی پیام های دریافتی
-            helper.send_shift_to_student(bot=bot)
-            updates = bot.getUpdates(timeout=10, offset=lui)
-            if updates:
-                lui = int(updates[-1]['update_id']) + 1
-                handle_updates(updates)
-    except Exception as e:
-        print(e)
-        lui = lui + 1
-        bot.sendMessage('6274361322', str(e))
-        main()
+    # try:
+    while True:
+        # دریافت تمامی پیام های دریافتی
+        helper.send_shift_to_student(bot=bot)
+        updates = bot.getUpdates(timeout=10, offset=lui)
+        if updates:
+            lui = int(updates[-1]['update_id']) + 1
+            handle_updates(updates)
+    # except Exception as e:
+    #     print(e)
+    #     lui = lui + 1
+    #     bot.sendMessage('6274361322', str(e))
+    #     main()
 
 
 if __name__ == '__main__':
