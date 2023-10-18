@@ -70,34 +70,34 @@ class mysqlconnector:
         else:
             sql = 'UPDATE `botshiftkari`.`membership` SET'
             updateExp = ''
-            if member.name != None: updateExp = '`name` = \'{}\''.format(member.name)
-            if member.last_name != None:
-                if updateExp != None:
+            if member.name is not None: updateExp = '`name` = \'{}\''.format(member.name)
+            if member.last_name is not None:
+                if updateExp is not None:
                     updateExp = '`last_name` = \'{}\''.format(member.last_name)
                 else:
                     updateExp = ', `last_name` = \'{}\''.format(member.last_name)
-            if member.phone_number != None:
-                if updateExp != None:
+            if member.phone_number is not None:
+                if updateExp is not None:
                     updateExp = '`phone_number` = \'{}\''.format(member.phone_number)
                 else:
                     updateExp = ', `phone_number` = \'{}\''.format(member.phone_number)
-            if member.membership_fee_paid != None:
-                if updateExp != None:
+            if member.membership_fee_paid is not None:
+                if updateExp is not None:
                     updateExp = '`membership_fee_paid` = \'{}\''.format(member.membership_fee_paid)
                 else:
                     updateExp = ', `membership_fee_paid` = \'{}\''.format(member.membership_fee_paid)
-            if member.register_progress != None:
-                if updateExp != None:
+            if member.register_progress is not None:
+                if updateExp is not None:
                     updateExp = '`registration_progress` = \'{}\''.format(member.register_progress)
                 else:
                     updateExp = ', `registration_progress` = \'{}\''.format(member.register_progress)
-            if member.chatId != None:
-                if updateExp != None:
+            if member.chatId is not None:
+                if updateExp is not None:
                     updateExp = '`username` = \'{}\''.format(member.userName)
                 else:
                     updateExp = ', `username` = \'{}\''.format(member.userName)
-            if member.lastMessage != None:
-                if updateExp != None:
+            if member.lastMessage is not None:
+                if updateExp is not None:
                     updateExp = '`last_message_sent` = \'{}\''.format(member.lastMessage)
                 else:
                     updateExp = ', `last_message_sent` = \'{}\''.format(member.lastMessage)
@@ -127,7 +127,7 @@ class mysqlconnector:
         result = myCursor.fetchone()
         myCursor.reset()
         tempMember = Membership()
-        if result != None:
+        if result is not None:
             tempMember.name = result[1]
             tempMember.last_name = result[2]
             tempMember.phone_number = result[3]
@@ -684,8 +684,8 @@ class mysqlconnector:
         else:
             return False
 
-    def registerDayShift(self, idShift, dateShift, requster, sendedForCreator,idDetailShift, status=None):
-        tmpIdDayShift = self.getIdRegisterDayOfShift(idShift, dateShift, requster,idDetailShift)
+    def registerDayShift(self, idShift, dateShift, requster, sendedForCreator, idDetailShift, status=None):
+        tmpIdDayShift = self.getIdRegisterDayOfShift(idShift, dateShift, requster, idDetailShift)
         if tmpIdDayShift != 0:
             return tmpIdDayShift
         mydb = self.connector()
@@ -736,7 +736,7 @@ VALUES({idShift},\'{dateShift}\',\'{requster}\',0,{sendedForCreator},{idDetailSh
         sqlQuery = f'SELECT {fieldName} from botshiftkari.dayshift  where  idDayShift={idDayShift}'
         myCursor.execute(sqlQuery)
         result = myCursor.fetchone()
-        if result == None:
+        if result is None:
             return None
         else:
             return result[0]
@@ -749,7 +749,7 @@ VALUES({idShift},\'{dateShift}\',\'{requster}\',0,{sendedForCreator},{idDetailSh
         result = myCursor.fetchall()
         return result
 
-    def getIdRegisterDayOfShift(self, idShift, dateShift, requsterShift,idDetailShift):
+    def getIdRegisterDayOfShift(self, idShift, dateShift, requsterShift, idDetailShift):
         mydb = self.connector()
         myCursor = mydb.cursor()
         sqlQuery = f'SELECT iddayShift from botshiftkari.dayshift  where  idShift={idShift} and dateShift=\'{dateShift}\'' + \
@@ -825,7 +825,7 @@ VALUES({idShift},\'{dateShift}\',\'{requster}\',0,{sendedForCreator},{idDetailSh
         result = myCursor.fetchall()
         return result
 
-    def getListSelectedDay(self, idShift,status=-1):
+    def getListSelectedDay(self, idShift, status=-1):
         sqlQuery = f'SELECT CONCAT(lpad(ds.year,4,\'0\'),\'-\',lpad(ds.month,2,\'0\'),\'-\',lpad(ds.day,2,\'0\')) as ' \
                    f'dateS,ds.idDetailShift,ds.idShift FROM botshiftkari.detailshift as ds ' \
                    f' where idShift = {idShift}  '
@@ -868,6 +868,7 @@ VALUES({idShift},\'{dateShift}\',\'{requster}\',0,{sendedForCreator},{idDetailSh
         myCursor.execute(sqlQuery)
         result = myCursor.fetchone()
         return result[0]
+
     def detailShift_update_by_id(self, fieldName, fieldValue, idDetailShift):
         mydb = self.connector()
         mydb.autocommit = True
@@ -877,3 +878,30 @@ VALUES({idShift},\'{dateShift}\',\'{requster}\',0,{sendedForCreator},{idDetailSh
         myCursor.execute(sqlQuery)
         myCursor.reset()
         return None
+
+    def getShiftList(self, creator=None, requsterShift=None, startDate=None, endDate=None):
+        sqlQuery = 'SELECT * FROM botshiftkari.myshift '
+        condition = ''
+        if creator is not None:
+            condition = f'where creator = \'{creator}\''
+        if requsterShift is not None:
+            if len(condition) == 0:
+                condition = f'where requster = \'{requsterShift}\''
+            else:
+                condition += f' and requster = \'{requsterShift}\''
+        if startDate is not None:
+            if len(condition) == 0:
+                condition = f'where dateShift >= \'{startDate}\''
+            else:
+                condition += f' and dateShift >= \'{startDate}\''
+        if endDate is not None:
+            if len(condition) == 0:
+                condition = f'where dateShift <= \'{endDate}\''
+            else:
+                condition += f' and dateShift <= \'{endDate}\''
+        sqlQuery += condition
+        mydb = self.connector()
+        myCursor = mydb.cursor()
+        myCursor.execute(sqlQuery)
+        result = myCursor.fetchall()
+        return result
