@@ -1107,7 +1107,7 @@ def handle_new_messages(user_id, userName, update):
                 listShift = mydb.getShiftList(requsterShift=user_id, startDate=dateF)
                 for item in listShift:
                     bot.sendMessage(user_id, helper.formatMyShift(item))
-                if len(listShift) == 0:    bot.sendMessage(user_id, msg.messageLib.emptyList)
+                if len(listShift) == 0:    bot.sendMessage(user_id, msg.messageLib.emptyList.value)
             elif spBtn[1] == 'listSift':
                 allShift = mydb.get_all_shift_by_creator(creator=user_id)
                 if len(allShift) == 0:
