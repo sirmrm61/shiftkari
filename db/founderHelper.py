@@ -121,6 +121,37 @@ class HelperFunder:
             bot.sendMessage(chatid, msg.messageLib.yourOperation.value,
                             reply_markup=menu.keyLib.kbCreateMenuManager(chatId=chatid))
 
+    def formatMyShift(self, dataRow, who=0):  # who = 0 => requster,who = 1 =>creator
+        # idShift 0, idDetailShift 1, dateShift 2, requster 3, fnr 4, fnc 5,
+        # creator 6, phoneRequster 7, startTime 8, endTime 9, pharmacyAddress 10, phoneCreator 11,iddayShift 12
+        dateShift = f' تاریخ شیفت:{dataRow[2]}'
+        startTime = f'زمان شروع شیفت: {dataRow[8]}'
+        endtTime = f' زمان پایان شیفت:{dataRow[9]}'
+        pharmacyAddress = f'آدرس داروخانه: {dataRow[10]}'
+        fnc = f'سازنده شیفت: {dataRow[5]}'
+        phoneCreator = f'تلفن سازنده شیفت: {dataRow[11]}'
+        fnr = f'پذیرنده شیفت: {dataRow[4]}'
+        phoneRequster = f'تلفن پذیرنده شیفت: {dataRow[7]}'
+        result = f'''
+{dateShift}
+{startTime}
+{endtTime}
+{pharmacyAddress}
+-----------------------
+'''
+        who1 = f'''
+{fnr}
+{phoneRequster}
+'''
+        who0 = f'''
+{fnc}
+{phoneCreator}
+        '''
+        if who == 0:
+            result += who0
+        elif who == 1:
+            result += who1
+        return result
     def formatShiftMessage(self, shiftRow, memberType=None):
         dr = shiftRow[12]
         dateRegister = f'تاریخ ایجاد درخواست:{JalaliDate.to_jalali(dr.year, dr.month, dr.day)}'

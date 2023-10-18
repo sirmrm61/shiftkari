@@ -25,6 +25,8 @@ mydb = msc.mysqlconnector()
 idFromFile = None
 botKeyApi = mydb.get_property_domain('botkey')
 bot = telepot.Bot(botKeyApi)
+
+
 # helper.send_shift_to_technicalResponsible(29, bot )
 # exit()
 # admins = mydb.getAdmins()
@@ -599,16 +601,16 @@ def handle_new_messages(user_id, userName, update):
                                     reply_markup=menu.keyLib.kbCreateMenuShiftApproveManager(shiftId=spBtn[2]))
             elif spBtn[1] == 'dayApproveCreator':
                 ids = str(spBtn[2]).split('=')
-                requsterSift = helper.registerDay(ids[0], bot, user_id,ids[1])
+                requsterSift = helper.registerDay(ids[0], bot, user_id, ids[1])
                 if requsterSift is not None:
                     bot.sendMessage(requsterSift, msg.messageLib.propertyShiftCreator.value)
                     helper.send_profile(user_id, bot, requsterSift)
-                    bot.sendMessage(user_id,msg.messageLib.requesterNotify.value)
+                    bot.sendMessage(user_id, msg.messageLib.requesterNotify.value)
             elif spBtn[1] == 'approveAllDay':
                 listIdDay = str(spBtn[2]).split('#')
                 for item in listIdDay:
                     ids = str(item).split('=')
-                    requsterSift = helper.registerDay(ids[0], bot, user_id,ids[1])
+                    requsterSift = helper.registerDay(ids[0], bot, user_id, ids[1])
                 bot.sendMessage(requsterSift, msg.messageLib.propertyShiftCreator.value)
                 helper.send_profile(user_id, bot, requsterSift)
             elif spBtn[1] == 'editProfile':
@@ -1100,6 +1102,12 @@ def handle_new_messages(user_id, userName, update):
                 if int(op) == 11:
                     mydb.member_update('op', 10, message['chat']['id'])
                     bot.sendMessage(message['chat']['id'], msg.messageLib.enterPharmacyAddress.value)
+            elif spBtn[1] == 'ownerShift':
+                dateF = JalaliDate.today().strftime("%Y.%m.%d")
+                listShift = mydb.getShiftList(requsterShift=user_id, startDate=dateF)
+                for item in listShift:
+                    bot.sendMessage(user_id, helper.formatMyShift(item))
+                if len(listShift) == 0:    bot.sendMessage(user_id, msg.messageLib.emptyList)
             elif spBtn[1] == 'listSift':
                 allShift = mydb.get_all_shift_by_creator(creator=user_id)
                 if len(allShift) == 0:
@@ -1109,7 +1117,7 @@ def handle_new_messages(user_id, userName, update):
                         bot.sendMessage(user_id, helper.formatShiftMessage(shiftRow),
                                         reply_markup=menu.keyLib.createMenuFromListDayForApproveCreatorNew(
                                             self=None,
-                                            idSift=shiftRow[9]))
+                                            idShift=shiftRow[9]))
             elif spBtn[1] == 'epf':
                 bot.sendMessage(user_id, msg.messageLib.editMessag.value)
                 helper.send_profile(chatid=user_id, bot=bot)
@@ -1170,7 +1178,7 @@ def handle_new_messages(user_id, userName, update):
                 if mydb.isShiftDayFull(idDetailShift) > 0:
                     bot.sendMessage(user_id, str(msg.messageLib.shiftDayIsFull.value))
                     return
-                tmpRes = mydb.registerDayShift(idShiftStr, dateStr, user_id,0, idDetailShift )
+                tmpRes = mydb.registerDayShift(idShiftStr, dateStr, user_id, 0, idDetailShift)
                 if tmpRes != 0:
                     bot.sendMessage(user_id, str(msg.messageLib.afterDaySelction.value).format(dateStr))
                 else:
@@ -1639,6 +1647,7 @@ def main(lui=0):
     except Exception as e:
         lui = lui + 1
         bot.sendMessage('6274361322', traceback.format_exc())
+        print(traceback.format_exc())
         main(lui)
 
 
