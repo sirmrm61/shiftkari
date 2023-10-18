@@ -716,11 +716,24 @@ def handle_new_messages(user_id, userName, update):
                 print(f'int(totalEM) < int(TSPDEM) ==>{totalEM} >{TSPDEM}')
                 if int(totalEM) < int(TSPDEM):
                     bot.sendMessage(user_id, msg.messageLib.emShiftRegister.value)
-                    bot.sendMessage(user_id, msg.messageLib.dateShift.value)
-                    bot.sendMessage(chat_id=user_id, parse_mode='HTML', text='سال را انتخاب کنید',
-                                    reply_markup=menu.keyLib.kbCreateMenuYear(tag=6))
-                    mydb.member_update('registration_progress', 11, user_id)
-                    mydb.member_update('op', 0, message['chat']['id'])
+                    splitDate = str(JalaliDate(datetime.now())).split('-')
+                    dateEndMonth = None
+                    if int(splitDate[1]) < 12:
+                        dateEndMonth = JalaliDate(
+                            JalaliDate(int(splitDate[0]), int(splitDate[1]) + 1, 1).to_gregorian() - timedelta(days=1))
+                    else:
+                        dateEndMonth = JalaliDate(
+                            JalaliDate(int(splitDate[0]) + 1, 1, 1).to_gregorian() - timedelta(days=1))
+                    sde = str(dateEndMonth).split('-')
+                    getMsgId = mydb.get_member_property_chatid('editMsgId', user_id)
+                    msgInfo = helper.sendCalendar(bot, user_id, None, int(splitDate[0]), int(splitDate[1]),
+                                                  int(splitDate[2]), int(sde[2]),isEm=1)
+                    mydb.member_update_chatid('editMsgId', msgInfo["message_id"], user_id)
+                    # bot.sendMessage(user_id, msg.messageLib.dateShift.value)
+                    # bot.sendMessage(chat_id=user_id, parse_mode='HTML', text='سال را انتخاب کنید',
+                    #                 reply_markup=menu.keyLib.kbCreateMenuYear(tag=6))
+                    # mydb.member_update('registration_progress', 11, user_id)
+                    # mydb.member_update('op', 0, message['chat']['id'])
                 else:
                     bot.sendMessage(user_id, msg.messageLib.emShiftFull.value)
                     return

@@ -575,7 +575,7 @@ class HelperFunder:
             bot.sendMessage(requesterShift, str(msg.messageLib.approvedDay.value).format(dateReq))
             return requesterShift
 
-    def sendCalendar(self, bot, user_id, msgId, yearC, monthC, dayC, endDay, idShift=0):
+    def sendCalendar(self, bot, user_id, msgId, yearC, monthC, dayC, endDay, idShift=0,isEm=2):
         msgInfo = None
         if msgId is None:
             msgInfo = bot.sendMessage(user_id, msg.messageLib.choiceDays.value, parse_mode='HTML',
@@ -583,7 +583,7 @@ class HelperFunder:
                                                                                       yearC,
                                                                                       monthC,
                                                                                       dayC,
-                                                                                      endDay, idShift))
+                                                                                      endDay, idShift,isEM=isEm))
         else:
             try:
                 msgInfo = bot.editMessageText((user_id, msgId), msg.messageLib.choiceDays.value,
@@ -593,7 +593,7 @@ class HelperFunder:
                                                                                               monthC,
                                                                                               dayC,
                                                                                               endDay,
-                                                                                              idShift))
+                                                                                              idShift,isEM=isEm))
             except:
                 print('Error Edit Message')
         return msgInfo
