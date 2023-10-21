@@ -1240,7 +1240,12 @@ def handle_new_messages(user_id, userName, update):
                 bot.sendMessage(user_id, msg.messageLib.requesterNotify.value)
             elif spBtn[1] == 'listFunderManager':
                 result = mydb.get_all_member(tye=1)
-                df = pd.DataFrame(result)
+                df = pd.DataFrame(result, columns=['نام','نوع عضویت','شماره همراه'])
+                df.to_excel('01.xlsx',sheet_name='لیست موسسان')
+                doc = 'list.xlsx'
+                isExisting = os.path.exists(doc)
+                if isExisting:
+                    bot.sendDocument(user_id, open(doc,'rb'))
                 print(df)
                 if len(result) > 0:
                     for item in result:
@@ -1255,6 +1260,12 @@ def handle_new_messages(user_id, userName, update):
                     bot.sendMessage(message['chat']['id'], msg.messageLib.emptyList.value)
             elif spBtn[1] == 'listresponsible':
                 result = mydb.get_all_member(tye=2)
+                df = pd.DataFrame(result, columns=['نام','نوع عضویت','شماره همراه'])
+                df.to_excel('01.xlsx',sheet_name='لیست مسئولان فنی')
+                doc = 'list.xlsx'
+                isExisting = os.path.exists(doc)
+                if isExisting:
+                    bot.sendDocument(user_id, open(doc,'rb'))
                 if len(result) > 0:
                     for item in result:
                         itemRow1 = 'نام و نام خانوادگی:{}'.format(item[0])
@@ -1268,6 +1279,12 @@ def handle_new_messages(user_id, userName, update):
                     bot.sendMessage(message['chat']['id'], msg.messageLib.emptyList.value)
             elif spBtn[1] == 'listStudent':
                 result = mydb.get_all_member(tye=3)
+                df = pd.DataFrame(result, columns=['نام','نوع عضویت','شماره همراه'])
+                df.to_excel('01.xlsx',sheet_name='لیست دانشجویان')
+                doc = 'list.xlsx'
+                isExisting = os.path.exists(doc)
+                if isExisting:
+                    bot.sendDocument(user_id, open(doc,'rb'))
                 if len(result) > 0:
                     for item in result:
                         itemRow1 = 'نام و نام خانوادگی:{}'.format(item[0])
