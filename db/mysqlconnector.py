@@ -534,7 +534,7 @@ class mysqlconnector:
                             else 'نامشخص'
                             end as typeMember,
                             mem.phone_number,memf.pharmacy_name,pharmacy_type,pharmacy_address,
-                            case when mems.del = 0 then 'فعال'
+                            case when memf.del = 0 then 'فعال'
                             else 'غیر فعال' end as status
                             from botshiftkari.membership mem inner join botshiftkari.founder memf 
                             on mem.id=memf.idMember  where mem.membership_type={}'''.format(type)
@@ -561,7 +561,9 @@ class mysqlconnector:
                             when mem.membership_type = 4 then 'مدیر'
                             else 'نامشخص'
                             end as typeMember,
-                            mem.phone_number,mems.start_date,mems.end_date,mems.shift_access, mems.hourPermit,mems.hourPermitUsed,
+                            mem.phone_number,mems.national_code,
+                            mems.start_date,mems.end_date,mems.shift_access, mems.hourPermit,
+                            mems.hourPermitUsed,
                             case when mems.del = 0 then 'فعال'
                             else 'غیر فعال' end as status
                             from botshiftkari.membership mem inner join botshiftkari.student mems 
