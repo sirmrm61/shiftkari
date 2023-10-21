@@ -14,6 +14,7 @@ import menu
 import db.founderHelper as fh
 from unidecode import unidecode
 import pandas as pd
+import jalali_pandas
 helper = fh.HelperFunder()
 from telepot.loop import MessageLoop
 
@@ -1225,6 +1226,15 @@ def handle_new_messages(user_id, userName, update):
                 if len(allShift) == 0:
                     bot.sendMessage(message['chat']["id"], msg.messageLib.emptyList.value)
                 else:
+                    df = pd.DataFrame(allShift,
+                                      columns=['ایجاد کننده شیفت', 'کد', 'تاریخ شروع', 'ساعت شروع','ساعت پایان', 'دستمزد',
+                                               'آدرس داروخانه', 'پیشرفت','تائید کننده','شناسه شیفت','تایخ پایان','دسمزد دانشجو','تاریخ ثبت'])
+                    df1 = df.iloc[:,[0,12,2,10,3,4,5,11,6]]
+                    df1.to_excel('list.xlsx', sheet_name='لیست شیفت ها')
+                    doc = 'list.xlsx'
+                    isExisting = os.path.exists(doc)
+                    if isExisting:
+                        bot.sendDocument(user_id, open(doc, 'rb'))
                     bot.sendMessage(message['chat']["id"], msg.messageLib.diver.value)
                     for shiftRow in allShift:
                         bot.sendMessage(message['chat']["id"], helper.formatShiftMessage(shiftRow))
