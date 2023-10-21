@@ -1246,7 +1246,6 @@ def handle_new_messages(user_id, userName, update):
                 isExisting = os.path.exists(doc)
                 if isExisting:
                     bot.sendDocument(user_id, open(doc,'rb'))
-                print(df)
                 if len(result) > 0:
                     for item in result:
                         itemRow1 = 'نام و نام خانوادگی:{}'.format(item[0])
