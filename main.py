@@ -1246,7 +1246,6 @@ def handle_new_messages(user_id, userName, update):
                 isExisting = os.path.exists(doc)
                 if isExisting:
                     bot.sendDocument(user_id, open(doc,'rb'))
-                print(df)
                 if len(result) > 0:
                     for item in result:
                         itemRow1 = 'نام و نام خانوادگی:{}'.format(item[0])
@@ -1279,7 +1278,8 @@ def handle_new_messages(user_id, userName, update):
                     bot.sendMessage(message['chat']['id'], msg.messageLib.emptyList.value)
             elif spBtn[1] == 'listStudent':
                 result = mydb.get_all_member(type=3)
-                df = pd.DataFrame(result, columns=['نام','نوع عضویت','شماره همراه', 'تاریخ شروع', 'تاریخ پایان', 'نوع داروخانه', 'میزان مجوز ساعت', 'ساعت استفاده شده', 'وضعیت'])
+                df = pd.DataFrame(result, columns=['نام','نوع عضویت','شماره همراه','کدملی', 'تاریخ شروع', 'تاریخ پایان', 'نوع داروخانه',
+                                                   'میزان مجوز ساعت', 'ساعت استفاده شده', 'وضعیت'])
                 df.to_excel('list.xlsx',sheet_name='لیست دانشجویان')
                 doc = 'list.xlsx'
                 isExisting = os.path.exists(doc)
