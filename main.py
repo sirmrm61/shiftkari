@@ -13,7 +13,7 @@ import uuid
 import menu
 import db.founderHelper as fh
 from unidecode import unidecode
-
+import pandas as pd
 helper = fh.HelperFunder()
 from telepot.loop import MessageLoop
 
@@ -1239,10 +1239,11 @@ def handle_new_messages(user_id, userName, update):
                 bot.sendMessage(approver, msg.messageLib.shiftDisApprovedByManager.value)
                 bot.sendMessage(user_id, msg.messageLib.requesterNotify.value)
             elif spBtn[1] == 'listFunderManager':
-                resualt = mydb.get_all_member(tye=1)
-                txtResualt = None
-                if len(resualt) > 0:
-                    for item in resualt:
+                result = mydb.get_all_member(tye=1)
+                df = pd.DataFrame(result)
+                print(df)
+                if len(result) > 0:
+                    for item in result:
                         itemRow1 = 'نام و نام خانوادگی:{}'.format(item[0])
                         itemRow2 = 'نوع عضویت:{}'.format(item[1])
                         itemRow3 = 'شماره همراه:{}'.format(item[2])
@@ -1253,10 +1254,9 @@ def handle_new_messages(user_id, userName, update):
                 else:
                     bot.sendMessage(message['chat']['id'], msg.messageLib.emptyList.value)
             elif spBtn[1] == 'listresponsible':
-                resualt = mydb.get_all_member(tye=2)
-                txtResualt = None
-                if len(resualt) > 0:
-                    for item in resualt:
+                result = mydb.get_all_member(tye=2)
+                if len(result) > 0:
+                    for item in result:
                         itemRow1 = 'نام و نام خانوادگی:{}'.format(item[0])
                         itemRow2 = 'نوع عضویت:{}'.format(item[1])
                         itemRow3 = 'شماره همراه:{}'.format(item[2])
@@ -1267,10 +1267,9 @@ def handle_new_messages(user_id, userName, update):
                 else:
                     bot.sendMessage(message['chat']['id'], msg.messageLib.emptyList.value)
             elif spBtn[1] == 'listStudent':
-                resualt = mydb.get_all_member(tye=3)
-                txtResualt = None
-                if len(resualt) > 0:
-                    for item in resualt:
+                result = mydb.get_all_member(tye=3)
+                if len(result) > 0:
+                    for item in result:
                         itemRow1 = 'نام و نام خانوادگی:{}'.format(item[0])
                         itemRow2 = 'نوع عضویت:{}'.format(item[1])
                         itemRow3 = 'شماره همراه:{}'.format(item[2])
