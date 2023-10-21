@@ -14,9 +14,7 @@ import menu
 import db.founderHelper as fh
 from unidecode import unidecode
 import pandas as pd
-import jalali_pandas
 helper = fh.HelperFunder()
-from telepot.loop import MessageLoop
 
 last_update_ids = {}
 # زمان حداکثر برای فعال بودن آخرین پیام دریافتی (به ثانیه)
