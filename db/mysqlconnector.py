@@ -508,12 +508,12 @@ class mysqlconnector:
         result = myCursor.fetchall()
         return result;
 
-    def get_all_member(self=None, tye=None):
+    def get_all_member(self=None, type=None):
         mydb = self.connector()
         mydb.autocommit = True
         myCursor = mydb.cursor()
         sqlQuery = None
-        if tye is None:
+        if type is None:
             sqlQuery = '''select concat(mem.name,mem.last_name) as fullname,
                             case 
                             when mem.membership_type = 1 then 'موسس'
@@ -524,18 +524,49 @@ class mysqlconnector:
                             end as typeMember,
                             mem.phone_number
                             from  botshiftkari.membership as mem '''
-        else:
-            sqlQuery = '''select concat(mem.name,mem.last_name) as fullname,
-                                        case 
-                                        when mem.membership_type = 1 then 'موسس'
-                                        when mem.membership_type = 2 then 'مسئول فنی'
-                                        when mem.membership_type = 3 then 'دانشجو'
-                                        when mem.membership_type = 4 then 'مدیر'
-                                        else 'نامشخص'
-                                        end as typeMember,
-                                        mem.phone_number
-                                        from  botshiftkari.membership as mem  where mem.membership_type={}'''.format(
-                tye)
+        elif type == 1:
+            sqlQuery = '''select concat(mem.name,' ',mem.last_name) as fn,
+						    case 
+                            when mem.membership_type = 1 then 'موسس'
+                            when mem.membership_type = 2 then 'مسئول فنی'
+                            when mem.membership_type = 3 then 'دانشجو'
+                            when mem.membership_type = 4 then 'مدیر'
+                            else 'نامشخص'
+                            end as typeMember,
+                            mem.phone_number,memf.pharmacy_name,pharmacy_type,pharmacy_address,
+                            case when mems.del = 0 then 'فعال'
+                            else 'غیر فعال' end as status
+                            from botshiftkari.membership mem inner join botshiftkari.founder memf 
+                            on mem.id=memf.idMember  where mem.membership_type={}'''.format(type)
+        elif type == 2:
+            sqlQuery = '''select concat(mem.name,' ',mem.last_name) as fn,
+						    case 
+                            when mem.membership_type = 1 then 'موسس'
+                            when mem.membership_type = 2 then 'مسئول فنی'
+                            when mem.membership_type = 3 then 'دانشجو'
+                            when mem.membership_type = 4 then 'مدیر'
+                            else 'نامشخص'
+                            end as typeMember,
+                            mem.phone_number,memT.national_code,
+                            case when memT.del = 0 then 'فعال'
+                            else 'غیر فعال' end as status
+                            from botshiftkari.membership mem inner join botshiftkari.technicalmanager memT
+                            on mem.id=memt.idMember  where mem.membership_type={}'''.format(type)
+        elif type == 3:
+            sqlQuery = '''select concat(mem.name,' ',mem.last_name) as fn,
+					        case 
+                            when mem.membership_type = 1 then 'موسس'
+                            when mem.membership_type = 2 then 'مسئول فنی'
+                            when mem.membership_type = 3 then 'دانشجو'
+                            when mem.membership_type = 4 then 'مدیر'
+                            else 'نامشخص'
+                            end as typeMember,
+                            mem.phone_number,mems.start_date,mems.end_date,mems.shift_access, mems.hourPermit,mems.hourPermitUsed,
+                            case when mems.del = 0 then 'فعال'
+                            else 'غیر فعال' end as status
+                            from botshiftkari.membership mem inner join botshiftkari.student mems 
+                            on mem.id=mems.idMember  where mem.membership_type={}'''.format(type)
+
         myCursor.execute(sqlQuery)
         result = myCursor.fetchall()
         return result
