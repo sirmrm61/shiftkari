@@ -70,34 +70,34 @@ class mysqlconnector:
         else:
             sql = 'UPDATE `botshiftkari`.`membership` SET'
             updateExp = ''
-            if member.name != None: updateExp = '`name` = \'{}\''.format(member.name)
-            if member.last_name != None:
-                if updateExp != None:
+            if member.name is not None: updateExp = '`name` = \'{}\''.format(member.name)
+            if member.last_name is not None:
+                if updateExp is not None:
                     updateExp = '`last_name` = \'{}\''.format(member.last_name)
                 else:
                     updateExp = ', `last_name` = \'{}\''.format(member.last_name)
-            if member.phone_number != None:
-                if updateExp != None:
+            if member.phone_number is not None:
+                if updateExp is not None:
                     updateExp = '`phone_number` = \'{}\''.format(member.phone_number)
                 else:
                     updateExp = ', `phone_number` = \'{}\''.format(member.phone_number)
-            if member.membership_fee_paid != None:
-                if updateExp != None:
+            if member.membership_fee_paid is not None:
+                if updateExp is not None:
                     updateExp = '`membership_fee_paid` = \'{}\''.format(member.membership_fee_paid)
                 else:
                     updateExp = ', `membership_fee_paid` = \'{}\''.format(member.membership_fee_paid)
-            if member.register_progress != None:
-                if updateExp != None:
+            if member.register_progress is not None:
+                if updateExp is not None:
                     updateExp = '`registration_progress` = \'{}\''.format(member.register_progress)
                 else:
                     updateExp = ', `registration_progress` = \'{}\''.format(member.register_progress)
-            if member.chatId != None:
-                if updateExp != None:
+            if member.chatId is not None:
+                if updateExp is not None:
                     updateExp = '`username` = \'{}\''.format(member.userName)
                 else:
                     updateExp = ', `username` = \'{}\''.format(member.userName)
-            if member.lastMessage != None:
-                if updateExp != None:
+            if member.lastMessage is not None:
+                if updateExp is not None:
                     updateExp = '`last_message_sent` = \'{}\''.format(member.lastMessage)
                 else:
                     updateExp = ', `last_message_sent` = \'{}\''.format(member.lastMessage)
@@ -127,7 +127,7 @@ class mysqlconnector:
         result = myCursor.fetchone()
         myCursor.reset()
         tempMember = Membership()
-        if result != None:
+        if result is not None:
             tempMember.name = result[1]
             tempMember.last_name = result[2]
             tempMember.phone_number = result[3]
@@ -508,12 +508,12 @@ class mysqlconnector:
         result = myCursor.fetchall()
         return result;
 
-    def get_all_member(self=None, tye=None):
+    def get_all_member(self=None, type=None):
         mydb = self.connector()
         mydb.autocommit = True
         myCursor = mydb.cursor()
         sqlQuery = None
-        if tye is None:
+        if type is None:
             sqlQuery = '''select concat(mem.name,mem.last_name) as fullname,
                             case 
                             when mem.membership_type = 1 then 'موسس'
@@ -524,18 +524,51 @@ class mysqlconnector:
                             end as typeMember,
                             mem.phone_number
                             from  botshiftkari.membership as mem '''
-        else:
-            sqlQuery = '''select concat(mem.name,mem.last_name) as fullname,
-                                        case 
-                                        when mem.membership_type = 1 then 'موسس'
-                                        when mem.membership_type = 2 then 'مسئول فنی'
-                                        when mem.membership_type = 3 then 'دانشجو'
-                                        when mem.membership_type = 4 then 'مدیر'
-                                        else 'نامشخص'
-                                        end as typeMember,
-                                        mem.phone_number
-                                        from  botshiftkari.membership as mem  where mem.membership_type={}'''.format(
-                tye)
+        elif type == 1:
+            sqlQuery = '''select concat(mem.name,' ',mem.last_name) as fn,
+						    case 
+                            when mem.membership_type = 1 then 'موسس'
+                            when mem.membership_type = 2 then 'مسئول فنی'
+                            when mem.membership_type = 3 then 'دانشجو'
+                            when mem.membership_type = 4 then 'مدیر'
+                            else 'نامشخص'
+                            end as typeMember,
+                            mem.phone_number,memf.pharmacy_name,pharmacy_type,pharmacy_address,
+                            case when memf.del = 0 then 'فعال'
+                            else 'غیر فعال' end as status
+                            from botshiftkari.membership mem inner join botshiftkari.founder memf 
+                            on mem.id=memf.idMember  where mem.membership_type={}'''.format(type)
+        elif type == 2:
+            sqlQuery = '''select concat(mem.name,' ',mem.last_name) as fn,
+						    case 
+                            when mem.membership_type = 1 then 'موسس'
+                            when mem.membership_type = 2 then 'مسئول فنی'
+                            when mem.membership_type = 3 then 'دانشجو'
+                            when mem.membership_type = 4 then 'مدیر'
+                            else 'نامشخص'
+                            end as typeMember,
+                            mem.phone_number,memT.national_code,
+                            case when memT.del = 0 then 'فعال'
+                            else 'غیر فعال' end as status
+                            from botshiftkari.membership mem inner join botshiftkari.technicalmanager memT
+                            on mem.id=memt.idMember  where mem.membership_type={}'''.format(type)
+        elif type == 3:
+            sqlQuery = '''select concat(mem.name,' ',mem.last_name) as fn,
+					        case 
+                            when mem.membership_type = 1 then 'موسس'
+                            when mem.membership_type = 2 then 'مسئول فنی'
+                            when mem.membership_type = 3 then 'دانشجو'
+                            when mem.membership_type = 4 then 'مدیر'
+                            else 'نامشخص'
+                            end as typeMember,
+                            mem.phone_number,mems.national_code,
+                            mems.start_date,mems.end_date,mems.shift_access, mems.hourPermit,
+                            mems.hourPermitUsed,
+                            case when mems.del = 0 then 'فعال'
+                            else 'غیر فعال' end as status
+                            from botshiftkari.membership mem inner join botshiftkari.student mems 
+                            on mem.id=mems.idMember  where mem.membership_type={}'''.format(type)
+
         myCursor.execute(sqlQuery)
         result = myCursor.fetchall()
         return result
@@ -684,8 +717,8 @@ class mysqlconnector:
         else:
             return False
 
-    def registerDayShift(self, idShift, dateShift, requster, sendedForCreator, status=None):
-        tmpIdDayShift = self.getIdRegisterDayOfShift(idShift, dateShift, requster)
+    def registerDayShift(self, idShift, dateShift, requster, sendedForCreator, idDetailShift, status=None):
+        tmpIdDayShift = self.getIdRegisterDayOfShift(idShift, dateShift, requster, idDetailShift)
         if tmpIdDayShift != 0:
             return tmpIdDayShift
         mydb = self.connector()
@@ -697,16 +730,17 @@ class mysqlconnector:
 `dateShift`,
 `requster`,
 `approveCreator`,
-`sendedForCreator`)
-VALUES({idShift},\'{dateShift}\',\'{requster}\',0,{sendedForCreator});SELECT LAST_INSERT_ID();'''
+`sendedForCreator`,
+`idDetailShift`)
+VALUES({idShift},\'{dateShift}\',\'{requster}\',0,{sendedForCreator},{idDetailShift})'''
         else:
             sqlQuery = f'''INSERT INTO `botshiftkari`.`dayshift`
             (`idShift`,
             `dateShift`,
             `requster`,
             `approveCreator`,
-            `sendedForCreator`,status)
-            VALUES({idShift},\'{dateShift}\',\'{requster}\',0,{sendedForCreator},{status})'''
+            `sendedForCreator`,`status`,`idDetailShift`)
+            VALUES({idShift},\'{dateShift}\',\'{requster}\',0,{sendedForCreator},{status},{idDetailShift})'''
         myCursor.execute(sqlQuery)
         return myCursor.lastrowid
 
@@ -735,7 +769,7 @@ VALUES({idShift},\'{dateShift}\',\'{requster}\',0,{sendedForCreator});SELECT LAS
         sqlQuery = f'SELECT {fieldName} from botshiftkari.dayshift  where  idDayShift={idDayShift}'
         myCursor.execute(sqlQuery)
         result = myCursor.fetchone()
-        if result == None:
+        if result is None:
             return None
         else:
             return result[0]
@@ -748,11 +782,11 @@ VALUES({idShift},\'{dateShift}\',\'{requster}\',0,{sendedForCreator});SELECT LAS
         result = myCursor.fetchall()
         return result
 
-    def getIdRegisterDayOfShift(self, idShift, dateShift, requsterShift):
+    def getIdRegisterDayOfShift(self, idShift, dateShift, requsterShift, idDetailShift):
         mydb = self.connector()
         myCursor = mydb.cursor()
         sqlQuery = f'SELECT iddayShift from botshiftkari.dayshift  where  idShift={idShift} and dateShift=\'{dateShift}\'' + \
-                   f' and requster=\'{requsterShift}\''
+                   f' and requster=\'{requsterShift}\' and idDetailShift={idDetailShift}'
         myCursor.execute(sqlQuery)
         result = myCursor.fetchone()
         if result is not None:
@@ -760,11 +794,10 @@ VALUES({idShift},\'{dateShift}\',\'{requster}\',0,{sendedForCreator});SELECT LAS
         else:
             return 0
 
-    def isShiftDayFull(self, idShift, dateShift):
+    def isShiftDayFull(self, idDetailShift):
         mydb = self.connector()
         myCursor = mydb.cursor()
-        sqlQuery = f'SELECT count(iddayShift) from botshiftkari.dayshift  where  idShift={idShift} and dateShift=\'{dateShift}\'' + \
-                   f' and status = 2 '
+        sqlQuery = f'SELECT count(*) from botshiftkari.detailshift  where  idDetailShift={idDetailShift} and status=1'
         myCursor.execute(sqlQuery)
         result = myCursor.fetchone()
         return result[0]
@@ -772,7 +805,7 @@ VALUES({idShift},\'{dateShift}\',\'{requster}\',0,{sendedForCreator});SELECT LAS
     def getListDaySelection(self, idShift, requsterShift):
         mydb = self.connector()
         myCursor = mydb.cursor()
-        sqlQuery = f'SELECT iddayShift,dateShift from botshiftkari.dayshift  where  idShift={idShift} and status= 0 ' + \
+        sqlQuery = f'SELECT iddayShift,dateShift,idDetailShift from botshiftkari.dayshift  where  idShift={idShift} and status= 0 ' + \
                    f' and requster=\'{requsterShift}\''
         myCursor.execute(sqlQuery)
         result = myCursor.fetchall()
@@ -825,10 +858,14 @@ VALUES({idShift},\'{dateShift}\',\'{requster}\',0,{sendedForCreator});SELECT LAS
         result = myCursor.fetchall()
         return result
 
-    def getListSelectedDay(self, idShift):
+    def getListSelectedDay(self, idShift, status=-1):
         sqlQuery = f'SELECT CONCAT(lpad(ds.year,4,\'0\'),\'-\',lpad(ds.month,2,\'0\'),\'-\',lpad(ds.day,2,\'0\')) as ' \
                    f'dateS,ds.idDetailShift,ds.idShift FROM botshiftkari.detailshift as ds ' \
-                   f' where idShift = {idShift}  order by ds.year,ds.month,ds.day'
+                   f' where idShift = {idShift}  '
+        if status > -1:
+            sqlQuery += f' and status = {status} order by ds.year,ds.month,ds.day'
+        else:
+            sqlQuery += ' order by ds.year,ds.month,ds.day'
         mydb = self.connector()
         myCursor = mydb.cursor()
         myCursor.execute(sqlQuery)
@@ -856,3 +893,48 @@ VALUES({idShift},\'{dateShift}\',\'{requster}\',0,{sendedForCreator});SELECT LAS
             endDate = f'{str(result[-1][2]).zfill(4)}-{str(result[-1][3]).zfill(2)}-{str(result[-1][4]).zfill(2)}'
         self.shift_update_by_id('DateShift', startDate, idShift)
         self.shift_update_by_id('dateEndShift', endDate, idShift)
+
+    def getTotalDayShift(self, idShift, status=0):
+        sqlQuery = f'select count(*) from botshiftkari.detailshift where idShift = {idShift} and status = {status} '
+        mydb = self.connector()
+        myCursor = mydb.cursor()
+        myCursor.execute(sqlQuery)
+        result = myCursor.fetchone()
+        return result[0]
+
+    def detailShift_update_by_id(self, fieldName, fieldValue, idDetailShift):
+        mydb = self.connector()
+        mydb.autocommit = True
+        myCursor = mydb.cursor()
+        sqlQuery = 'UPDATE `botshiftkari`.`detailshift` SET `{0}` = \'{1}\'  where  idDetailShift = \'{2}\''.format(
+            fieldName, fieldValue, idDetailShift)
+        myCursor.execute(sqlQuery)
+        myCursor.reset()
+        return None
+
+    def getShiftList(self, creator=None, requsterShift=None, startDate=None, endDate=None):
+        sqlQuery = 'SELECT * FROM botshiftkari.myshift '
+        condition = ''
+        if creator is not None:
+            condition = f'where creator = \'{creator}\''
+        if requsterShift is not None:
+            if len(condition) == 0:
+                condition = f'where requster = \'{requsterShift}\''
+            else:
+                condition += f' and requster = \'{requsterShift}\''
+        if startDate is not None:
+            if len(condition) == 0:
+                condition = f'where dateShift >= \'{startDate}\''
+            else:
+                condition += f' and dateShift >= \'{startDate}\''
+        if endDate is not None:
+            if len(condition) == 0:
+                condition = f'where dateShift <= \'{endDate}\''
+            else:
+                condition += f' and dateShift <= \'{endDate}\''
+        sqlQuery += condition
+        mydb = self.connector()
+        myCursor = mydb.cursor()
+        myCursor.execute(sqlQuery)
+        result = myCursor.fetchall()
+        return result

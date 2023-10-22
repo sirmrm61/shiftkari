@@ -69,13 +69,14 @@ class keyLib:
     def kbCreateMenuFunder(self=None, chatId=None):
         return InlineKeyboardMarkup(inline_keyboard=[
             [InlineKeyboardButton(text='حذف شیفت', callback_data='btn_deleteShift_{}'.format(str(chatId))),
-             InlineKeyboardButton(text='شیفت های من', callback_data='btn_createShift_{}'.format(str(chatId)))],
+             InlineKeyboardButton(text='شیفت های من', callback_data='btn_listSift_{}'.format(str(chatId)))],
             [InlineKeyboardButton(text='ثبت شیفت اضطراری', callback_data='btn_createShiftEm_{}'.format(str(chatId))),
              InlineKeyboardButton(text='ثبت شیفت', callback_data='btn_createShift_{}'.format(str(chatId)))],
             [InlineKeyboardButton(text='ویرایش پروفایل', callback_data='btn_epf_{}'.format(str(chatId))),
              InlineKeyboardButton(text='غیر فعال', callback_data='btn_removeProfile_{}'.format(str(chatId)))],
-            [InlineKeyboardButton(text='شیفت هایی که من ساخته ام',
-                                  callback_data='btn_ownerShift_{}'.format(str(chatId))), ]
+            [InlineKeyboardButton(text='شیفت هایی که پر کرده ام',
+                                  callback_data='btn_ownerShift_{}'.format(str(chatId))),
+            ]
         ])
 
     def kbCreateMenuResponsible(self=None, chatId=None):
@@ -88,7 +89,7 @@ class keyLib:
             [InlineKeyboardButton(text='ثبت شیفت اضطراری', callback_data='btn_createShiftEm_{}'.format(str(chatId))),
              InlineKeyboardButton(text='ثبت شیفت', callback_data='btn_createShift_{}'.format(str(chatId)))],
             [InlineKeyboardButton(text='غیر فعال', callback_data='btn_removeProfile_{}'.format(str(chatId)))],
-            [InlineKeyboardButton(text='شیفت هایی که من ساخته ام',
+            [InlineKeyboardButton(text='شیفت هایی که پر کرده ام',
                                   callback_data='btn_ownerShift_{}'.format(str(chatId))), ]
         ])
 
@@ -100,7 +101,7 @@ class keyLib:
              InlineKeyboardButton(text='ثبت شیفت', callback_data='btn_createShift_{}'.format(str(chatId)))],
             [InlineKeyboardButton(text='غیر فعال', callback_data='btn_removeProfile_{}'.format(str(chatId))),
              InlineKeyboardButton(text='ویرایش پروفایل', callback_data='btn_epf_{}'.format(str(chatId))), ],
-            [InlineKeyboardButton(text='شیفت هایی که من ساخته ام',
+            [InlineKeyboardButton(text='شیفت هایی که پر کرده ام',
                                   callback_data='btn_ownerShift_{}'.format(str(chatId))), ]
         ])
 
@@ -139,8 +140,8 @@ class keyLib:
 
     def kbApproveAllShiftYesNO(self=None, shiftId=None):
         return InlineKeyboardMarkup(inline_keyboard=[
-            [InlineKeyboardButton(text='بله', callback_data='btn_yesApproveAllShift_{}'.format(str(shiftId))),
-             InlineKeyboardButton(text='خیر', callback_data='btn_NOApproveAllShift_{}'.format(str(shiftId)))]
+            [InlineKeyboardButton(text='خیر', callback_data='btn_NOApproveAllShift_{}'.format(str(shiftId))),
+             InlineKeyboardButton(text='بله', callback_data='btn_yesApproveAllShift_{}'.format(str(shiftId)))]
         ])
 
     def kbCreateMenuDeleteShift(self=None, shiftId=None):
@@ -349,16 +350,17 @@ class keyLib:
 
     def kbCreateMenuSendForCreator(self=None, idShift=None):
         return InlineKeyboardMarkup(inline_keyboard=[
-            [InlineKeyboardButton(text='تائید', callback_data='btn_sendToCreator_{}'.format(str(idShift)))]
+            [InlineKeyboardButton(text='ارسال', callback_data='btn_sendToCreator_{}'.format(str(idShift)))]
         ])
 
     def createMenuFromListDayForApproveCreator(self, listDay, totalInRow=2):
         lk = []
         listIdDay = ''
+        print(listDay)
         for item in listDay:
-            listIdDay += str(item[0]) + '#'
+            listIdDay += str(item[0]) + '=' + str(item[2]) + '#'
             lk.append(InlineKeyboardButton(text=item[1],
-                                           callback_data='btn_dayApproveCreator_{}'.format(str(item[0]))))
+                                           callback_data='btn_dayApproveCreator_{}'.format(str(item[0])+'='+str(item[2]))))
         listIdDay = listIdDay[:-1]
         if len(lk) > 1: lk.append(InlineKeyboardButton(text="همه روزها",
                                                        callback_data='btn_approveAllDay_{}'.format(listIdDay)))
@@ -370,12 +372,13 @@ class keyLib:
             res.append(lk[idx * N: (idx + 1) * N])  # ToDo: check day is empty
         return InlineKeyboardMarkup(inline_keyboard=res)
 
-    def createMenuForSelectDay(self, year, month, startDay, endDay, idShift=0, totalInRow=7):
+    def createMenuForSelectDay(self, year, month, startDay, endDay, idShift=0, totalInRow=7, isEM=2):
         selectedDay = []
         if idShift != 0:
             tmp = mydb.getListSelectedDay(idShift)
             selectedDay = [item[0] for item in tmp]
-        currentDate = str(JalaliDate(datetime.datetime.now())).split('-')
+        print(isEM)
+        currentDate = str(JalaliDate(datetime.datetime.now()+datetime.timedelta(days=isEM))).split('-')
         dayValid = int(currentDate[2])
         if int(currentDate[1]) < month:
             dayValid = 0

@@ -1,3 +1,4 @@
+import traceback
 import telepot
 import time
 from model.membership import Membership
@@ -12,9 +13,8 @@ import uuid
 import menu
 import db.founderHelper as fh
 from unidecode import unidecode
-
+import pandas as pd
 helper = fh.HelperFunder()
-from telepot.loop import MessageLoop
 
 last_update_ids = {}
 # زمان حداکثر برای فعال بودن آخرین پیام دریافتی (به ثانیه)
@@ -24,8 +24,10 @@ mydb = msc.mysqlconnector()
 idFromFile = None
 botKeyApi = mydb.get_property_domain('botkey')
 bot = telepot.Bot(botKeyApi)
-helper.send_shift_to_technicalResponsible(29, bot )
-exit()
+
+
+# helper.send_shift_to_technicalResponsible(29, bot )
+# exit()
 # admins = mydb.getAdmins()
 # image = 'download/2c3809f7-8e48-4cbf-acb7-bc7b0c9d1cd4.jpg'
 # pprint(admins)
@@ -597,13 +599,17 @@ def handle_new_messages(user_id, userName, update):
                     bot.sendMessage(creatorChatID, str(msg.messageLib.senndAcceptAllDayInShift.value).format(fullName),
                                     reply_markup=menu.keyLib.kbCreateMenuShiftApproveManager(shiftId=spBtn[2]))
             elif spBtn[1] == 'dayApproveCreator':
-                requsterSift = helper.registerDay(spBtn[2], bot, user_id)
-                bot.sendMessage(requsterSift, msg.messageLib.propertyShiftCreator.value)
-                helper.send_profile(user_id, bot, requsterSift)
+                ids = str(spBtn[2]).split('=')
+                requsterSift = helper.registerDay(ids[0], bot, user_id, ids[1])
+                if requsterSift is not None:
+                    bot.sendMessage(requsterSift, msg.messageLib.propertyShiftCreator.value)
+                    helper.send_profile(user_id, bot, requsterSift)
+                    bot.sendMessage(user_id, msg.messageLib.requesterNotify.value)
             elif spBtn[1] == 'approveAllDay':
                 listIdDay = str(spBtn[2]).split('#')
                 for item in listIdDay:
-                    requsterSift = helper.registerDay(item, bot, user_id)
+                    ids = str(item).split('=')
+                    requsterSift = helper.registerDay(ids[0], bot, user_id, ids[1])
                 bot.sendMessage(requsterSift, msg.messageLib.propertyShiftCreator.value)
                 helper.send_profile(user_id, bot, requsterSift)
             elif spBtn[1] == 'editProfile':
@@ -709,11 +715,24 @@ def handle_new_messages(user_id, userName, update):
                 print(f'int(totalEM) < int(TSPDEM) ==>{totalEM} >{TSPDEM}')
                 if int(totalEM) < int(TSPDEM):
                     bot.sendMessage(user_id, msg.messageLib.emShiftRegister.value)
-                    bot.sendMessage(user_id, msg.messageLib.dateShift.value)
-                    bot.sendMessage(chat_id=user_id, parse_mode='HTML', text='سال را انتخاب کنید',
-                                    reply_markup=menu.keyLib.kbCreateMenuYear(tag=6))
-                    mydb.member_update('registration_progress', 11, user_id)
-                    mydb.member_update('op', 0, message['chat']['id'])
+                    splitDate = str(JalaliDate(datetime.now())).split('-')
+                    dateEndMonth = None
+                    if int(splitDate[1]) < 12:
+                        dateEndMonth = JalaliDate(
+                            JalaliDate(int(splitDate[0]), int(splitDate[1]) + 1, 1).to_gregorian() - timedelta(days=1))
+                    else:
+                        dateEndMonth = JalaliDate(
+                            JalaliDate(int(splitDate[0]) + 1, 1, 1).to_gregorian() - timedelta(days=1))
+                    sde = str(dateEndMonth).split('-')
+                    getMsgId = mydb.get_member_property_chatid('editMsgId', user_id)
+                    msgInfo = helper.sendCalendar(bot, user_id, None, int(splitDate[0]), int(splitDate[1]),
+                                                  int(splitDate[2]), int(sde[2]),isEm=1)
+                    mydb.member_update_chatid('editMsgId', msgInfo["message_id"], user_id)
+                    # bot.sendMessage(user_id, msg.messageLib.dateShift.value)
+                    # bot.sendMessage(chat_id=user_id, parse_mode='HTML', text='سال را انتخاب کنید',
+                    #                 reply_markup=menu.keyLib.kbCreateMenuYear(tag=6))
+                    # mydb.member_update('registration_progress', 11, user_id)
+                    # mydb.member_update('op', 0, message['chat']['id'])
                 else:
                     bot.sendMessage(user_id, msg.messageLib.emShiftFull.value)
                     return
@@ -1095,6 +1114,12 @@ def handle_new_messages(user_id, userName, update):
                 if int(op) == 11:
                     mydb.member_update('op', 10, message['chat']['id'])
                     bot.sendMessage(message['chat']['id'], msg.messageLib.enterPharmacyAddress.value)
+            elif spBtn[1] == 'ownerShift':
+                dateF = JalaliDate.today().strftime("%Y.%m.%d")
+                listShift = mydb.getShiftList(requsterShift=user_id, startDate=dateF)
+                for item in listShift:
+                    bot.sendMessage(user_id, helper.formatMyShift(item))
+                if len(listShift) == 0:    bot.sendMessage(user_id, msg.messageLib.emptyList.value)
             elif spBtn[1] == 'listSift':
                 allShift = mydb.get_all_shift_by_creator(creator=user_id)
                 if len(allShift) == 0:
@@ -1104,7 +1129,7 @@ def handle_new_messages(user_id, userName, update):
                         bot.sendMessage(user_id, helper.formatShiftMessage(shiftRow),
                                         reply_markup=menu.keyLib.createMenuFromListDayForApproveCreatorNew(
                                             self=None,
-                                            idSift=shiftRow[9]))
+                                            idShift=shiftRow[9]))
             elif spBtn[1] == 'epf':
                 bot.sendMessage(user_id, msg.messageLib.editMessag.value)
                 helper.send_profile(chatid=user_id, bot=bot)
@@ -1143,14 +1168,10 @@ def handle_new_messages(user_id, userName, update):
             #             پس از فشردن کلید شیفت را می پذیرم اجرا می شود
             elif spBtn[1] == 'shiftApprove':
                 # todo: new approve shift
-                listDayFull = mydb.getListDayIsNotEmpty(spBtn[2])
-                if len(listDayFull) == 0:
-                    dateStart = str(mydb.get_shift_property('DateShift', spBtn[2])).split('-')
-                    dateEnd = str(mydb.get_shift_property('dateEndShift', spBtn[2])).split('-')
-                    dsG = JalaliDate(int(dateStart[0]), int(dateStart[1]), int(dateStart[2])).to_gregorian()
-                    deG = JalaliDate(int(dateEnd[0]), int(dateEnd[1]), int(dateEnd[2])).to_gregorian()
-                    diffDay = relativedelta(deG, dsG)
-                    bot.sendMessage(user_id, str(msg.messageLib.shiftTotalDay.value).format(diffDay.days + 1),
+                tds = mydb.getTotalDayShift(spBtn[2], 1)
+                if tds == 0:
+                    tds = mydb.getTotalDayShift(spBtn[2], 0)
+                    bot.sendMessage(user_id, str(msg.messageLib.shiftTotalDay.value).format(tds),
                                     reply_markup=menu.keyLib.kbApproveAllShiftYesNO(shiftId=spBtn[2]))
                 else:
                     helper.NOApproveAllShift(spBtn[2], user_id, bot)
@@ -1165,11 +1186,12 @@ def handle_new_messages(user_id, userName, update):
                 tmp = str(spBtn[2]).split('=')
                 dateStr = tmp[0]
                 idShiftStr = tmp[1]
-                if mydb.isShiftDayFull(idShiftStr, dateStr) > 0:
+                idDetailShift = tmp[2]
+                if mydb.isShiftDayFull(idDetailShift) > 0:
                     bot.sendMessage(user_id, str(msg.messageLib.shiftDayIsFull.value))
                     return
-                tmpRes = mydb.registerDayShift(idShiftStr, dateStr, user_id, 0)
-                if tmpRes == 0:
+                tmpRes = mydb.registerDayShift(idShiftStr, dateStr, user_id, 0, idDetailShift)
+                if tmpRes != 0:
                     bot.sendMessage(user_id, str(msg.messageLib.afterDaySelction.value).format(dateStr))
                 else:
                     bot.sendMessage(user_id, str(msg.messageLib.repeatedDay.value))
@@ -1202,6 +1224,15 @@ def handle_new_messages(user_id, userName, update):
                 if len(allShift) == 0:
                     bot.sendMessage(message['chat']["id"], msg.messageLib.emptyList.value)
                 else:
+                    df = pd.DataFrame(allShift,
+                                      columns=['ایجاد کننده شیفت', 'کد', 'تاریخ شروع', 'ساعت شروع','ساعت پایان', 'دستمزد',
+                                               'آدرس داروخانه', 'پیشرفت','تائید کننده','شناسه شیفت','تایخ پایان','دسمزد دانشجو','تاریخ ثبت'])
+                    df1 = df.iloc[:,[0,12,2,10,3,4,5,11,6]]
+                    df1.to_excel('list.xlsx', sheet_name='لیست شیفت ها')
+                    doc = 'list.xlsx'
+                    isExisting = os.path.exists(doc)
+                    if isExisting:
+                        bot.sendDocument(user_id, open(doc, 'rb'))
                     bot.sendMessage(message['chat']["id"], msg.messageLib.diver.value)
                     for shiftRow in allShift:
                         bot.sendMessage(message['chat']["id"], helper.formatShiftMessage(shiftRow))
@@ -1216,10 +1247,15 @@ def handle_new_messages(user_id, userName, update):
                 bot.sendMessage(approver, msg.messageLib.shiftDisApprovedByManager.value)
                 bot.sendMessage(user_id, msg.messageLib.requesterNotify.value)
             elif spBtn[1] == 'listFunderManager':
-                resualt = mydb.get_all_member(tye=1)
-                txtResualt = None
-                if len(resualt) > 0:
-                    for item in resualt:
+                result = mydb.get_all_member(type=1)
+                df = pd.DataFrame(result, columns=['نام','نوع عضویت','شماره همراه','نام داروخانه','نام داروخانه','آدرس','وضعیت'])
+                df.to_excel('list.xlsx',sheet_name='لیست موسسان')
+                doc = 'list.xlsx'
+                isExisting = os.path.exists(doc)
+                if isExisting:
+                    bot.sendDocument(user_id, open(doc,'rb'))
+                if len(result) > 0:
+                    for item in result:
                         itemRow1 = 'نام و نام خانوادگی:{}'.format(item[0])
                         itemRow2 = 'نوع عضویت:{}'.format(item[1])
                         itemRow3 = 'شماره همراه:{}'.format(item[2])
@@ -1230,10 +1266,15 @@ def handle_new_messages(user_id, userName, update):
                 else:
                     bot.sendMessage(message['chat']['id'], msg.messageLib.emptyList.value)
             elif spBtn[1] == 'listresponsible':
-                resualt = mydb.get_all_member(tye=2)
-                txtResualt = None
-                if len(resualt) > 0:
-                    for item in resualt:
+                result = mydb.get_all_member(type=2)
+                df = pd.DataFrame(result, columns=['نام','نوع عضویت','شماره همراه','شماره ملی','وضعیت'])
+                df.to_excel('list.xlsx', sheet_name='لیست مسئولان فنی')
+                doc = 'list.xlsx'
+                isExisting = os.path.exists(doc)
+                if isExisting:
+                    bot.sendDocument(user_id, open(doc,'rb'))
+                if len(result) > 0:
+                    for item in result:
                         itemRow1 = 'نام و نام خانوادگی:{}'.format(item[0])
                         itemRow2 = 'نوع عضویت:{}'.format(item[1])
                         itemRow3 = 'شماره همراه:{}'.format(item[2])
@@ -1244,10 +1285,16 @@ def handle_new_messages(user_id, userName, update):
                 else:
                     bot.sendMessage(message['chat']['id'], msg.messageLib.emptyList.value)
             elif spBtn[1] == 'listStudent':
-                resualt = mydb.get_all_member(tye=3)
-                txtResualt = None
-                if len(resualt) > 0:
-                    for item in resualt:
+                result = mydb.get_all_member(type=3)
+                df = pd.DataFrame(result, columns=['نام','نوع عضویت','شماره همراه','کدملی', 'تاریخ شروع', 'تاریخ پایان', 'نوع داروخانه',
+                                                   'میزان مجوز ساعت', 'ساعت استفاده شده', 'وضعیت'])
+                df.to_excel('list.xlsx',sheet_name='لیست دانشجویان')
+                doc = 'list.xlsx'
+                isExisting = os.path.exists(doc)
+                if isExisting:
+                    bot.sendDocument(user_id, open(doc,'rb'))
+                if len(result) > 0:
+                    for item in result:
                         itemRow1 = 'نام و نام خانوادگی:{}'.format(item[0])
                         itemRow2 = 'نوع عضویت:{}'.format(item[1])
                         itemRow3 = 'شماره همراه:{}'.format(item[2])
@@ -1623,23 +1670,22 @@ def handle_updates(updates):
 
 
 # شروع برنامه
-def main():
-    lui = 0
+def main(lui=0):
     # HTML کد پیام
     # html_message = '<table><tr><th>نام</th><th>سن</th></tr>''<tr><td>علی</td><td>30</td></tr><tr><td>محمد</td><td>25</td></tr></table>'
-    # try:
-    while True:
-        # دریافت تمامی پیام های دریافتی
-        helper.send_shift_to_student(bot=bot)
-        updates = bot.getUpdates(timeout=10, offset=lui)
-        if updates:
-            lui = int(updates[-1]['update_id']) + 1
-            handle_updates(updates)
-    # except Exception as e:
-    #     print(e)
-    #     lui = lui + 1
-    #     bot.sendMessage('6274361322', str(e))
-    #     main()
+    try:
+        while True:
+            # دریافت تمامی پیام های دریافتی
+            helper.send_shift_to_student(bot=bot)
+            updates = bot.getUpdates(timeout=10, offset=lui)
+            if updates:
+                lui = int(updates[-1]['update_id']) + 1
+                handle_updates(updates)
+    except Exception as e:
+        lui = lui + 1
+        bot.sendMessage('6274361322', traceback.format_exc())
+        print(traceback.format_exc())
+        main(lui)
 
 
 if __name__ == '__main__':
