@@ -77,7 +77,11 @@ class keyLib:
             [InlineKeyboardButton(text='شیفت هایی که پر کرده ام',
                                   callback_data='btn_ownerShift_{}'.format(str(chatId)))],
             [InlineKeyboardButton(text='ثبت نیاز به پروانه',
-                                  callback_data='btn_licenseNeed_{}'.format(str(chatId)))]
+                                  callback_data='btn_licenseNeed_{}'.format(str(chatId)))],
+            [InlineKeyboardButton(text='پروانه ها با ساعات خالی',
+                                  callback_data='btn_listLicenseEmpty_{}'.format(str(chatId)))],
+            [InlineKeyboardButton(text='پروانه ها درخواستی من',
+                                  callback_data='btn_myListLicense_{}'.format(str(chatId)))]
         ])
 
     def kbCreateMenuResponsible(self=None, chatId=None):
@@ -93,7 +97,11 @@ class keyLib:
             [InlineKeyboardButton(text='شیفت هایی که پر کرده ام',
                                   callback_data='btn_ownerShift_{}'.format(str(chatId))), ],
             [InlineKeyboardButton(text='ثبت ساعات خالی پروانه',
-                                  callback_data='btn_licenseEmpty_{}'.format(str(chatId)))]
+                                  callback_data='btn_licenseEmpty_{}'.format(str(chatId)))],
+            [InlineKeyboardButton(text='لیست درخواست پروانه ',
+                                  callback_data='btn_listLicenseNeed_{}'.format(str(chatId)))],
+            [InlineKeyboardButton(text='ساعات خالی پروانه من ',
+                                  callback_data='btn_myListLicense_{}'.format(str(chatId)))]
         ])
 
     def kbCreateMenuStudent(self=None, chatId=None):
@@ -184,7 +192,11 @@ class keyLib:
         return InlineKeyboardMarkup(inline_keyboard=[
             [InlineKeyboardButton(text='حذف کردن شیفت', callback_data='btn_confirmDelete_{}'.format(str(shiftId)))]
         ])
-
+    def kbCreateLicenseMenu(self=None, idL=None):
+        return InlineKeyboardMarkup(inline_keyboard=[
+            [InlineKeyboardButton(text='تمدید', callback_data='btn_Extension_{}'.format(str(idL))),
+             InlineKeyboardButton(text='حذف', callback_data='btn_delLicense_{}'.format(str(idL)))]
+        ])
     def kbCreateMenuDayInMonth(tag=None):
         return InlineKeyboardMarkup(inline_keyboard=[
             [InlineKeyboardButton(text='01', callback_data='btn_day_01_{}'.format(str(tag))),

@@ -564,7 +564,7 @@ def handle_new_messages(user_id, userName, update):
             mydb.member_update_chatid('registration_progress', 10, user_id)
             mydb.member_update_chatid('op', 0, user_id)
             bot.sendMessage(user_id, msg.messageLib.sendedMessage.value)
-        elif tempMember.register_progress in (201,202) :
+        elif tempMember.register_progress in (201, 202):
             typeRequest = tempMember.register_progress - 201
             result = mydb.insertLicense(message['text'], typeRequest, user_id)
             if result > 0:
@@ -598,9 +598,33 @@ def handle_new_messages(user_id, userName, update):
                 bot.sendMessage(user_id, msg.messageLib.licenseNeed.value)
             elif spBtn[1] == 'licenseEmpty':
                 mydb.member_update_chatid('registration_progress', 202, user_id)
-                bot.sendMessage(user_id, msg.messageLib.licenseNeed.value)
-            elif spBtn[1] == 'msgRegistedlicenseEmpty':
-                print(spBtn)
+                bot.sendMessage(user_id, msg.messageLib.licenseEmpty.value)
+            elif spBtn[1] == 'listLicenseNeed':
+                print(1)
+                listNeed = mydb.getListLicenseNeed()
+                for item in listNeed:
+                    bot.sendMessage(user_id, helper.formatLicenseNeed(item))
+                if len(listNeed) == 0:
+                    bot.sendMessage(user_id, msg.messageLib.emptyList.value)
+            elif spBtn[1] == 'listLicenseEmpty':
+                listEmpty = mydb.getListLicenseEmpty()
+                for item in listEmpty:
+                    bot.sendMessage(user_id, helper.formatLicenseEmpty(item))
+                if len(listEmpty) == 0:
+                    bot.sendMessage(user_id, msg.messageLib.emptyList.value)
+            elif spBtn[1] == 'myListLicense':
+                myList = mydb.getMyListLicense(user_id)
+                for item in myList:
+                    bot.sendMessage(user_id, helper.formatMyLicense(item),
+                                    reply_markup=menu.keyLib.kbCreateLicenseMenu(idL=item[0]))
+                if len(myList) == 0:
+                    bot.sendMessage(user_id,msg.messageLib.emptyList.value)
+            elif spBtn[1] == 'Extension':
+                mydb.updateLisence('dateExtension', datetime.now(), spBtn[2])
+                bot.sendMessage(user_id, msg.messageLib.extensionLicensed.value)
+            elif spBtn[1] == 'delLicense':
+                mydb.delLisence( 1, 1)
+                bot.sendMessage(user_id, msg.messageLib.delLicensed.value)
             elif spBtn[1] == 'sendToCreator':
                 creatorChatID = mydb.get_shift_property(fieldName='Creator', idShift=spBtn[2])
                 listDayAccept = mydb.getListDaySelection(idShift=spBtn[2], requsterShift=user_id)
