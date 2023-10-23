@@ -938,3 +938,70 @@ VALUES({idShift},\'{dateShift}\',\'{requster}\',0,{sendedForCreator},{idDetailSh
         myCursor.execute(sqlQuery)
         result = myCursor.fetchall()
         return result
+
+    def insertLicense(self, textDetail, typeLicense, creator):
+        sqlQuery = f'''insert into `botshiftkari`.`activity_license` (`detail`,`type`,`creator`)values(\'{textDetail}\',
+                        {typeLicense},\'{creator}\')'''
+        mydb = self.connector()
+        mydb.autocommit = True
+        myCursor = mydb.cursor()
+        myCursor.execute(sqlQuery)
+        return myCursor.lastrowid
+
+    def getListLicenseEmpty(self):
+        sqlQuery = f'''select id_activity_license, fn, phone_number, detail, date_register from 
+                        `botshiftkari`.`vw_licenseempty` where date_register >= {datetime.datetime.now()}'''
+        mydb = self.connector()
+        myCursor = mydb.cursor()
+        myCursor.execute(sqlQuery)
+        result = myCursor.fetchall()
+        return result
+
+    def getListLicenseNeed(self):
+        sqlQuery = f'''select id_activity_license, fn, phone_number, pharmacy_name, pharmacy_type, pharmacy_address,
+        detail, date_register from `botshiftkari`.`vw_licenseneed` '''
+        mydb = self.connector()
+        myCursor = mydb.cursor()
+        myCursor.execute(sqlQuery)
+        result = myCursor.fetchall()
+        return result
+
+    def getListLicenseEmpty(self):
+        sqlQuery = f'''select id_activity_license, fn, phone_number, detail, date_register
+         from `botshiftkari`.`vw_licenseempty`'''
+        mydb = self.connector()
+        myCursor = mydb.cursor()
+        myCursor.execute(sqlQuery)
+        result = myCursor.fetchall()
+        return result
+
+    def getMyListLicense(self, userId):
+        sqlQuery = f'''select id_activity_license, type, detail, date_register, creator, del
+         from `botshiftkari`.`activity_license` where del=0  and creator = \'{userId}\''''
+        mydb = self.connector()
+        myCursor = mydb.cursor()
+        myCursor.execute(sqlQuery)
+        result = myCursor.fetchall()
+        return result
+
+    def updateLisence(self, fieldName, fieldValue, idL):
+        mydb = self.connector()
+        mydb.autocommit = True
+        myCursor = mydb.cursor()
+        sqlQuery = 'UPDATE `botshiftkari`.`activity_license` SET `{0}` = \'{1}\'  where `id_activity_license` = {2}' \
+            .format(fieldName, fieldValue, idL)
+        print(sqlQuery)
+        myCursor.execute(sqlQuery)
+        myCursor.reset()
+        return None
+
+    def delLisence(self, fieldValue, idL):
+        mydb = self.connector()
+        mydb.autocommit = True
+        myCursor = mydb.cursor()
+        sqlQuery = 'UPDATE `botshiftkari`.`activity_license` SET `del` = {0}  where `id_activity_license` = {1}' \
+            .format(fieldValue, idL)
+        print(sqlQuery)
+        myCursor.execute(sqlQuery)
+        myCursor.reset()
+        return None

@@ -152,6 +152,47 @@ class HelperFunder:
         elif who == 1:
             result += who1
         return result
+    def formatMyLicense(self,dataRow):
+        # id_activity_license, type, detail, date_register, creator, del
+        dr = dataRow[3]
+        date_register = f'تاریخ ایجاد :{JalaliDate.to_jalali(dr.year, dr.month, dr.day)}'
+        detail = f'\n جزئیات پروانه:{dataRow[2]}'
+        return f'''
+{date_register}
+{detail}
+            '''
+    def formatLicenseEmpty(self, dataRow):
+        # id_activity_license, fn, phone_number, detail, date_register
+        requsterL = f'مالک پروانه:{dataRow[1]}'
+        phone_number = f'شماره همراه:{dataRow[2]}'
+        detail = f'\n جزئیات پروانه:{dataRow[3]}'
+        dr = dataRow[4]
+        date_register = f'تاریخ ایجاد :{JalaliDate.to_jalali(dr.year, dr.month, dr.day)}'
+        return f'''
+{date_register}
+{requsterL}
+{phone_number}
+{detail}
+        '''
+    def formatLicenseNeed(self, dataRow):
+        # id_activity_license, fn, phone_number, pharmacy_name, pharmacy_type, pharmacy_address, detail, date_register
+        requsterL = f'درخواست دهنده:{dataRow[1]}'
+        phone_number = f'شماره همراه:{dataRow[2]}'
+        pharmacy_name = f'نام داروخانه:{dataRow[3]}'
+        pharmacy_type = f'نوع داروخانه:{dataRow[4]}'
+        pharmacy_address = f'\nآدرس داروخانه:{dataRow[5]}'
+        detail = f'\n جزئیات درخواست:{dataRow[6]}'
+        dr = dataRow[7]
+        date_register = f'تاریخ ایجاد درخواست:{JalaliDate.to_jalali(dr.year, dr.month, dr.day)}'
+        return f'''
+{date_register}
+{requsterL}
+{phone_number}
+{pharmacy_name}
+{pharmacy_type}
+{pharmacy_address}
+{detail}
+        '''
     def formatShiftMessage(self, shiftRow, memberType=None):
         dr = shiftRow[12]
         dateRegister = f'تاریخ ایجاد درخواست:{JalaliDate.to_jalali(dr.year, dr.month, dr.day)}'
@@ -575,7 +616,7 @@ class HelperFunder:
             bot.sendMessage(requesterShift, str(msg.messageLib.approvedDay.value).format(dateReq))
             return requesterShift
 
-    def sendCalendar(self, bot, user_id, msgId, yearC, monthC, dayC, endDay, idShift=0,isEm=2):
+    def sendCalendar(self, bot, user_id, msgId, yearC, monthC, dayC, endDay, idShift=0, isEm=2):
         msgInfo = None
         if msgId is None:
             msgInfo = bot.sendMessage(user_id, msg.messageLib.choiceDays.value, parse_mode='HTML',
@@ -583,7 +624,7 @@ class HelperFunder:
                                                                                       yearC,
                                                                                       monthC,
                                                                                       dayC,
-                                                                                      endDay, idShift,isEM=isEm))
+                                                                                      endDay, idShift, isEM=isEm))
         else:
             try:
                 msgInfo = bot.editMessageText((user_id, msgId), msg.messageLib.choiceDays.value,
@@ -593,7 +634,7 @@ class HelperFunder:
                                                                                               monthC,
                                                                                               dayC,
                                                                                               endDay,
-                                                                                              idShift,isEM=isEm))
+                                                                                              idShift, isEM=isEm))
             except:
                 print('Error Edit Message')
         return msgInfo
