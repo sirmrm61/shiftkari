@@ -75,8 +75,9 @@ class keyLib:
             [InlineKeyboardButton(text='ویرایش پروفایل', callback_data='btn_epf_{}'.format(str(chatId))),
              InlineKeyboardButton(text='غیر فعال', callback_data='btn_removeProfile_{}'.format(str(chatId)))],
             [InlineKeyboardButton(text='شیفت هایی که پر کرده ام',
-                                  callback_data='btn_ownerShift_{}'.format(str(chatId))),
-            ]
+                                  callback_data='btn_ownerShift_{}'.format(str(chatId)))],
+            [InlineKeyboardButton(text='ثبت نیاز به پروانه',
+                                  callback_data='btn_licenseNeed_{}'.format(str(chatId)))]
         ])
 
     def kbCreateMenuResponsible(self=None, chatId=None):
@@ -90,7 +91,9 @@ class keyLib:
              InlineKeyboardButton(text='ثبت شیفت', callback_data='btn_createShift_{}'.format(str(chatId)))],
             [InlineKeyboardButton(text='غیر فعال', callback_data='btn_removeProfile_{}'.format(str(chatId)))],
             [InlineKeyboardButton(text='شیفت هایی که پر کرده ام',
-                                  callback_data='btn_ownerShift_{}'.format(str(chatId))), ]
+                                  callback_data='btn_ownerShift_{}'.format(str(chatId))), ],
+            [InlineKeyboardButton(text='ثبت ساعات خالی پروانه',
+                                  callback_data='btn_licenseEmpty_{}'.format(str(chatId)))]
         ])
 
     def kbCreateMenuStudent(self=None, chatId=None):

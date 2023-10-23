@@ -938,3 +938,12 @@ VALUES({idShift},\'{dateShift}\',\'{requster}\',0,{sendedForCreator},{idDetailSh
         myCursor.execute(sqlQuery)
         result = myCursor.fetchall()
         return result
+
+    def insertLicense(self, textDetail, typeLicense, creator):
+        sqlQuery = f'''insert into `botshiftkari`.`activity_license` (detail,type,creator)values(\'{textDetail}\',
+                        {typeLicense},\'{creator}\''''
+        mydb = self.connector()
+        mydb.autocommit = True
+        myCursor = mydb.cursor()
+        myCursor.execute(sqlQuery)
+        return myCursor.lastrowid
