@@ -1005,3 +1005,53 @@ VALUES({idShift},\'{dateShift}\',\'{requster}\',0,{sendedForCreator},{idDetailSh
         myCursor.execute(sqlQuery)
         myCursor.reset()
         return None
+
+    def searchFounder(self, searchVerb):
+        sqlQuery = f'''select fn, phone_number, username, chat_id, vdmind, vf.desc, opTime, pharmacy_name, pharmacy_type,
+         pharmacy_address, vdmin
+         from `botshiftkari`.`vw_founder` vf where fn like \'%{searchVerb}%\' or  phone_number like\'%{searchVerb}%\' or 
+         username like \'%{searchVerb}%\' or  vf.desc like\'%{searchVerb}%\' or pharmacy_name like \'%{searchVerb}%\' or 
+         pharmacy_type like\'%{searchVerb}%\' or pharmacy_address like\'%{searchVerb}%\''''
+        mydb = self.connector()
+        myCursor = mydb.cursor()
+        myCursor.execute(sqlQuery)
+        result = myCursor.fetchall()
+        return result
+
+    def searchStudent(self, searchVerb):
+        sqlQuery = f'''SELECT fn, phone_number, username, chat_id, vdmind, vs.desc,
+                     opTime, national_code, start_date, end_date, shift_access,
+                     hourPermit, vdmin FROM botshiftkari.vw_student vs
+                     where fn like \'%{searchVerb}%\' or  phone_number like\'%{searchVerb}%\' or 
+                     username like \'%{searchVerb}%\' or  vs.desc like\'%{searchVerb}%\' or 
+                     national_code like\'%{searchVerb}%\' or start_date like\'%{searchVerb}%\' or
+                     end_date like\'%{searchVerb}%\' or shift_access like\'%{searchVerb}%\' or
+                     end_date like\'%{searchVerb}%\' or shift_access like\'%{searchVerb}%\' '''
+        mydb = self.connector()
+        myCursor = mydb.cursor()
+        myCursor.execute(sqlQuery)
+        result = myCursor.fetchall()
+        return result
+
+    def searchTecnician(self, searchVerb):
+        sqlQuery = f'''SELECT fn, phone_number, username, chat_id, vdmind, vs.desc, opTime, national_code, vdmin
+                     FROM botshiftkari.vw_tecnician vs
+                     where fn like \'%{searchVerb}%\' or  phone_number like\'%{searchVerb}%\' or 
+                     username like \'%{searchVerb}%\' or  vs.desc like\'%{searchVerb}%\' or 
+                     national_code like\'%{searchVerb}%\'  '''
+        mydb = self.connector()
+        myCursor = mydb.cursor()
+        myCursor.execute(sqlQuery)
+        result = myCursor.fetchall()
+        return result
+
+    def searchAdmin(self, searchVerb):
+        sqlQuery = f'''SELECT fn, phone_number, username, chat_id, vdmind, vs.desc, opTime
+                     FROM botshiftkari.vw_admin vs
+                     where fn like \'%{searchVerb}%\' or  phone_number like\'%{searchVerb}%\' or 
+                     username like \'%{searchVerb}%\' or  vs.desc like\'%{searchVerb}%\'  '''
+        mydb = self.connector()
+        myCursor = mydb.cursor()
+        myCursor.execute(sqlQuery)
+        result = myCursor.fetchall()
+        return result
