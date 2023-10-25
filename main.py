@@ -575,6 +575,28 @@ def handle_new_messages(user_id, userName, update):
             else:
                 bot.sendMessage(user_id, msg.messageLib.errorRegisterLicense.value)
             mydb.member_update_chatid('registration_progress', 10, user_id)
+        elif tempMember.register_progress in (304, 301, 302, 303):
+            print(tempMember.register_progress)
+            resultSearch = []
+            if tempMember.register_progress == 304:
+                resultSearch = mydb.searchFounder(message['text'])
+            elif tempMember.register_progress == 301:
+                resultSearch = mydb.searchStudent(message['text'])
+            elif tempMember.register_progress == 303:
+                resultSearch = mydb.searchTecnician(message['text'])
+            elif tempMember.register_progress == 302:
+                resultSearch = mydb.searchAdmin(message['text'])
+
+            if len(resultSearch) == 0:
+                bot.sendMessage(user_id, msg.messageLib.searchEmptyList.value,
+                                reply_markup=menu.keyLib.kbCreateCancelSearchMenu())
+                return
+            for item in resultSearch:
+                bot.sendMessage(user_id, helper.formatSearchFounder(item, tempMember.register_progress),
+                                reply_markup=menu.keyLib.kbCreateOperateSearchMenu(item[3], tempMember.register_progress))
+            mydb.member_update_chatid('registration_progress', 10, user_id)
+
+
     elif 'callback_query' in update:
         message = update['callback_query']['message']
         btn = update['callback_query']['data']
@@ -593,6 +615,29 @@ def handle_new_messages(user_id, userName, update):
                     bot.sendMessage(user_id, str(msg.messageLib.verifyMsg.value).format(mem.name + " " + mem.last_name))
                 else:
                     bot.sendMessage(user_id, msg.messageLib.doseVerify.value)
+            elif spBtn[1] == 'searchMenu':
+                bot.sendMessage(user_id, msg.messageLib.searchMessage.value,
+                                reply_markup=menu.keyLib.kbCreateSearchMenu())
+            elif spBtn[1] == 'search':
+                if spBtn[2] == 'student':
+                    mydb.member_update_chatid('registration_progress', 301, user_id)
+                    bot.sendMessage(user_id, msg.messageLib.searchMessageStudent.value,
+                                    reply_markup=menu.keyLib.kbCreateCancelSearchMenu())
+                elif spBtn[2] == 'manager':
+                    mydb.member_update_chatid('registration_progress', 302, user_id)
+                    bot.sendMessage(user_id, msg.messageLib.searchMessageAdmin.value,
+                                    reply_markup=menu.keyLib.kbCreateCancelSearchMenu())
+                elif spBtn[2] == 'responsible':
+                    mydb.member_update_chatid('registration_progress', 303, user_id)
+                    bot.sendMessage(user_id, msg.messageLib.searchMessageTechnician.value,
+                                    reply_markup=menu.keyLib.kbCreateCancelSearchMenu())
+                elif spBtn[2] == 'founder':
+                    mydb.member_update_chatid('registration_progress', 304, user_id)
+                    bot.sendMessage(user_id, msg.messageLib.searchMessageFounder.value,
+                                    reply_markup=menu.keyLib.kbCreateCancelSearchMenu())
+            elif spBtn[1] == 'cancelSearch':
+                mydb.member_update_chatid('registration_progress', 10, user_id)
+                bot.sendMessage(user_id, msg.messageLib.searchCancel.value)
             elif spBtn[1] == 'licenseNeed':
                 mydb.member_update_chatid('registration_progress', 201, user_id)
                 bot.sendMessage(user_id, msg.messageLib.licenseNeed.value)
@@ -618,12 +663,12 @@ def handle_new_messages(user_id, userName, update):
                     bot.sendMessage(user_id, helper.formatMyLicense(item),
                                     reply_markup=menu.keyLib.kbCreateLicenseMenu(idL=item[0]))
                 if len(myList) == 0:
-                    bot.sendMessage(user_id,msg.messageLib.emptyList.value)
+                    bot.sendMessage(user_id, msg.messageLib.emptyList.value)
             elif spBtn[1] == 'Extension':
                 mydb.updateLisence('dateExtension', datetime.now(), spBtn[2])
                 bot.sendMessage(user_id, msg.messageLib.extensionLicensed.value)
             elif spBtn[1] == 'delLicense':
-                mydb.delLisence( 1, 1)
+                mydb.delLisence(1, 1)
                 bot.sendMessage(user_id, msg.messageLib.delLicensed.value)
             elif spBtn[1] == 'sendToCreator':
                 creatorChatID = mydb.get_shift_property(fieldName='Creator', idShift=spBtn[2])
@@ -1732,7 +1777,7 @@ def main(lui=0):
                 handle_updates(updates)
     except Exception as e:
         lui = lui + 1
-        if type(e).__name__ in ('MaxRetryError','ProtocolError'):
+        if type(e).__name__ in ('MaxRetryError', 'ProtocolError'):
             print(type(e).__name__)
         else:
             bot.sendMessage('6274361322', traceback.format_exc())
