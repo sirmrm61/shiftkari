@@ -1732,8 +1732,11 @@ def main(lui=0):
                 handle_updates(updates)
     except Exception as e:
         lui = lui + 1
-        bot.sendMessage('6274361322', traceback.format_exc())
-        print(traceback.format_exc())
+        if type(e).__name__ in ('MaxRetryError','ProtocolError'):
+            print(type(e).__name__)
+        else:
+            bot.sendMessage('6274361322', traceback.format_exc())
+            print(traceback.format_exc())
         main(lui)
 
 
