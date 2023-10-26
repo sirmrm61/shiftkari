@@ -14,6 +14,7 @@ import menu
 import db.founderHelper as fh
 from unidecode import unidecode
 import pandas as pd
+
 helper = fh.HelperFunder()
 
 last_update_ids = {}
@@ -178,7 +179,6 @@ def handle_new_messages(user_id, userName, update):
             bot.sendMessage(user_id, msg.messageLib.cancelMsg.value)
         elif 'text' in message and message['text'] == '/myoperation':
             helper.send_operation(tempMember=tempMember, bot=bot, chatid=message['chat']['id'])
-
         elif 'text' in message and tempMember.register_progress == 0 and message['text'] == '/start':
             bot.sendMessage(message['chat']['id'], str(msg.messageLib.helloClient.value).format(
                 message['chat']['first_name']), reply_markup=menu.keyLib.kbWhoAreYou())
@@ -564,6 +564,39 @@ def handle_new_messages(user_id, userName, update):
             mydb.member_update_chatid('registration_progress', 10, user_id)
             mydb.member_update_chatid('op', 0, user_id)
             bot.sendMessage(user_id, msg.messageLib.sendedMessage.value)
+        elif tempMember.register_progress in (201, 202):
+            typeRequest = tempMember.register_progress - 201
+            result = mydb.insertLicense(message['text'], typeRequest, user_id)
+            if result > 0:
+                if typeRequest == 0:
+                    bot.sendMessage(user_id, msg.messageLib.msgRegistedlicenseNeed.value)
+                else:
+                    bot.sendMessage(user_id, msg.messageLib.msgRegistedlicenseEmpty.value)
+            else:
+                bot.sendMessage(user_id, msg.messageLib.errorRegisterLicense.value)
+            mydb.member_update_chatid('registration_progress', 10, user_id)
+        elif tempMember.register_progress in (304, 301, 302, 303):
+            print(tempMember.register_progress)
+            resultSearch = []
+            if tempMember.register_progress == 304:
+                resultSearch = mydb.searchFounder(message['text'])
+            elif tempMember.register_progress == 301:
+                resultSearch = mydb.searchStudent(message['text'])
+            elif tempMember.register_progress == 303:
+                resultSearch = mydb.searchTecnician(message['text'])
+            elif tempMember.register_progress == 302:
+                resultSearch = mydb.searchAdmin(message['text'])
+
+            if len(resultSearch) == 0:
+                bot.sendMessage(user_id, msg.messageLib.searchEmptyList.value,
+                                reply_markup=menu.keyLib.kbCreateCancelSearchMenu())
+                return
+            for item in resultSearch:
+                bot.sendMessage(user_id, helper.formatSearchFounder(item, tempMember.register_progress),
+                                reply_markup=menu.keyLib.kbCreateOperateSearchMenu(item[3], tempMember.register_progress))
+            mydb.member_update_chatid('registration_progress', 10, user_id)
+
+
     elif 'callback_query' in update:
         message = update['callback_query']['message']
         btn = update['callback_query']['data']
@@ -582,6 +615,61 @@ def handle_new_messages(user_id, userName, update):
                     bot.sendMessage(user_id, str(msg.messageLib.verifyMsg.value).format(mem.name + " " + mem.last_name))
                 else:
                     bot.sendMessage(user_id, msg.messageLib.doseVerify.value)
+            elif spBtn[1] == 'searchMenu':
+                bot.sendMessage(user_id, msg.messageLib.searchMessage.value,
+                                reply_markup=menu.keyLib.kbCreateSearchMenu())
+            elif spBtn[1] == 'search':
+                if spBtn[2] == 'student':
+                    mydb.member_update_chatid('registration_progress', 301, user_id)
+                    bot.sendMessage(user_id, msg.messageLib.searchMessageStudent.value,
+                                    reply_markup=menu.keyLib.kbCreateCancelSearchMenu())
+                elif spBtn[2] == 'manager':
+                    mydb.member_update_chatid('registration_progress', 302, user_id)
+                    bot.sendMessage(user_id, msg.messageLib.searchMessageAdmin.value,
+                                    reply_markup=menu.keyLib.kbCreateCancelSearchMenu())
+                elif spBtn[2] == 'responsible':
+                    mydb.member_update_chatid('registration_progress', 303, user_id)
+                    bot.sendMessage(user_id, msg.messageLib.searchMessageTechnician.value,
+                                    reply_markup=menu.keyLib.kbCreateCancelSearchMenu())
+                elif spBtn[2] == 'founder':
+                    mydb.member_update_chatid('registration_progress', 304, user_id)
+                    bot.sendMessage(user_id, msg.messageLib.searchMessageFounder.value,
+                                    reply_markup=menu.keyLib.kbCreateCancelSearchMenu())
+            elif spBtn[1] == 'cancelSearch':
+                mydb.member_update_chatid('registration_progress', 10, user_id)
+                bot.sendMessage(user_id, msg.messageLib.searchCancel.value)
+            elif spBtn[1] == 'licenseNeed':
+                mydb.member_update_chatid('registration_progress', 201, user_id)
+                bot.sendMessage(user_id, msg.messageLib.licenseNeed.value)
+            elif spBtn[1] == 'licenseEmpty':
+                mydb.member_update_chatid('registration_progress', 202, user_id)
+                bot.sendMessage(user_id, msg.messageLib.licenseEmpty.value)
+            elif spBtn[1] == 'listLicenseNeed':
+                print(1)
+                listNeed = mydb.getListLicenseNeed()
+                for item in listNeed:
+                    bot.sendMessage(user_id, helper.formatLicenseNeed(item))
+                if len(listNeed) == 0:
+                    bot.sendMessage(user_id, msg.messageLib.emptyList.value)
+            elif spBtn[1] == 'listLicenseEmpty':
+                listEmpty = mydb.getListLicenseEmpty()
+                for item in listEmpty:
+                    bot.sendMessage(user_id, helper.formatLicenseEmpty(item))
+                if len(listEmpty) == 0:
+                    bot.sendMessage(user_id, msg.messageLib.emptyList.value)
+            elif spBtn[1] == 'myListLicense':
+                myList = mydb.getMyListLicense(user_id)
+                for item in myList:
+                    bot.sendMessage(user_id, helper.formatMyLicense(item),
+                                    reply_markup=menu.keyLib.kbCreateLicenseMenu(idL=item[0]))
+                if len(myList) == 0:
+                    bot.sendMessage(user_id, msg.messageLib.emptyList.value)
+            elif spBtn[1] == 'Extension':
+                mydb.updateLisence('dateExtension', datetime.now(), spBtn[2])
+                bot.sendMessage(user_id, msg.messageLib.extensionLicensed.value)
+            elif spBtn[1] == 'delLicense':
+                mydb.delLisence(1, 1)
+                bot.sendMessage(user_id, msg.messageLib.delLicensed.value)
             elif spBtn[1] == 'sendToCreator':
                 creatorChatID = mydb.get_shift_property(fieldName='Creator', idShift=spBtn[2])
                 listDayAccept = mydb.getListDaySelection(idShift=spBtn[2], requsterShift=user_id)
@@ -726,7 +814,7 @@ def handle_new_messages(user_id, userName, update):
                     sde = str(dateEndMonth).split('-')
                     getMsgId = mydb.get_member_property_chatid('editMsgId', user_id)
                     msgInfo = helper.sendCalendar(bot, user_id, None, int(splitDate[0]), int(splitDate[1]),
-                                                  int(splitDate[2]), int(sde[2]),isEm=1)
+                                                  int(splitDate[2]), int(sde[2]), isEm=1)
                     mydb.member_update_chatid('editMsgId', msgInfo["message_id"], user_id)
                     # bot.sendMessage(user_id, msg.messageLib.dateShift.value)
                     # bot.sendMessage(chat_id=user_id, parse_mode='HTML', text='سال را انتخاب کنید',
@@ -1225,9 +1313,11 @@ def handle_new_messages(user_id, userName, update):
                     bot.sendMessage(message['chat']["id"], msg.messageLib.emptyList.value)
                 else:
                     df = pd.DataFrame(allShift,
-                                      columns=['ایجاد کننده شیفت', 'کد', 'تاریخ شروع', 'ساعت شروع','ساعت پایان', 'دستمزد',
-                                               'آدرس داروخانه', 'پیشرفت','تائید کننده','شناسه شیفت','تایخ پایان','دسمزد دانشجو','تاریخ ثبت'])
-                    df1 = df.iloc[:,[0,12,2,10,3,4,5,11,6]]
+                                      columns=['ایجاد کننده شیفت', 'کد', 'تاریخ شروع', 'ساعت شروع', 'ساعت پایان',
+                                               'دستمزد',
+                                               'آدرس داروخانه', 'پیشرفت', 'تائید کننده', 'شناسه شیفت', 'تایخ پایان',
+                                               'دسمزد دانشجو', 'تاریخ ثبت'])
+                    df1 = df.iloc[:, [0, 12, 2, 10, 3, 4, 5, 11, 6]]
                     df1.to_excel('list.xlsx', sheet_name='لیست شیفت ها')
                     doc = 'list.xlsx'
                     isExisting = os.path.exists(doc)
@@ -1248,12 +1338,14 @@ def handle_new_messages(user_id, userName, update):
                 bot.sendMessage(user_id, msg.messageLib.requesterNotify.value)
             elif spBtn[1] == 'listFunderManager':
                 result = mydb.get_all_member(type=1)
-                df = pd.DataFrame(result, columns=['نام','نوع عضویت','شماره همراه','نام داروخانه','نام داروخانه','آدرس','وضعیت'])
-                df.to_excel('list.xlsx',sheet_name='لیست موسسان')
+                df = pd.DataFrame(result,
+                                  columns=['نام', 'نوع عضویت', 'شماره همراه', 'نام داروخانه', 'نام داروخانه', 'آدرس',
+                                           'وضعیت'])
+                df.to_excel('list.xlsx', sheet_name='لیست موسسان')
                 doc = 'list.xlsx'
                 isExisting = os.path.exists(doc)
                 if isExisting:
-                    bot.sendDocument(user_id, open(doc,'rb'))
+                    bot.sendDocument(user_id, open(doc, 'rb'))
                 if len(result) > 0:
                     for item in result:
                         itemRow1 = 'نام و نام خانوادگی:{}'.format(item[0])
@@ -1267,12 +1359,12 @@ def handle_new_messages(user_id, userName, update):
                     bot.sendMessage(message['chat']['id'], msg.messageLib.emptyList.value)
             elif spBtn[1] == 'listresponsible':
                 result = mydb.get_all_member(type=2)
-                df = pd.DataFrame(result, columns=['نام','نوع عضویت','شماره همراه','شماره ملی','وضعیت'])
+                df = pd.DataFrame(result, columns=['نام', 'نوع عضویت', 'شماره همراه', 'شماره ملی', 'وضعیت'])
                 df.to_excel('list.xlsx', sheet_name='لیست مسئولان فنی')
                 doc = 'list.xlsx'
                 isExisting = os.path.exists(doc)
                 if isExisting:
-                    bot.sendDocument(user_id, open(doc,'rb'))
+                    bot.sendDocument(user_id, open(doc, 'rb'))
                 if len(result) > 0:
                     for item in result:
                         itemRow1 = 'نام و نام خانوادگی:{}'.format(item[0])
@@ -1286,13 +1378,15 @@ def handle_new_messages(user_id, userName, update):
                     bot.sendMessage(message['chat']['id'], msg.messageLib.emptyList.value)
             elif spBtn[1] == 'listStudent':
                 result = mydb.get_all_member(type=3)
-                df = pd.DataFrame(result, columns=['نام','نوع عضویت','شماره همراه','کدملی', 'تاریخ شروع', 'تاریخ پایان', 'نوع داروخانه',
-                                                   'میزان مجوز ساعت', 'ساعت استفاده شده', 'وضعیت'])
-                df.to_excel('list.xlsx',sheet_name='لیست دانشجویان')
+                df = pd.DataFrame(result,
+                                  columns=['نام', 'نوع عضویت', 'شماره همراه', 'کدملی', 'تاریخ شروع', 'تاریخ پایان',
+                                           'نوع داروخانه',
+                                           'میزان مجوز ساعت', 'ساعت استفاده شده', 'وضعیت'])
+                df.to_excel('list.xlsx', sheet_name='لیست دانشجویان')
                 doc = 'list.xlsx'
                 isExisting = os.path.exists(doc)
                 if isExisting:
-                    bot.sendDocument(user_id, open(doc,'rb'))
+                    bot.sendDocument(user_id, open(doc, 'rb'))
                 if len(result) > 0:
                     for item in result:
                         itemRow1 = 'نام و نام خانوادگی:{}'.format(item[0])
@@ -1683,8 +1777,11 @@ def main(lui=0):
                 handle_updates(updates)
     except Exception as e:
         lui = lui + 1
-        bot.sendMessage('6274361322', traceback.format_exc())
-        print(traceback.format_exc())
+        if type(e).__name__ in ('MaxRetryError', 'ProtocolError'):
+            print(type(e).__name__)
+        else:
+            bot.sendMessage('6274361322', traceback.format_exc())
+            print(traceback.format_exc())
         main(lui)
 
 

@@ -121,6 +121,72 @@ class HelperFunder:
             bot.sendMessage(chatid, msg.messageLib.yourOperation.value,
                             reply_markup=menu.keyLib.kbCreateMenuManager(chatId=chatid))
 
+    def formatSearchFounder(self, dataRow, op):
+        if op == 304:
+            # fn, phone_number, username, chat_id, vdmind, desc, opTime, pharmacy_name, pharmacy_type, pharmacy_address, vdmin
+            dr = dataRow[6]
+            return f'''
+نام و نام خانوادگی: {dataRow[0]}
+شماره همراه: {dataRow[1]}
+نام کاربری: {dataRow[2]}
+شناسه چت: {dataRow[3]}
+{dataRow[4]}
+تاریخ ثبت نام: {JalaliDate.to_jalali(dr.year, dr.month, dr.day)}
+توضیحات: 
+{dataRow[5]}
+نام داروخانه: {dataRow[7]}
+نوع داروخانه: {dataRow[8]}
+وضعیت: {dataRow[10]}
+آدرس داروخانه:
+{dataRow[9]}
+'''
+        elif op == 301:
+            # fn, phone_number, username, chat_id, vdmind, desc, opTime, national_code, start_date, end_date, shift_access, hourPermit, vdmin
+            dr = dataRow[6]
+            return f'''
+نام و نام خانوادگی: {dataRow[0]}
+کد ملی: {dataRow[7]}
+شماره همراه: {dataRow[1]}
+نام کاربری: {dataRow[2]}
+شناسه چت: {dataRow[3]}
+{dataRow[4]}
+تاریخ ثبت نام: {JalaliDate.to_jalali(dr.year, dr.month, dr.day)}
+توضیحات: 
+{dataRow[5]}
+تاریخ شروع مجوز: {dataRow[8]}
+تاریخ پایان مجوز: {dataRow[9]}
+شیفت مجاز: {dataRow[10]}
+ساعات مجاز: {dataRow[11]}
+وضعیت: {dataRow[12]}
+'''
+        elif op == 302:
+            # fn, phone_number, username, chat_id, vdmind, desc, opTime
+            dr = dataRow[6]
+            return f'''
+نام و نام خانوادگی: {dataRow[0]}
+شماره همراه: {dataRow[1]}
+نام کاربری: {dataRow[2]}
+شناسه چت: {dataRow[3]}
+{dataRow[4]}
+تاریخ ثبت نام: {JalaliDate.to_jalali(dr.year, dr.month, dr.day)}
+توضیحات: 
+{dataRow[5]}
+'''
+        elif op == 303:
+            # fn, phone_number, username, chat_id, vdmind, desc, opTime, national_code, vdmin
+            dr = dataRow[6]
+            return f'''
+نام و نام خانوادگی: {dataRow[0]}
+کد ملی: {dataRow[7]}
+شماره همراه: {dataRow[1]}
+نام کاربری: {dataRow[2]}
+شناسه چت: {dataRow[3]}
+{dataRow[4]}
+تاریخ ثبت نام: {JalaliDate.to_jalali(dr.year, dr.month, dr.day)}
+توضیحات: 
+{dataRow[5]}
+وضعیت: {dataRow[8]}
+'''
     def formatMyShift(self, dataRow, who=0):  # who = 0 => requster,who = 1 =>creator
         # idShift 0, idDetailShift 1, dateShift 2, requster 3, fnr 4, fnc 5,
         # creator 6, phoneRequster 7, startTime 8, endTime 9, pharmacyAddress 10, phoneCreator 11,iddayShift 12
@@ -152,6 +218,51 @@ class HelperFunder:
         elif who == 1:
             result += who1
         return result
+
+    def formatMyLicense(self, dataRow):
+        # id_activity_license, type, detail, date_register, creator, del
+        dr = dataRow[3]
+        date_register = f'تاریخ ایجاد :{JalaliDate.to_jalali(dr.year, dr.month, dr.day)}'
+        detail = f'\n جزئیات پروانه:{dataRow[2]}'
+        return f'''
+{date_register}
+{detail}
+            '''
+
+    def formatLicenseEmpty(self, dataRow):
+        # id_activity_license, fn, phone_number, detail, date_register
+        requsterL = f'مالک پروانه:{dataRow[1]}'
+        phone_number = f'شماره همراه:{dataRow[2]}'
+        detail = f'\n جزئیات پروانه:{dataRow[3]}'
+        dr = dataRow[4]
+        date_register = f'تاریخ ایجاد :{JalaliDate.to_jalali(dr.year, dr.month, dr.day)}'
+        return f'''
+{date_register}
+{requsterL}
+{phone_number}
+{detail}
+        '''
+
+    def formatLicenseNeed(self, dataRow):
+        # id_activity_license, fn, phone_number, pharmacy_name, pharmacy_type, pharmacy_address, detail, date_register
+        requsterL = f'درخواست دهنده:{dataRow[1]}'
+        phone_number = f'شماره همراه:{dataRow[2]}'
+        pharmacy_name = f'نام داروخانه:{dataRow[3]}'
+        pharmacy_type = f'نوع داروخانه:{dataRow[4]}'
+        pharmacy_address = f'\nآدرس داروخانه:{dataRow[5]}'
+        detail = f'\n جزئیات درخواست:{dataRow[6]}'
+        dr = dataRow[7]
+        date_register = f'تاریخ ایجاد درخواست:{JalaliDate.to_jalali(dr.year, dr.month, dr.day)}'
+        return f'''
+{date_register}
+{requsterL}
+{phone_number}
+{pharmacy_name}
+{pharmacy_type}
+{pharmacy_address}
+{detail}
+        '''
+
     def formatShiftMessage(self, shiftRow, memberType=None):
         dr = shiftRow[12]
         dateRegister = f'تاریخ ایجاد درخواست:{JalaliDate.to_jalali(dr.year, dr.month, dr.day)}'
@@ -575,7 +686,7 @@ class HelperFunder:
             bot.sendMessage(requesterShift, str(msg.messageLib.approvedDay.value).format(dateReq))
             return requesterShift
 
-    def sendCalendar(self, bot, user_id, msgId, yearC, monthC, dayC, endDay, idShift=0,isEm=2):
+    def sendCalendar(self, bot, user_id, msgId, yearC, monthC, dayC, endDay, idShift=0, isEm=2):
         msgInfo = None
         if msgId is None:
             msgInfo = bot.sendMessage(user_id, msg.messageLib.choiceDays.value, parse_mode='HTML',
@@ -583,7 +694,7 @@ class HelperFunder:
                                                                                       yearC,
                                                                                       monthC,
                                                                                       dayC,
-                                                                                      endDay, idShift,isEM=isEm))
+                                                                                      endDay, idShift, isEM=isEm))
         else:
             try:
                 msgInfo = bot.editMessageText((user_id, msgId), msg.messageLib.choiceDays.value,
@@ -593,7 +704,7 @@ class HelperFunder:
                                                                                               monthC,
                                                                                               dayC,
                                                                                               endDay,
-                                                                                              idShift,isEM=isEm))
+                                                                                              idShift, isEM=isEm))
             except:
                 print('Error Edit Message')
         return msgInfo

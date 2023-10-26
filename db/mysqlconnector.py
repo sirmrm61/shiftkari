@@ -938,3 +938,120 @@ VALUES({idShift},\'{dateShift}\',\'{requster}\',0,{sendedForCreator},{idDetailSh
         myCursor.execute(sqlQuery)
         result = myCursor.fetchall()
         return result
+
+    def insertLicense(self, textDetail, typeLicense, creator):
+        sqlQuery = f'''insert into `botshiftkari`.`activity_license` (`detail`,`type`,`creator`)values(\'{textDetail}\',
+                        {typeLicense},\'{creator}\')'''
+        mydb = self.connector()
+        mydb.autocommit = True
+        myCursor = mydb.cursor()
+        myCursor.execute(sqlQuery)
+        return myCursor.lastrowid
+
+    def getListLicenseEmpty(self):
+        sqlQuery = f'''select id_activity_license, fn, phone_number, detail, date_register from 
+                        `botshiftkari`.`vw_licenseempty` where date_register >= {datetime.datetime.now()}'''
+        mydb = self.connector()
+        myCursor = mydb.cursor()
+        myCursor.execute(sqlQuery)
+        result = myCursor.fetchall()
+        return result
+
+    def getListLicenseNeed(self):
+        sqlQuery = f'''select id_activity_license, fn, phone_number, pharmacy_name, pharmacy_type, pharmacy_address,
+        detail, date_register from `botshiftkari`.`vw_licenseneed` '''
+        mydb = self.connector()
+        myCursor = mydb.cursor()
+        myCursor.execute(sqlQuery)
+        result = myCursor.fetchall()
+        return result
+
+    def getListLicenseEmpty(self):
+        sqlQuery = f'''select id_activity_license, fn, phone_number, detail, date_register
+         from `botshiftkari`.`vw_licenseempty`'''
+        mydb = self.connector()
+        myCursor = mydb.cursor()
+        myCursor.execute(sqlQuery)
+        result = myCursor.fetchall()
+        return result
+
+    def getMyListLicense(self, userId):
+        sqlQuery = f'''select id_activity_license, type, detail, date_register, creator, del
+         from `botshiftkari`.`activity_license` where del=0  and creator = \'{userId}\''''
+        mydb = self.connector()
+        myCursor = mydb.cursor()
+        myCursor.execute(sqlQuery)
+        result = myCursor.fetchall()
+        return result
+
+    def updateLisence(self, fieldName, fieldValue, idL):
+        mydb = self.connector()
+        mydb.autocommit = True
+        myCursor = mydb.cursor()
+        sqlQuery = 'UPDATE `botshiftkari`.`activity_license` SET `{0}` = \'{1}\'  where `id_activity_license` = {2}' \
+            .format(fieldName, fieldValue, idL)
+        print(sqlQuery)
+        myCursor.execute(sqlQuery)
+        myCursor.reset()
+        return None
+
+    def delLisence(self, fieldValue, idL):
+        mydb = self.connector()
+        mydb.autocommit = True
+        myCursor = mydb.cursor()
+        sqlQuery = 'UPDATE `botshiftkari`.`activity_license` SET `del` = {0}  where `id_activity_license` = {1}' \
+            .format(fieldValue, idL)
+        print(sqlQuery)
+        myCursor.execute(sqlQuery)
+        myCursor.reset()
+        return None
+
+    def searchFounder(self, searchVerb):
+        sqlQuery = f'''select fn, phone_number, username, chat_id, vdmind, vf.desc, opTime, pharmacy_name, pharmacy_type,
+         pharmacy_address, vdmin
+         from `botshiftkari`.`vw_founder` vf where fn like \'%{searchVerb}%\' or  phone_number like\'%{searchVerb}%\' or 
+         username like \'%{searchVerb}%\' or  vf.desc like\'%{searchVerb}%\' or pharmacy_name like \'%{searchVerb}%\' or 
+         pharmacy_type like\'%{searchVerb}%\' or pharmacy_address like\'%{searchVerb}%\''''
+        mydb = self.connector()
+        myCursor = mydb.cursor()
+        myCursor.execute(sqlQuery)
+        result = myCursor.fetchall()
+        return result
+
+    def searchStudent(self, searchVerb):
+        sqlQuery = f'''SELECT fn, phone_number, username, chat_id, vdmind, vs.desc,
+                     opTime, national_code, start_date, end_date, shift_access,
+                     hourPermit, vdmin FROM botshiftkari.vw_student vs
+                     where fn like \'%{searchVerb}%\' or  phone_number like\'%{searchVerb}%\' or 
+                     username like \'%{searchVerb}%\' or  vs.desc like\'%{searchVerb}%\' or 
+                     national_code like\'%{searchVerb}%\' or start_date like\'%{searchVerb}%\' or
+                     end_date like\'%{searchVerb}%\' or shift_access like\'%{searchVerb}%\' or
+                     end_date like\'%{searchVerb}%\' or shift_access like\'%{searchVerb}%\' '''
+        mydb = self.connector()
+        myCursor = mydb.cursor()
+        myCursor.execute(sqlQuery)
+        result = myCursor.fetchall()
+        return result
+
+    def searchTecnician(self, searchVerb):
+        sqlQuery = f'''SELECT fn, phone_number, username, chat_id, vdmind, vs.desc, opTime, national_code, vdmin
+                     FROM botshiftkari.vw_tecnician vs
+                     where fn like \'%{searchVerb}%\' or  phone_number like\'%{searchVerb}%\' or 
+                     username like \'%{searchVerb}%\' or  vs.desc like\'%{searchVerb}%\' or 
+                     national_code like\'%{searchVerb}%\'  '''
+        mydb = self.connector()
+        myCursor = mydb.cursor()
+        myCursor.execute(sqlQuery)
+        result = myCursor.fetchall()
+        return result
+
+    def searchAdmin(self, searchVerb):
+        sqlQuery = f'''SELECT fn, phone_number, username, chat_id, vdmind, vs.desc, opTime
+                     FROM botshiftkari.vw_admin vs
+                     where fn like \'%{searchVerb}%\' or  phone_number like\'%{searchVerb}%\' or 
+                     username like \'%{searchVerb}%\' or  vs.desc like\'%{searchVerb}%\'  '''
+        mydb = self.connector()
+        myCursor = mydb.cursor()
+        myCursor.execute(sqlQuery)
+        result = myCursor.fetchall()
+        return result
