@@ -668,7 +668,7 @@ def handle_new_messages(user_id, userName, update):
                 mydb.updateLisence('dateExtension', datetime.now(), spBtn[2])
                 bot.sendMessage(user_id, msg.messageLib.extensionLicensed.value)
             elif spBtn[1] == 'delLicense':
-                mydb.delLisence(1, 1)
+                mydb.delLisence(1, spBtn[2])
                 bot.sendMessage(user_id, msg.messageLib.delLicensed.value)
             elif spBtn[1] == 'sendToCreator':
                 creatorChatID = mydb.get_shift_property(fieldName='Creator', idShift=spBtn[2])
