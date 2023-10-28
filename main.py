@@ -903,8 +903,9 @@ def handle_new_messages(user_id, userName, update):
                         JalaliDate(yearC + 1, 1, 1).to_gregorian() - timedelta(days=1))
                 sde = str(dateEndMonth).split('-')
                 endDay = int(sde[2])
+                print(f'idShift={idShift}')
                 if idShift == 0:
-                    idShift = mydb.shift_update('send', 0, user_id)[0]
+                    idShift = mydb.shift_update('send', 0, user_id)
                 re = mydb.registerDetailShift(idShift, selectiveDate[0], selectiveDate[1], selectiveDate[2])
                 getMsgId = mydb.get_member_property_chatid('editMsgId', user_id)
                 msgInfo = helper.sendCalendar(bot, user_id, getMsgId, yearC, monthC, startDay, int(endDay), idShift)
