@@ -383,12 +383,14 @@ class mysqlconnector:
         result = myCursor.fetchone()
         if result is None:
             sqlQuery = 'insert into `botshiftkari`.`shift` (Creator,{0}) values (\'{1}\',\'{2}\')'.format(fieldName,
-                                                                                                          chatid,
                                                                                                           fieldValue)
             result = myCursor.lastrowid
         else:
             sqlQuery = 'UPDATE `botshiftkari`.`shift` SET `{0}` = \'{1}\'  where progress=0 and Creator = \'{2}\''.format(
                 fieldName, fieldValue, chatid)
+        print(f'result={result}')
+        if not isinstance(result, int):
+            result = result[0]
         myCursor.execute(sqlQuery)
         myCursor.reset()
         return result
