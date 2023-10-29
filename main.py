@@ -837,7 +837,6 @@ def handle_new_messages(user_id, userName, update):
                 getMsgId = mydb.get_member_property_chatid('editMsgId', user_id)
                 msgInfo = helper.sendCalendar(bot, user_id, None, int(splitDate[0]), int(splitDate[1]),
                                               int(splitDate[2]), int(sde[2]))
-                print(f'msgInfo={msgInfo}')
                 mydb.member_update_chatid('editMsgId', msgInfo["message_id"], user_id)
                 # bot.sendMessage(user_id, msg.messageLib.dateShift.value)
                 # bot.sendMessage(chat_id=user_id, parse_mode='HTML', text='سال را انتخاب کنید',
