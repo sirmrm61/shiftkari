@@ -382,7 +382,7 @@ class mysqlconnector:
         myCursor.execute(sqlQuery)
         result = myCursor.fetchone()
         if result is None:
-            sqlQuery = 'insert into `botshiftkari`.`shift` (Creator,{0}) values (\'{1}\',\'{2}\')'.format(fieldName,
+            sqlQuery = 'insert into `botshiftkari`.`shift` (Creator,{0}) values (\'{1}\',\'{2}\')'.format(fieldName,chatid,
                                                                                                           fieldValue)
             result = myCursor.lastrowid
         else:
