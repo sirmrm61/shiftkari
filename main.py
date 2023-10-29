@@ -837,6 +837,7 @@ def handle_new_messages(user_id, userName, update):
                 getMsgId = mydb.get_member_property_chatid('editMsgId', user_id)
                 msgInfo = helper.sendCalendar(bot, user_id, None, int(splitDate[0]), int(splitDate[1]),
                                               int(splitDate[2]), int(sde[2]))
+                print(f'msgInfo={msgInfo}')
                 mydb.member_update_chatid('editMsgId', msgInfo["message_id"], user_id)
                 # bot.sendMessage(user_id, msg.messageLib.dateShift.value)
                 # bot.sendMessage(chat_id=user_id, parse_mode='HTML', text='سال را انتخاب کنید',
@@ -903,7 +904,6 @@ def handle_new_messages(user_id, userName, update):
                         JalaliDate(yearC + 1, 1, 1).to_gregorian() - timedelta(days=1))
                 sde = str(dateEndMonth).split('-')
                 endDay = int(sde[2])
-                print(f'idShift={idShift}')
                 if idShift == 0:
                     idShift = mydb.shift_update('send', 0, user_id)
                 re = mydb.registerDetailShift(idShift, selectiveDate[0], selectiveDate[1], selectiveDate[2])
@@ -1153,7 +1153,7 @@ def handle_new_messages(user_id, userName, update):
                         bot.sendMessage(message['chat']['id'],
                                         'آیا آدرس {0} برای داروخانه صحیح است؟'.format(addressPharmacy),
                                         reply_markup=menu.keyLib.kbCreateMenuYesNO(
-                                            chatId='{0}_{1}'.format(11, rs[0])))
+                                            chatId='{0}_{1}'.format(11, rs)))
                         mydb.member_update('op', 11, message['chat']['id'])
                     else:
                         mydb.member_update('op', 10, message['chat']['id'])
