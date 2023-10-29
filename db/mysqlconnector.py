@@ -388,7 +388,6 @@ class mysqlconnector:
         else:
             sqlQuery = 'UPDATE `botshiftkari`.`shift` SET `{0}` = \'{1}\'  where progress=0 and Creator = \'{2}\''.format(
                 fieldName, fieldValue, chatid)
-        print(f'result={result}')
         if not isinstance(result, int):
             result = result[0]
         myCursor.execute(sqlQuery)
