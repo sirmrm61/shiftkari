@@ -531,7 +531,7 @@ def handle_new_messages(user_id, userName, update):
                     bot.sendMessage(message['chat']['id'],
                                     'آیا آدرس {0} برای داروخانه صحیح است؟'.format(message['text']),
                                     reply_markup=menu.keyLib.kbCreateMenuYesNO(
-                                        chatId='{0}_{1}'.format(11, rs[0])))
+                                        chatId='{0}_{1}'.format(11, rs)))
         elif tempMember.register_progress == 15:
             if tempMember.membership_type == 4:
                 chatIdUser = mydb.get_member_property_Adminchatid(fieldName='chat_id', chatid=message['chat']['id'])
