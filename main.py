@@ -681,7 +681,7 @@ def handle_new_messages(user_id, userName, update):
                     bot.sendMessage(creatorChatID, str(msg.messageLib.sendDayForApproveCreator.value).format(fullName))
                     helper.send_profile(user_id, bot, creatorChatID)
                     bot.sendMessage(creatorChatID, 'روز های مورد تائید را نتخاب نمائید',
-                                    reply_markup=menu.keyLib.createMenuFromListDayForApproveCreator(None, listDayAccept,
+                                    reply_markup=menu.keyLib.createMenuFromListDayForApproveCreatorNew(None, listDayAccept,
                                                                                                     2))
                 else:
                     bot.sendMessage(creatorChatID, str(msg.messageLib.senndAcceptAllDayInShift.value).format(fullName),

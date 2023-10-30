@@ -508,7 +508,6 @@ class HelperFunder:
             Edited = 1
         elif op == 4:
             phone = unidecode(newValue['text'])
-            print(f'phoneNumber:{newValue["text"]}')
             if self.validate_IR_mobile_number(mobile_number=phone):
                 mydb.member_update_chatid(fieldName='phone_number', fieldValue=phone, chatid=userId)
                 Edited = 1
@@ -707,4 +706,5 @@ class HelperFunder:
                                                                                               idShift, isEM=isEm))
             except:
                 print('Error Edit Message')
+                print((user_id, msgId))
         return msgInfo
