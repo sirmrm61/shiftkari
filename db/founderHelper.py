@@ -1,3 +1,5 @@
+import traceback
+
 import db.mysqlconnector as msc
 import msg
 import menu
@@ -187,6 +189,7 @@ class HelperFunder:
 {dataRow[5]}
 وضعیت: {dataRow[8]}
 '''
+
     def formatMyShift(self, dataRow, who=0):  # who = 0 => requster,who = 1 =>creator
         # idShift 0, idDetailShift 1, dateShift 2, requster 3, fnr 4, fnc 5,
         # creator 6, phoneRequster 7, startTime 8, endTime 9, pharmacyAddress 10, phoneCreator 11,iddayShift 12
@@ -269,8 +272,6 @@ class HelperFunder:
         rowReq = 'درخواست دهنده: {}'.format(shiftRow[0])
         rowStartDate = 'تاریخ شروع شیفت: {}'.format(shiftRow[2])
         rowEndDate = 'تاریخ پایان شیفت: {}'.format(shiftRow[10])
-        rowStartTime = 'ساعت شروع  : {}'.format(shiftRow[3])
-        rowEndTime = 'ساعت پایان  : {}'.format(shiftRow[4])
         if memberType != 3:
             rowWage = 'حق الزحمه  : {}'.format(shiftRow[5])
         elif memberType == 3:
@@ -282,8 +283,6 @@ class HelperFunder:
 {dateRegister}
 {rowStartDate}
 {rowEndDate}
-{rowStartTime}
-{rowEndTime}
 {rowWage}
 {rowaddr}
 '''
@@ -508,7 +507,6 @@ class HelperFunder:
             Edited = 1
         elif op == 4:
             phone = unidecode(newValue['text'])
-            print(f'phoneNumber:{newValue["text"]}')
             if self.validate_IR_mobile_number(mobile_number=phone):
                 mydb.member_update_chatid(fieldName='phone_number', fieldValue=phone, chatid=userId)
                 Edited = 1
@@ -686,25 +684,59 @@ class HelperFunder:
             bot.sendMessage(requesterShift, str(msg.messageLib.approvedDay.value).format(dateReq))
             return requesterShift
 
-    def sendCalendar(self, bot, user_id, msgId, yearC, monthC, dayC, endDay, idShift=0, isEm=2):
+    def sendCalendar(self, bot, user_id, msgId, yearC, monthC, dayC, endDay, idShift=0, isEm=2, typeShift=0,
+                     isMorning=0):
+        print(f'sendCalendar-isMorning={isMorning}')
         msgInfo = None
+        msgStr = 'empty'
+        if int(typeShift) == 1:
+            msgStr = msg.messageLib.choiceDays.value
+        elif int(typeShift) == 2:
+            hour = mydb.get_property_domain('morning')
+            msgStr = str(msg.messageLib.choiceDaysMorning.value).format(hour)
+        elif int(typeShift) == 3:
+            hour = mydb.get_property_domain('evening')
+            msgStr = str(msg.messageLib.choiceDaysEvening.value).format(hour)
+        elif int(typeShift) == 4:
+            hour = mydb.get_property_domain('night')
+            msgStr = str(msg.messageLib.choiceDaysNight.value).format(hour)
         if msgId is None:
-            msgInfo = bot.sendMessage(user_id, msg.messageLib.choiceDays.value, parse_mode='HTML',
+            msgInfo = bot.sendMessage(user_id, msgStr, parse_mode='HTML',
                                       reply_markup=menu.keyLib.createMenuForSelectDay(None,
                                                                                       yearC,
                                                                                       monthC,
                                                                                       dayC,
-                                                                                      endDay, idShift, isEM=isEm))
+                                                                                      endDay, idShift, isEM=isEm,
+                                                                                      typeShift=typeShift,
+                                                                                      isMorning=isMorning))
         else:
             try:
-                msgInfo = bot.editMessageText((user_id, msgId), msg.messageLib.choiceDays.value,
+                msgInfo = bot.editMessageText((user_id, int(msgId)), msgStr,
                                               parse_mode='HTML',
                                               reply_markup=menu.keyLib.createMenuForSelectDay(None,
                                                                                               yearC,
                                                                                               monthC,
                                                                                               dayC,
                                                                                               endDay,
-                                                                                              idShift, isEM=isEm))
+                                                                                              idShift, isEM=isEm
+                                                                                              , typeShift=typeShift
+                                                                                              , isMorning=isMorning))
             except:
                 print('Error Edit Message')
+                print(traceback.format_exc())
+                print((user_id, msgId))
         return msgInfo
+
+    def send_createShift(self, bot, user_id, idShift, typeShift, msgId, isMorning=0):
+        splitDate = str(JalaliDate(datetime.datetime.now())).split('-')
+        dateEndMonth = None
+        if int(splitDate[1]) < 12:
+            dateEndMonth = JalaliDate(
+                JalaliDate(int(splitDate[0]), int(splitDate[1]) + 1, 1).to_gregorian() - timedelta(days=1))
+        else:
+            dateEndMonth = JalaliDate(
+                JalaliDate(int(splitDate[0]) + 1, 1, 1).to_gregorian() - timedelta(days=1))
+        sde = str(dateEndMonth).split('-')
+        msgInfo = self.sendCalendar(bot, user_id, msgId, int(splitDate[0]), int(splitDate[1]),
+                                    int(splitDate[2]), int(sde[2]), idShift, 2, typeShift, isMorning)
+        mydb.member_update_chatid('editMsgId', msgInfo["message_id"], user_id)

@@ -1,6 +1,13 @@
+<<<<<<< HEAD
 **/__pycache__
 **/.vscode
 **/.history
 **/.idea
 **/.venv
 **/download
+=======
+/list.xlsx
+/01.xlsx
+/download/
+/venv/
+>>>>>>> 56f2933a442797ea376be7b091e4658770d6da57
