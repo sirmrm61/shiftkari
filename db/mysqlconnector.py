@@ -382,16 +382,28 @@ class mysqlconnector:
         myCursor.execute(sqlQuery)
         result = myCursor.fetchone()
         if result is None:
-            sqlQuery = 'insert into `botshiftkari`.`shift` (Creator,{0}) values (\'{1}\',\'{2}\')'.format(fieldName,chatid,
+            sqlQuery = 'insert into `botshiftkari`.`shift` (Creator,{0}) values (\'{1}\',\'{2}\')'.format(fieldName,
+                                                                                                          chatid,
                                                                                                           fieldValue)
             result = myCursor.lastrowid
         else:
             sqlQuery = 'UPDATE `botshiftkari`.`shift` SET `{0}` = \'{1}\'  where progress=0 and Creator = \'{2}\''.format(
                 fieldName, fieldValue, chatid)
+        print(sqlQuery)
+        myCursor.execute(sqlQuery)
         if not isinstance(result, int):
             result = result[0]
-        myCursor.execute(sqlQuery)
         myCursor.reset()
+        return result
+
+    def create_shift(self, userid):
+        mydb = self.connector()
+        mydb.autocommit = True
+        myCursor = mydb.cursor()
+        sqlQuery = 'insert into `botshiftkari`.`shift` (Creator) values (\'{0}\')'.format(userid)
+        print(sqlQuery)
+        myCursor.execute(sqlQuery)
+        result = myCursor.lastrowid
         return result
 
     def shift_update_by_id(self, fieldName, fieldValue, idshift):
@@ -754,6 +766,20 @@ VALUES({idShift},\'{dateShift}\',\'{requster}\',0,{sendedForCreator},{idDetailSh
         myCursor.execute(sqlQuery)
         return myCursor.lastrowid
 
+    def updateDetailShift(self, fieldName, fieldValue, idDetailShift):
+        mydb = self.connector()
+        mydb.autocommit = True
+        myCursor = mydb.cursor()
+        if fieldValue is not None:
+            sqlQuery = 'UPDATE `botshiftkari`.`detailshift` SET `{0}` = \'{1}\'  where `idDetailShift` = \'{2}\''.format(
+                fieldName, fieldValue, idDetailShift)
+        else:
+            sqlQuery = 'UPDATE `botshiftkari`.`detailshift` SET `{0}` = null  where `idDetailShift` = \'{1}\''.format(
+                fieldName,  idDetailShift)
+        myCursor.execute(sqlQuery)
+        myCursor.reset()
+        return None
+
     def updateShiftDay(self, fieldName, fieldValue, idDayShift):
         mydb = self.connector()
         mydb.autocommit = True
@@ -860,9 +886,20 @@ VALUES({idShift},\'{dateShift}\',\'{requster}\',0,{sendedForCreator},{idDetailSh
         return result
 
     def getListSelectedDay(self, idShift, status=-1):
-        sqlQuery = f'SELECT CONCAT(lpad(ds.year,4,\'0\'),\'-\',lpad(ds.month,2,\'0\'),\'-\',lpad(ds.day,2,\'0\')) as ' \
-                   f'dateS,ds.idDetailShift,ds.idShift FROM botshiftkari.detailshift as ds ' \
-                   f' where idShift = {idShift}  '
+        sqlQuery = f'''SELECT CONCAT(lpad(ds.year,4,\'0\'),\'-\',lpad(ds.month,2,\'0\'),\'-\',lpad(ds.day,2,\'0\')) as
+                   dateS,ds.idDetailShift,ds.idShift, morning, evening, night, freeTime,
+                    case 
+                    when morning is  null and evening is null and night is null then 0
+                    when morning is not null and evening is null and night is null then 1
+                    when morning is  null and evening is not null  and night is null then 2
+                    when morning is not null and evening is not null and night is null then 3
+                    when morning is  null and evening is  null and night is not null then 4
+                    when morning is not null and evening is  null and night is not null then 5
+                    when morning is  null and evening is not null and night is not null then 6
+                    when morning is not null and evening is not null and night is not null then 7
+                    else 0 end selectStatus FROM  
+                   botshiftkari.detailshift as ds   
+                    where idShift = {idShift}  '''
         if status > -1:
             sqlQuery += f' and status = {status} order by ds.year,ds.month,ds.day'
         else:
@@ -873,9 +910,22 @@ VALUES({idShift},\'{dateShift}\',\'{requster}\',0,{sendedForCreator},{idDetailSh
         result = myCursor.fetchall()
         return result
 
-    def removeDay(self, idShift, year, month, day):
-        sqlQuery = f'delete from  botshiftkari.detailshift as ds where ds.idShift = {idShift} and ds.year={year} and' \
+    def getIdDetailShift(self, idShift, year, month, day):
+        sqlQuery = f'select idDetailShift from  botshiftkari.detailshift as ds where ds.idShift = {idShift} and ds.year={year} and' \
                    f' ds.month={month} and ds.day = {day}'
+        mydb = self.connector()
+        mydb.autocommit = True
+        myCursor = mydb.cursor()
+        myCursor.execute(sqlQuery)
+        id = myCursor.fetchone()
+        if id is not None:
+            return id[0]
+        else:
+            return None
+
+    def removeDay(self, idShift):
+        sqlQuery = f'delete from  botshiftkari.detailshift as ds where ds.idDetailShift = {idShift} and ds.morning is ' \
+                   f'null and ds.evening is null and ds.night is null and freeTime is null'
         mydb = self.connector()
         mydb.autocommit = True
         myCursor = mydb.cursor()
@@ -886,6 +936,7 @@ VALUES({idShift},\'{dateShift}\',\'{requster}\',0,{sendedForCreator},{idDetailSh
         sqlQuery = f'select * from  botshiftkari.detailshift where idShift= {idShift} order by year,month,day;'
         mydb = self.connector()
         myCursor = mydb.cursor()
+        print(sqlQuery)
         myCursor.execute(sqlQuery)
         result = myCursor.fetchall()
         startDate = endDate = '0001-01-01'

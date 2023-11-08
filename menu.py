@@ -28,6 +28,16 @@ class keyLib:
              InlineKeyboardButton(text='عادی', callback_data='btnNormal')]
         ])
 
+    def kbTypePharmacyCS(self=None, idShift=0):
+        return InlineKeyboardMarkup(inline_keyboard=[
+            [InlineKeyboardButton(text='شبانه روزی', callback_data=f'btn_btNightDayCS_{idShift}'),
+             InlineKeyboardButton(text='عادی', callback_data=f'btn_btnNormalCS_{idShift}')]
+        ])
+    def kbTypePharmacyTime(self=None, idShift=0):
+        return InlineKeyboardMarkup(inline_keyboard=[
+            [InlineKeyboardButton(text='زمان آزاد', callback_data=f'btn_freeTime_{idShift}'),
+             InlineKeyboardButton(text='زمان استاندارد', callback_data=f'btn_timeStandard_{idShift}')]
+        ])
     def kbTypeShift(self=None):
         return InlineKeyboardMarkup(inline_keyboard=[
             [InlineKeyboardButton(text='صبح', callback_data='btShiftMorning'),
@@ -88,7 +98,7 @@ class keyLib:
         return InlineKeyboardMarkup(inline_keyboard=[
             [InlineKeyboardButton(text='شیفت های من', callback_data='btn_listSift_{}'.format(str(chatId))),
              InlineKeyboardButton(text='کنسل کردن شیفت', callback_data='btn_cancelShift_{}'.format(str(chatId)))],
-             [InlineKeyboardButton(text='درخواست پر کردن شیفت', callback_data='btn_repShift_{}'.format(str(chatId)))],
+            [InlineKeyboardButton(text='درخواست پر کردن شیفت', callback_data='btn_repShift_{}'.format(str(chatId)))],
             [InlineKeyboardButton(text='حذف شیفت', callback_data='btn_deleteShift_{}'.format(str(chatId))),
              InlineKeyboardButton(text='ویرایش پروفایل', callback_data='btn_epf_{}'.format(str(chatId)))],
             [InlineKeyboardButton(text='ثبت شیفت اضطراری', callback_data='btn_createShiftEm_{}'.format(str(chatId))),
@@ -153,10 +163,10 @@ class keyLib:
         return InlineKeyboardMarkup(inline_keyboard=[[InlineKeyboardButton(text='کنسل کردن جستجو',
                                                                            callback_data='btn_cancelSearch')]])
 
-    def kbCreateOperateSearchMenu(self=None, chatId=None,op=None):
+    def kbCreateOperateSearchMenu(self=None, chatId=None, op=None):
         return InlineKeyboardMarkup(inline_keyboard=[[InlineKeyboardButton(text='عملیات',
                                                                            callback_data='btn_operate_{0}_{1}'.format(
-                                                                               chatId,op))]])
+                                                                               chatId, op))]])
 
     def kbcreateSendMessage(self=None, chatId=None):
         return InlineKeyboardMarkup(inline_keyboard=[
@@ -394,6 +404,12 @@ class keyLib:
             [InlineKeyboardButton(text='ارسال', callback_data='btn_sendToCreator_{}'.format(str(idShift)))]
         ])
 
+    def kbCreateMenuTypePharmacy(self=None, idShift=None):
+        return InlineKeyboardMarkup(inline_keyboard=[
+            [InlineKeyboardButton(text='شبانه روزی', callback_data='btn_pharmacyType_{}'.format(str(idShift)))],
+            [InlineKeyboardButton(text='عادی', callback_data='btn_pharmacyType_{}'.format(str(idShift)))]
+        ])
+
     def createMenuFromListDayForApproveCreator(self, listDay, totalInRow=2):
         lk = []
         listIdDay = ''
@@ -414,28 +430,31 @@ class keyLib:
             res.append(lk[idx * N: (idx + 1) * N])  # ToDo: check day is empty
         return InlineKeyboardMarkup(inline_keyboard=res)
 
-    def createMenuForSelectDay(self, year, month, startDay, endDay, idShift=0, totalInRow=7, isEM=2):
+    def createMenuForSelectDay(self, year, month, startDay, endDay, idShift=0, totalInRow=7, isEM=2, typeShift=0,
+                               isMorning=0):
         selectedDay = []
+        sdFullData = None
         if idShift != 0:
-            tmp = mydb.getListSelectedDay(idShift)
-            selectedDay = [item[0] for item in tmp]
-        print(isEM)
-        currentDate = str(JalaliDate(datetime.datetime.now() + datetime.timedelta(days=isEM))).split('-')
+            sdFullData = mydb.getListSelectedDay(idShift)
+            selectedDay = [item[0] for item in sdFullData]
+        currentDate = str(JalaliDate(datetime.datetime.now() + datetime.timedelta(days=int(isEM)))).split('-')
         dayValid = int(currentDate[2])
         if int(currentDate[1]) < month:
             dayValid = 0
         elif int(currentDate[1]) > month:
-            dayValid = 32
+            if int(month) < 7:
+                dayValid = 32
+            else:
+                dayValid = 31
         else:
             startDay = int(currentDate[2])
-        listDay = []
-        listDay.append(InlineKeyboardButton(text=f'شنبه', callback_data='spare'))
-        listDay.append(InlineKeyboardButton(text=f'یکشنبه', callback_data='spare'))
-        listDay.append(InlineKeyboardButton(text=f'دو شنبه', callback_data='spare'))
-        listDay.append(InlineKeyboardButton(text=f'سه شنبه', callback_data='spare'))
-        listDay.append(InlineKeyboardButton(text=f'چهار شنبه', callback_data='spare'))
-        listDay.append(InlineKeyboardButton(text=f'پنج شنبه', callback_data='spare'))
-        listDay.append(InlineKeyboardButton(text=f'جمعه', callback_data='spare'))
+        listDay = [InlineKeyboardButton(text=f'شنبه', callback_data='spare'),
+                   InlineKeyboardButton(text=f'1شنبه', callback_data='spare'),
+                   InlineKeyboardButton(text=f'2شنبه', callback_data='spare'),
+                   InlineKeyboardButton(text=f'3شنبه', callback_data='spare'),
+                   InlineKeyboardButton(text=f'4شنبه', callback_data='spare'),
+                   InlineKeyboardButton(text=f'5شنبه', callback_data='spare'),
+                   InlineKeyboardButton(text=f'جمعه', callback_data='spare')]
         monthList = ['فروردین', 'اردیبهشت', 'خرداد',
                      'تیر', 'مرداد', 'شهریور',
                      'مهر', 'آبان', 'آذر',
@@ -453,10 +472,11 @@ class keyLib:
             dayEnd -= 5
         else:
             dayEnd += 2
+        print(f'dayValid={dayValid}')
         if dayValid == 0:
             startDay = 1
             endDay += 1
-        elif dayValid == 32:
+        elif dayValid == 32 or dayValid == 31:
             startDay = dayValid
         else:
             endDay += 1
@@ -466,11 +486,41 @@ class keyLib:
             listDay.append(InlineKeyboardButton(text=f'🙅{idx}', callback_data='spare'))
         for day in range(startDay, endDay):
             if f'{str(year).zfill(4)}-{str(month).zfill(2)}-{str(day).zfill(2)}' in selectedDay:
-                listDay.append(InlineKeyboardButton(text=f'💕{day}',
-                                                    callback_data=f'btn_removeDay_{year}#{month}#{day}_{idShift}_{startDay}_{endDay}'))
+                itemDay = [item for item in sdFullData if
+                           item[0] == f'{str(year).zfill(4)}-{str(month).zfill(2)}-{str(day).zfill(2)}']
+                emoji = None
+                action = 'removeDay'
+                if int(itemDay[0][7]) == 1:
+                    if int(isMorning) == 1 or int(isMorning) == 2:
+                        action = 'newDaySelect'
+                    emoji = '🌞'
+                elif int(itemDay[0][7]) == 2:
+                    if int(isMorning) == 0 or int(isMorning) == 2:
+                        action = 'newDaySelect'
+                    emoji = '🌝'
+                elif int(itemDay[0][7]) == 3:
+                    if int(isMorning) == 2:
+                        action = 'newDaySelect'
+                    emoji = '🌓'
+                elif int(itemDay[0][7]) == 4:
+                    if int(isMorning) == 0 or int(isMorning) == 1:
+                        action = 'newDaySelect'
+                    emoji = '🌑'
+                elif int(itemDay[0][7]) == 5:
+                    if int(isMorning) == 1:
+                        action = 'newDaySelect'
+                    emoji = '🌖'
+                elif int(itemDay[0][7]) == 6:
+                    if int(isMorning) == 0:
+                        action = 'newDaySelect'
+                    emoji = '🌘'
+                elif int(itemDay[0][7]) == 7:
+                    emoji = '🥮'
+                listDay.append(InlineKeyboardButton(text=f'{emoji}{day}',
+                                                    callback_data=f'btn_{action}_{year}#{month}#{day}_{idShift}_{startDay}_{endDay}_{isEM}_{typeShift}_{isMorning}'))
             else:
                 listDay.append(InlineKeyboardButton(text=f'👍{day}',
-                                                    callback_data=f'btn_newDaySelect_{year}#{month}#{day}_{idShift}_{startDay}_{endDay}'))
+                                                    callback_data=f'btn_newDaySelect_{year}#{month}#{day}_{idShift}_{startDay}_{endDay}_{isEM}_{typeShift}_{isMorning}'))
         for idx in range(dayEnd, 7):
             listDay.append(InlineKeyboardButton(text='-', callback_data='spare'))
         N = totalInRow
@@ -481,12 +531,32 @@ class keyLib:
             res.append(listDay[idx * N: (idx + 1) * N])  # ToDo: check day is empty
         res.append(
             [InlineKeyboardButton(text='ماه قبل >>',
-                                  callback_data=f'btn_previousMonth_{year}#{month}#{startDay}_{idShift}'),
+                                  callback_data=f'btn_previousMonth_{year}#{month}#{startDay}_{idShift}_{typeShift}_{isEM}_{isMorning}'),
              InlineKeyboardButton(text='<< ماه بعد',
-                                  callback_data=f'btn_nextMonth_{year}#{month}#{startDay}_{idShift}')])
-        res.append(
-            [InlineKeyboardButton(text='پایان انتخاب روز های شیفت',
-                                  callback_data=f'btn_endSelectDay_{idShift}')])
+                                  callback_data=f'btn_nextMonth_{year}#{month}#{startDay}_{idShift}_{typeShift}_{isEM}_{isMorning}')])
+        print(f'menu-isMorning={isMorning}')
+        if int(typeShift) == 2:
+            res.append(
+                [InlineKeyboardButton(text='پایان انتخاب روز ها برای شیفت صبح',
+                                      callback_data=f'btn_endSelectDay_{idShift}_{isMorning}')])
+        elif int(typeShift) == 3:
+            res.append(
+                [InlineKeyboardButton(text='بازگشت به انتخاب شیفت های صبح',
+                                      callback_data=f'btn_backwardToMorning_{idShift}_{year}#{month}#{startDay}_{isEM}')])
+            res.append(
+                [InlineKeyboardButton(text='پایان انتخاب روز ها برای شیفت عصر',
+                                      callback_data=f'btn_endSelectDay_{idShift}_{isMorning}')])
+        elif int(typeShift) == 4:
+            res.append(
+                [InlineKeyboardButton(text='بازگشت به انتخاب شیفت های عصر',
+                                      callback_data=f'btn_backwardToEvening_{idShift}_{year}#{month}#{startDay}_{isEM}')])
+            res.append(
+                [InlineKeyboardButton(text='پایان انتخاب تاریخ ها برای شیفت شب',
+                                      callback_data=f'btn_endSelectDay_{idShift}_{isMorning}')])
+        elif int(typeShift) == 1:
+            res.append(
+                [InlineKeyboardButton(text='پایان انتخاب روز های شیفت',
+                                      callback_data=f'btn_endSelectDay_{idShift}_{isMorning}')])
         return InlineKeyboardMarkup(inline_keyboard=res)
 
     def createMenuFromListDayForApproveCreatorNew(self, idShift, totalInRow=2, ability=0):
@@ -498,8 +568,18 @@ class keyLib:
             actionText = 'spare'
             if ability == 1:
                 actionText = f'btn_dayApproveNew_{str(item[1])}'
-            lk.append(InlineKeyboardButton(text=item[0],
-                                           callback_data=actionText))
+            if item[3] is not None:
+                lk.append(InlineKeyboardButton(text=f'{item[0]}<=>{item[3]}',
+                                               callback_data=actionText))
+            if item[4] is not None:
+                lk.append(InlineKeyboardButton(text=f'{item[0]}<=>{item[4]}',
+                                               callback_data=actionText))
+            if item[5] is not None:
+                lk.append(InlineKeyboardButton(text=f'{item[0]}<=>{item[5]}',
+                                               callback_data=actionText))
+            if item[6] is not None:
+                lk.append(InlineKeyboardButton(text=f'{item[0]}<=>{item[6]}',
+                                               callback_data=actionText))
         listIdDay = listIdDay[:-1]
         if len(lk) > 1 and ability == 1: lk.append(InlineKeyboardButton(text="همه روزها",
                                                                         callback_data='btn_approveAllDayNew_{}'.format(
