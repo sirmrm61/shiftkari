@@ -654,18 +654,12 @@ class HelperFunder:
             mydb.registerDayShift(idShift, txtTmp, requester, 0, 2)
 
     def NOApproveAllShift(self, idShift, userID, bot):
-        listDayShift = mydb.getListSelectedDay(idShift, 0)
-        listDay = []
-        for dayItem in listDayShift:
-            tempDic = {}
-            tempDic['text'] = dayItem[0]
-            tempDic['key'] = str(dayItem[0]).replace('-', '.') + f'={idShift}={dayItem[1]}'
-            listDay.append(tempDic)
+
         bot.sendMessage(userID,
                         msg.messageLib.shiftSelectDay.value
-                        , reply_markup=menu.keyLib.createMenuFromList(listMenu=listDay))
-        bot.sendMessage(userID, str(msg.messageLib.endShiftSelection.value),
-                        reply_markup=menu.keyLib.kbCreateMenuEndSelection(idShift=idShift))
+                        ,
+                        reply_markup=menu.keyLib.createMenuFromListDayForApproveCreatorNew(self=None, idShift=idShift,
+                                                                                           ability=4))
 
     def registerDay(self, idDay, bot, userId, idDetailShift):
         statusDay = mydb.getShiftDayProperty('status', idDay)

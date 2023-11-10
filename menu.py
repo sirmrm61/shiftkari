@@ -33,11 +33,13 @@ class keyLib:
             [InlineKeyboardButton(text='شبانه روزی', callback_data=f'btn_btNightDayCS_{idShift}'),
              InlineKeyboardButton(text='عادی', callback_data=f'btn_btnNormalCS_{idShift}')]
         ])
+
     def kbTypePharmacyTime(self=None, idShift=0):
         return InlineKeyboardMarkup(inline_keyboard=[
             [InlineKeyboardButton(text='زمان آزاد', callback_data=f'btn_freeTime_{idShift}'),
              InlineKeyboardButton(text='زمان استاندارد', callback_data=f'btn_timeStandard_{idShift}')]
         ])
+
     def kbTypeShift(self=None):
         return InlineKeyboardMarkup(inline_keyboard=[
             [InlineKeyboardButton(text='صبح', callback_data='btShiftMorning'),
@@ -404,6 +406,15 @@ class keyLib:
             [InlineKeyboardButton(text='ارسال', callback_data='btn_sendToCreator_{}'.format(str(idShift)))]
         ])
 
+    def kbCreateMenuErrorConti(self=None, idShift=None):
+        return InlineKeyboardMarkup(inline_keyboard=[
+            [InlineKeyboardButton(text='اد امه ثبت', callback_data='btn_erroConti_{}'.format(str(idShift)))]
+        ])
+    def kbCreateMenuCancelShiftReg(self=None, idShift=None):
+        return InlineKeyboardMarkup(inline_keyboard=[
+            [InlineKeyboardButton(text='اد امه ثبت', callback_data='btn_ContiReg_{}'.format(str(idShift))),
+             InlineKeyboardButton(text='انصراف', callback_data='btn_cancelReg_{}'.format(str(idShift)))]
+        ])
     def kbCreateMenuTypePharmacy(self=None, idShift=None):
         return InlineKeyboardMarkup(inline_keyboard=[
             [InlineKeyboardButton(text='شبانه روزی', callback_data='btn_pharmacyType_{}'.format(str(idShift)))],
@@ -472,7 +483,6 @@ class keyLib:
             dayEnd -= 5
         else:
             dayEnd += 2
-        print(f'dayValid={dayValid}')
         if dayValid == 0:
             startDay = 1
             endDay += 1
@@ -516,6 +526,8 @@ class keyLib:
                     emoji = '🌘'
                 elif int(itemDay[0][7]) == 7:
                     emoji = '🥮'
+                else:
+                    emoji = '❔'
                 listDay.append(InlineKeyboardButton(text=f'{emoji}{day}',
                                                     callback_data=f'btn_{action}_{year}#{month}#{day}_{idShift}_{startDay}_{endDay}_{isEM}_{typeShift}_{isMorning}'))
             else:
@@ -534,29 +546,28 @@ class keyLib:
                                   callback_data=f'btn_previousMonth_{year}#{month}#{startDay}_{idShift}_{typeShift}_{isEM}_{isMorning}'),
              InlineKeyboardButton(text='<< ماه بعد',
                                   callback_data=f'btn_nextMonth_{year}#{month}#{startDay}_{idShift}_{typeShift}_{isEM}_{isMorning}')])
-        print(f'menu-isMorning={isMorning}')
         if int(typeShift) == 2:
             res.append(
-                [InlineKeyboardButton(text='پایان انتخاب روز ها برای شیفت صبح',
-                                      callback_data=f'btn_endSelectDay_{idShift}_{isMorning}')])
+                [InlineKeyboardButton(text='پایان انتخاب تاریخ ها برای شیفت صبح',
+                                      callback_data=f'btn_endSelectDay_{idShift}_{isMorning}_{year}#{month}#{startDay}_{isEM}_{typeShift}')])
         elif int(typeShift) == 3:
             res.append(
-                [InlineKeyboardButton(text='بازگشت به انتخاب شیفت های صبح',
+                [InlineKeyboardButton(text='بازگشت به انتخاب تاریخ های برای شیفت صبح',
                                       callback_data=f'btn_backwardToMorning_{idShift}_{year}#{month}#{startDay}_{isEM}')])
             res.append(
-                [InlineKeyboardButton(text='پایان انتخاب روز ها برای شیفت عصر',
-                                      callback_data=f'btn_endSelectDay_{idShift}_{isMorning}')])
+                [InlineKeyboardButton(text='پایان انتخاب تاریخ ها برای شیفت عصر',
+                                      callback_data=f'btn_endSelectDay_{idShift}_{isMorning}_{year}#{month}#{startDay}_{isEM}_{typeShift}')])
         elif int(typeShift) == 4:
             res.append(
-                [InlineKeyboardButton(text='بازگشت به انتخاب شیفت های عصر',
+                [InlineKeyboardButton(text='بازگشت به انتخاب تاریخ ها برای شیفت های عصر',
                                       callback_data=f'btn_backwardToEvening_{idShift}_{year}#{month}#{startDay}_{isEM}')])
             res.append(
                 [InlineKeyboardButton(text='پایان انتخاب تاریخ ها برای شیفت شب',
-                                      callback_data=f'btn_endSelectDay_{idShift}_{isMorning}')])
+                                      callback_data=f'btn_endSelectDay_{idShift}_{isMorning}_{year}#{month}#{startDay}_{isEM}_{typeShift}')])
         elif int(typeShift) == 1:
             res.append(
-                [InlineKeyboardButton(text='پایان انتخاب روز های شیفت',
-                                      callback_data=f'btn_endSelectDay_{idShift}_{isMorning}')])
+                [InlineKeyboardButton(text='پایان انتخاب تاریخ های شیفت',
+                                      callback_data=f'btn_endSelectDay_{idShift}_{isMorning}_{year}#{month}#{startDay}_{isEM}_{typeShift}')])
         return InlineKeyboardMarkup(inline_keyboard=res)
 
     def createMenuFromListDayForApproveCreatorNew(self, idShift, totalInRow=2, ability=0):
@@ -568,16 +579,38 @@ class keyLib:
             actionText = 'spare'
             if ability == 1:
                 actionText = f'btn_dayApproveNew_{str(item[1])}'
+            elif ability == 3:
+                actionText = f'btn_enterTime_{idShift}_{str(item[1])}_{item[0]}'
+            elif ability == 4:
+                actionText = f'btn_dayShift_{idShift}_{str(item[1])}_{item[0]}<->'
+            elif ability == 5:
+                actionText = f'btn_dayApproveCreator_{str(item[1])}'
             if item[3] is not None:
+                actionText = f'btn_dayApproveNew_{str(item[1])}'
+                if ability == 4:
+                    actionText += f'{item[3]}_0'
                 lk.append(InlineKeyboardButton(text=f'{item[0]}<=>{item[3]}',
                                                callback_data=actionText))
+
             if item[4] is not None:
+                if ability == 4:
+                    actionText += f'{item[4]}_1'
                 lk.append(InlineKeyboardButton(text=f'{item[0]}<=>{item[4]}',
                                                callback_data=actionText))
+
             if item[5] is not None:
+                if ability == 4:
+                    actionText += f'{item[5]}_2'
                 lk.append(InlineKeyboardButton(text=f'{item[0]}<=>{item[5]}',
                                                callback_data=actionText))
-            if item[6] is not None:
+
+            if item[6] is not None and ability != 3:
+                if ability == 4:
+                    actionText += f'{item[6]}_3'
+                lk.append(InlineKeyboardButton(text=f'{item[0]}<=>{item[6]}',
+                                               callback_data=actionText))
+
+            if ability == 3:
                 lk.append(InlineKeyboardButton(text=f'{item[0]}<=>{item[6]}',
                                                callback_data=actionText))
         listIdDay = listIdDay[:-1]
@@ -590,9 +623,17 @@ class keyLib:
         if (len(lk) % N) > 0: mod = 1
         for idx in range(0, (len(lk) // N) + mod):
             res.append(lk[idx * N: (idx + 1) * N])  # ToDo: check day is empty
+        if ability == 3:
+            res.append([InlineKeyboardButton(text="بازگشت به تقویم",
+                                             callback_data=f'btn_backToSelectDay_{idShift}'),
+                        InlineKeyboardButton(text="ادامه",
+                                             callback_data=f'btn_continueRegShif_{idShift}')])
         if len(res) > 1 and ability == 2:
             res.append([InlineKeyboardButton(text='شیفت را می پذیرم',
                                              callback_data='btn_shiftApprove_{}'.format(str(idShift)))])
+        if ability == 4:
+            res.append([InlineKeyboardButton(text='پایان انتخاب',
+                                             callback_data='btn_endSelection_{}'.format(str(idShift)))])
         return InlineKeyboardMarkup(inline_keyboard=res)
 
     def kbCreateMenuApproveShift(self=None, shiftId=None):
