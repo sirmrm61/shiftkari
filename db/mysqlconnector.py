@@ -775,7 +775,7 @@ VALUES({idShift},\'{dateShift}\',\'{requster}\',0,{sendedForCreator},{idDetailSh
                 fieldName, fieldValue, idDetailShift)
         else:
             sqlQuery = 'UPDATE `botshiftkari`.`detailshift` SET `{0}` = null  where `idDetailShift` = \'{1}\''.format(
-                fieldName,  idDetailShift)
+                fieldName, idDetailShift)
         myCursor.execute(sqlQuery)
         myCursor.reset()
         return None
@@ -821,10 +821,20 @@ VALUES({idShift},\'{dateShift}\',\'{requster}\',0,{sendedForCreator},{idDetailSh
         else:
             return 0
 
-    def isShiftDayFull(self, idDetailShift):
+    def isShiftDayFull(self, idDetailShift, flagTime=0):
         mydb = self.connector()
         myCursor = mydb.cursor()
-        sqlQuery = f'SELECT count(*) from botshiftkari.detailshift  where  idDetailShift={idDetailShift} and status=1'
+        print(f'flagtime={flagTime}')
+        sqlQuery = ''
+        if int(flagTime) == 0:
+            sqlQuery = f'SELECT count(*) from botshiftkari.detailshift  where  idDetailShift={idDetailShift} and status=1'
+        elif int(flagTime) == 1:
+            sqlQuery = f'SELECT count(*) from botshiftkari.detailshift  where  idDetailShift={idDetailShift} and status_e=1'
+        elif int(flagTime) == 2:
+            sqlQuery = f'SELECT count(*) from botshiftkari.detailshift  where  idDetailShift={idDetailShift} and status_n=1'
+        elif int(flagTime) == 3:
+            sqlQuery = f'SELECT count(*) from botshiftkari.detailshift  where  idDetailShift={idDetailShift} and status_f=1'
+        print(sqlQuery)
         myCursor.execute(sqlQuery)
         result = myCursor.fetchone()
         return result[0]
@@ -1107,3 +1117,32 @@ VALUES({idShift},\'{dateShift}\',\'{requster}\',0,{sendedForCreator},{idDetailSh
         myCursor.execute(sqlQuery)
         result = myCursor.fetchall()
         return result
+
+    def checkNoneTimeDayInFreeTime(self, idShift):
+        sqlQuery = f'select count(*) from `botshiftkari`.`detailshift` where idShift={idShift} and freeTime=\'?\''
+        mydb = self.connector()
+        myCursor = mydb.cursor()
+        myCursor.execute(sqlQuery)
+        result = myCursor.fetchone()
+        return result[0]
+
+    def checkTotalDayInShift(self, idShift):
+        sqlQuery = f'select count(*) from `botshiftkari`.`detailshift` where idShift={idShift}'
+        mydb = self.connector()
+        myCursor = mydb.cursor()
+        myCursor.execute(sqlQuery)
+        result = myCursor.fetchone()
+        return result[0]
+
+    def deleteShift(self, idShift):
+        try:
+            mydb = self.connector()
+            myCursor = mydb.cursor()
+            mydb.autocommit = True
+            sqlQuery = f'delete from botshiftkari.dayshift  where  idShift={idShift} '
+            myCursor.execute(sqlQuery)
+            sqlQuery = f'delete from botshiftkari.shift  where  idShift={idShift} '
+            myCursor.execute(sqlQuery)
+            return 1
+        except:
+            return 0
