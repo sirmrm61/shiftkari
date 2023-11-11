@@ -612,12 +612,13 @@ def handle_new_messages(user_id, userName, update):
                                                                                                        idShift=idShift,
                                                                                                        ability=3))
                 bot.deleteMessage((user_id, message['message_id']))
+                mydb.member_update_chatid('registration_progress', 10, user_id)
             else:
                 msgInfo = bot.editMessageText((user_id, msgId),
                                               text=f'{txtInput} \n {msg.messageLib.errorFormatTime.value}')
                 mydb.shift_update_by_id('messageID', msgInfo['message_id'], idShift)
                 bot.deleteMessage((user_id, message['message_id']))
-            mydb.member_update_chatid('registration_progress', 10, user_id)
+            
     elif 'callback_query' in update:
         message = update['callback_query']['message']
         btn = update['callback_query']['data']
