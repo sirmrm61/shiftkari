@@ -734,3 +734,4 @@ class HelperFunder:
         msgInfo = self.sendCalendar(bot, user_id, msgId, int(splitDate[0]), int(splitDate[1]),
                                     int(splitDate[2]), int(sde[2]), idShift, 2, typeShift, isMorning)
         mydb.member_update_chatid('editMsgId', msgInfo["message_id"], user_id)
+        return msgInfo

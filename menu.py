@@ -572,7 +572,7 @@ class keyLib:
 
     def createMenuFromListDayForApproveCreatorNew(self, idShift, totalInRow=2, ability=0):
         lk = []
-        listIdDay = ''
+        listIdDay = []
         listDay = mydb.getListSelectedDay(idShift)
         for item in listDay:
             listIdDay += str(item[1]) + '#'
@@ -583,8 +583,6 @@ class keyLib:
                 actionText = f'btn_enterTime_{idShift}_{str(item[1])}_{item[0]}'
             elif ability == 4:
                 actionText = f'btn_dayShift_{idShift}_{str(item[1])}_{item[0]}<->'
-            elif ability == 5:
-                actionText = f'btn_dayApproveCreator_{str(item[1])}'
             if item[3] is not None:
                 actionText = f'btn_dayApproveNew_{str(item[1])}'
                 if ability == 4:
