@@ -602,7 +602,7 @@ def handle_new_messages(user_id, userName, update):
             mydb.member_update_chatid('registration_progress', 10, user_id)
         elif tempMember.register_progress == 400:
             idDetailShift = mydb.get_member_property_chatid('editMsgId', user_id)
-            txtInput = message['text']
+            txtInput = unidecode(message['text'])
             idShift = mydb.get_member_property_chatid('lastShiftId', user_id)
             msgId = mydb.get_shift_property('messageID', idShift)
             if reg.match(r'^([01]\d|2[0-3]):([0-5]\d)-([01]\d|2[0-3]):([0-5]\d)$', txtInput):
@@ -2000,7 +2000,7 @@ def main(lui=0):
         while True:
             # دریافت تمامی پیام های دریافتی
             helper.send_shift_to_student(bot=bot)
-            updates = bot.getUpdates(timeout=10, offset=lui)
+            updates = bot.getUpdates( offset=lui)
             if updates:
                 lui = int(updates[-1]['update_id']) + 1
                 handle_updates(updates)
