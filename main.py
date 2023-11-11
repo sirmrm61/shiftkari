@@ -697,14 +697,14 @@ def handle_new_messages(user_id, userName, update):
                 fname = mydb.get_member_property_chatid('name', user_id)
                 lname = mydb.get_member_property_chatid('last_name', user_id)
                 fullName = fname + ' ' + lname
-
                 if len(listDayAccept) > 0:
                     bot.sendMessage(creatorChatID, str(msg.messageLib.sendDayForApproveCreator.value).format(fullName))
                     helper.send_profile(user_id, bot, creatorChatID)
-                    bot.sendMessage(creatorChatID, 'روز های مورد تائید را نتخاب نمائید سپس به کلید اطلاع به درخواست دهنده را کلیک نمائید',
-                                    reply_markup=menu.keyLib.createMenuFromListDayForApproveCreatorNew(None,
-                                                                                                       spBtn[2],
-                                                                                                       2,5))
+                    bot.sendMessage(creatorChatID,
+                                    'روز های مورد تائید را نتخاب نمائید سپس به کلید اطلاع به درخواست دهنده را کلیک نمائید',
+                                    reply_markup=menu.keyLib.createMenuFromListDayForApproveCreator(None,
+                                                                                                    listDayAccept,
+                                                                                                    2))
                 else:
                     bot.sendMessage(creatorChatID, str(msg.messageLib.senndAcceptAllDayInShift.value).format(fullName),
                                     reply_markup=menu.keyLib.kbCreateMenuShiftApproveManager(shiftId=spBtn[2]))
@@ -717,11 +717,13 @@ def handle_new_messages(user_id, userName, update):
                     bot.sendMessage(user_id, msg.messageLib.requesterNotify.value)
             elif spBtn[1] == 'approveAllDay':
                 listIdDay = str(spBtn[2]).split('#')
+                requsterSift = None
                 for item in listIdDay:
                     ids = str(item).split('=')
                     requsterSift = helper.registerDay(ids[0], bot, user_id, ids[1])
-                bot.sendMessage(requsterSift, msg.messageLib.propertyShiftCreator.value)
-                helper.send_profile(user_id, bot, requsterSift)
+                if requsterSift is not None:
+                    bot.sendMessage(requsterSift, msg.messageLib.propertyShiftCreator.value)
+                    helper.send_profile(user_id, bot, requsterSift)
             elif spBtn[1] == 'editProfile':
                 # آماده‌سازی دریافت اطلاعات کاربر جهت ویرایش
                 helper.editProfile(bot=bot, spBtn=spBtn, mem=tempMember)
@@ -887,8 +889,21 @@ def handle_new_messages(user_id, userName, update):
                     msgInfo = bot.sendMessage(user_id, msg.messageLib.promptChoseTypePharmacy.value,
                                               reply_markup=menu.keyLib.kbTypePharmacyCS(idShift=idShift))
                 else:
-                    msgInfo = mydb.shift_update_by_id('pharmacyType', 1, idShift)
-                    helper.send_createShift(bot, user_id)
+                    pharmacyTypeTmp = mydb.get_funder_property('pharmacy_type', user_id)
+                    if pharmacyTypeTmp == 'شبانه روزی':
+                        mydb.shift_update_by_id('pharmacyType', 1, idShift)
+                        morning = mydb.get_property_domain('morning')
+                        evening = mydb.get_property_domain('evening')
+                        night = mydb.get_property_domain('night')
+                        msgInfo = bot.sendMessage(user_id,
+                                                  str(msg.messageLib.promptStandardShift.value).format(morning, evening,
+                                                                                                       night),
+                                                  reply_markup=menu.keyLib.kbTypePharmacyTime(idShift=idShift))
+                    else:
+                        mydb.shift_update_by_id('pharmacyType', 2, idShift)
+                        msgInfo = helper.send_createShift(bot, user_id, idShift, 2, None)
+                    # msgInfo = mydb.shift_update_by_id('pharmacyType', 1, idShift)
+                    # helper.send_createShift(bot, user_id)
                 mydb.shift_update_by_id('messageID', msgInfo['message_id'], idShift)
                 mydb.member_update_chatid('lastShiftId', idShift, user_id)
             elif spBtn[1] == 'btNightDayCS':
@@ -1065,14 +1080,15 @@ def handle_new_messages(user_id, userName, update):
                         mydb.shift_update_by_id('messageID', msgInfo["message_id"], idShift)
                 elif isMorning == 3:
                     if totalDay > 0:
-                       bot.editMessageText((user_id, msgId), msg.messageLib.freeTimeMsg.value, parse_mode='HTML',
-                                        reply_markup=menu.keyLib.createMenuFromListDayForApproveCreatorNew(self=None,
-                                                                                                           idShift=idShift,
-                                                                                                           ability=3))
+                        bot.editMessageText((user_id, msgId), msg.messageLib.freeTimeMsg.value, parse_mode='HTML',
+                                            reply_markup=menu.keyLib.createMenuFromListDayForApproveCreatorNew(
+                                                self=None,
+                                                idShift=idShift,
+                                                ability=3))
                     else:
-                       bot.editMessageText((user_id, msgId), msg.messageLib.errorTotalDay.value,
-                                       reply_markup=menu.keyLib.kbCreateMenuCancelShiftReg(
-                                           idShift=f'{idShift}_{isMorning}_{dateStr}_{isEm}_{typeShift}'))
+                        bot.editMessageText((user_id, msgId), msg.messageLib.errorTotalDay.value,
+                                            reply_markup=menu.keyLib.kbCreateMenuCancelShiftReg(
+                                                idShift=f'{idShift}_{isMorning}_{dateStr}_{isEm}_{typeShift}'))
                 else:
                     if totalDay > 0:
                         minWag = mydb.get_property_domain('wage')
@@ -1082,7 +1098,7 @@ def handle_new_messages(user_id, userName, update):
                         mydb.member_update('op', 6, user_id)
                         mydb.member_update('registration_progress', 11, user_id)
                     else:
-                        bot.editMessageText((user_id,msgId),msg.messageLib.errorTotalDay.value,
+                        bot.editMessageText((user_id, msgId), msg.messageLib.errorTotalDay.value,
                                             reply_markup=menu.keyLib.kbCreateMenuCancelShiftReg(
                                                 idShift=f'{idShift}_{isMorning}_{dateStr}_{isEm}_{typeShift}'))
             elif spBtn[1] == 'ContiReg':
@@ -1093,7 +1109,7 @@ def handle_new_messages(user_id, userName, update):
                 dayC = int(sd[2])
                 isEM = spBtn[5]
                 isMorning = spBtn[3]
-                typeShift =  spBtn[6]
+                typeShift = spBtn[6]
                 dateEndMonth = None
                 if monthC < 12:
                     dateEndMonth = JalaliDate(
@@ -1109,18 +1125,19 @@ def handle_new_messages(user_id, userName, update):
                 idShift = spBtn[2]
                 getMsgId = mydb.get_shift_property('messageID', idShift)
                 mydb.deleteShift(idShift)
-                bot.editMessageText((user_id,getMsgId),msg.messageLib.cancelShiftMsg.value)
-                helper.send_operation(tempMember,bot,user_id)
+                bot.editMessageText((user_id, getMsgId), msg.messageLib.cancelShiftMsg.value)
+                helper.send_operation(tempMember, bot, user_id)
             elif spBtn[1] == 'continueRegShif':
                 idShift = int(spBtn[2])
                 totalEmptyDay = mydb.checkNoneTimeDayInFreeTime(idShift)
+                print(f'totalEmptyDay={totalEmptyDay}')
                 msgId = mydb.get_shift_property('messageID', idShift)
-                if totalEmptyDay>0:
-                    bot.editMessageText((user_id,msgId),str(msg.messageLib.errorConti.value).format(totalEmptyDay),
+                if totalEmptyDay > 0:
+                    bot.editMessageText((user_id, msgId), str(msg.messageLib.errorConti.value).format(totalEmptyDay),
                                         reply_markup=menu.keyLib.kbCreateMenuErrorConti(idShift=idShift))
                 else:
                     minWag = mydb.get_property_domain('wage')
-                    bot.editMessageText((user_id, msgId),f'''{str(msg.messageLib.minWage.value).format(minWag)}\n
+                    bot.editMessageText((user_id, msgId), f'''{str(msg.messageLib.minWage.value).format(minWag)}\n
 {msg.messageLib.shiftWage.value}''', parse_mode='HTML')
                     mydb.member_update('lastShiftId', idShift, user_id)
                     mydb.member_update('op', 6, user_id)
