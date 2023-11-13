@@ -656,8 +656,7 @@ class HelperFunder:
     def NOApproveAllShift(self, idShift, userID, bot):
 
         bot.sendMessage(userID,
-                        msg.messageLib.shiftSelectDay.value
-                        ,
+                        msg.messageLib.shiftSelectDay.value,
                         reply_markup=menu.keyLib.createMenuFromListDayForApproveCreatorNew(self=None, idShift=idShift,
                                                                                            ability=4))
 
