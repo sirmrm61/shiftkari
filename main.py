@@ -1389,7 +1389,7 @@ def handle_new_messages(user_id, userName, update):
                     idShift = mydb.get_member_property_chatid('lastShiftId', user_id)
                     mydb.setMinMaxDate(idShift)
                     hrSendToStudent = mydb.get_property_domain('hrStudent')
-                    helper.send_shift_to_technicalResponsible(idShift, bot, user_id)
+                    helper.send_shift_to_technicalResponsible(idShift, bot, user_id,0)
                     isShiftEm = mydb.get_shift_property('shiftIsEM', idShift)
                     if int(isShiftEm) == 1:
                         helper.send_shift_to_studentEM(spBtn[3], bot, user_id)
