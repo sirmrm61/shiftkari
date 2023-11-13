@@ -323,7 +323,7 @@ class HelperFunder:
         # If all conditions are met, return True
         return True
 
-    def send_shift_to_technicalResponsible(self, idShift, bot, creator=None):
+    def send_shift_to_technicalResponsible(self, idShift, bot, creator=None,ability=2):
         shiftRow = mydb.get_all_property_shift_byId(idShift)
         ts = mydb.get_all_ts_chatid(creator)
         for t in ts:
@@ -331,7 +331,7 @@ class HelperFunder:
                             reply_markup=menu.keyLib.createMenuFromListDayForApproveCreatorNew(
                                 self=None,
                                 idShift=shiftRow[9],
-                                ability=2))
+                                ability=ability))
 
     def send_shift_to_studentEM(self, idShift, bot, creator=None):
         shiftRow = mydb.get_all_property_shift_byId(idShift)
