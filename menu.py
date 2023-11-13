@@ -388,7 +388,7 @@ class keyLib:
             [InlineKeyboardButton(text='پایان انتخاب', callback_data='btn_endSelection_{}'.format(str(idShift)))]
         ])
 
-    def createMenuFromListDay(self, listDay, totalInRow=2):
+    def createMenuFromListDay(self, listDay, totalInRow=1):
         lk = []
         for item in listDay:
             lk.append(InlineKeyboardButton(text=item[1],
@@ -421,7 +421,7 @@ class keyLib:
             [InlineKeyboardButton(text='عادی', callback_data='btn_pharmacyType_{}'.format(str(idShift)))]
         ])
 
-    def createMenuFromListDayForApproveCreator(self, listDay, totalInRow=2):
+    def createMenuFromListDayForApproveCreator(self, listDay, totalInRow=1):
         lk = []
         listIdDay = ''
         print(listDay)
@@ -570,7 +570,10 @@ class keyLib:
                                       callback_data=f'btn_endSelectDay_{idShift}_{isMorning}_{year}#{month}#{startDay}_{isEM}_{typeShift}')])
         return InlineKeyboardMarkup(inline_keyboard=res)
 
-    def createMenuFromListDayForApproveCreatorNew(self, idShift, totalInRow=2, ability=0):
+    def createMenuFromListDayForApproveCreatorNew(self, idShift, totalInRow=1, ability=0):
+        print(f'idShift={idShift}')
+        print(f'totalInRow={totalInRow}')
+        print(f'ability={ability}')
         lk = []
         listIdDay = []
         listDay = mydb.getListSelectedDay(idShift)
