@@ -586,26 +586,26 @@ class keyLib:
                 actionText = f'btn_enterTime_{idShift}_{str(item[1])}_{item[0]}'
             elif ability == 4:
                 actionText = f'btn_dayShift_{idShift}_{str(item[1])}_{item[0]}<->'
-            if item[3] is not None:
+            if item[3] is not None and ability != 0:
                 actionText = f'btn_dayApproveNew_{str(item[1])}'
                 if ability == 4:
                     actionText += f'{item[3]}_0'
                 lk.append(InlineKeyboardButton(text=f'{item[0]}<=>{item[3]}',
                                                callback_data=actionText))
 
-            if item[4] is not None:
+            if item[4] is not None  and ability != 0:
                 if ability == 4:
                     actionText += f'{item[4]}_1'
                 lk.append(InlineKeyboardButton(text=f'{item[0]}<=>{item[4]}',
                                                callback_data=actionText))
 
-            if item[5] is not None:
+            if item[5] is not None  and ability != 0:
                 if ability == 4:
                     actionText += f'{item[5]}_2'
                 lk.append(InlineKeyboardButton(text=f'{item[0]}<=>{item[5]}',
                                                callback_data=actionText))
 
-            if item[6] is not None and ability != 3:
+            if item[6] is not None and ability != 3  and ability != 0:
                 if ability == 4:
                     actionText += f'{item[6]}_3'
                 lk.append(InlineKeyboardButton(text=f'{item[0]}<=>{item[6]}',
