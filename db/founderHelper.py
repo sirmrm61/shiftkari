@@ -628,7 +628,7 @@ class HelperFunder:
     def send_shift_to_other(self, bot, idshift, userId, typeMember=2):
         shiftRow = mydb.get_all_property_shift_byId(idshift)  # shift's for student
         bot.sendMessage(userId, self.formatShiftMessage(shiftRow, typeMember),
-                        reply_markup=menu.keyLib.kbCreateMenuShiftApproveManager(shiftId=shiftRow[9]))
+                        reply_markup=menu.keyLib.kbCreateMenuShiftApproveFunder(shiftId=shiftRow[9]))
 
     def yesApproveAllShift(self, idShift, userId, bot):
         mydb.shift_update_by_id('approver', userId, idShift)

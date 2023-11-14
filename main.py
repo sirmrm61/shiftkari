@@ -1389,7 +1389,7 @@ def handle_new_messages(user_id, userName, update):
                     idShift = mydb.get_member_property_chatid('lastShiftId', user_id)
                     mydb.setMinMaxDate(idShift)
                     hrSendToStudent = mydb.get_property_domain('hrStudent')
-                    helper.send_shift_to_technicalResponsible(idShift, bot, user_id,0)
+                    helper.send_shift_to_technicalResponsible(idShift, bot, user_id,2)
                     isShiftEm = mydb.get_shift_property('shiftIsEM', idShift)
                     if int(isShiftEm) == 1:
                         helper.send_shift_to_studentEM(spBtn[3], bot, user_id)
@@ -1459,6 +1459,7 @@ def handle_new_messages(user_id, userName, update):
                 mydb.shift_update('progress', 4, spBtn[2])
                 bot.sendMessage(requester, msg.messageLib.acceptShift.value)
                 bot.sendMessage(requester, helper.formatShiftMessage(shiftRow))
+                bot.sendMessage(user_id, msg.messageLib.requesterNotify.value)
                 # آپدیت کردن شیف
             elif spBtn[1] == 'cancelShift':
                 # ارسال شیفت هایی که شخص قبول کرده و تاریخ آنها نرسیده
@@ -2015,4 +2016,5 @@ def main(lui=0):
 
 
 if __name__ == '__main__':
+    helper.send_shift_to_technicalResponsible(125, bot, '6274361322',2)
     main()

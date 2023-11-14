@@ -577,6 +577,7 @@ class keyLib:
         lk = []
         listIdDay = []
         listDay = mydb.getListSelectedDay(idShift)
+        print(f'len(listDay)={len(listDay)}')
         for item in listDay:
             listIdDay += str(item[1]) + '#'
             actionText = 'spare'
@@ -586,8 +587,8 @@ class keyLib:
                 actionText = f'btn_enterTime_{idShift}_{str(item[1])}_{item[0]}'
             elif ability == 4:
                 actionText = f'btn_dayShift_{idShift}_{str(item[1])}_{item[0]}<->'
-            if item[3] is not None and ability != 0:
-                actionText = f'btn_dayApproveNew_{str(item[1])}'
+            if item[3] is not None:
+                if ability not in (2,0):actionText = f'btn_dayApproveNew_{str(item[1])}'
                 if ability == 4:
                     actionText += f'{item[3]}_0'
                 lk.append(InlineKeyboardButton(text=f'{item[0]}<=>{item[3]}',
@@ -629,7 +630,7 @@ class keyLib:
                                              callback_data=f'btn_backToSelectDay_{idShift}'),
                         InlineKeyboardButton(text="ادامه",
                                              callback_data=f'btn_continueRegShif_{idShift}')])
-        if len(res) > 1 and ability == 2:
+        if len(res) > 0 and ability == 2:
             res.append([InlineKeyboardButton(text='شیفت را می پذیرم',
                                              callback_data='btn_shiftApprove_{}'.format(str(idShift)))])
         if ability == 4:

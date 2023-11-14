@@ -1,13 +1,15 @@
-<<<<<<< HEAD
-**/__pycache__
+**/db/__pycache__/
+**/__pycache__/
+*.py[cod]
+*$py.class
 **/.vscode
 **/.history
 **/.idea
 **/.venv
 **/download
-=======
 /list.xlsx
 /01.xlsx
 /download/
 /venv/
->>>>>>> 56f2933a442797ea376be7b091e4658770d6da57
+**/db/__pycache__/**
+**/db/__pycache__/**
