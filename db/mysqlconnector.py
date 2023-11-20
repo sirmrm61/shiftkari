@@ -1146,3 +1146,21 @@ VALUES({idShift},\'{dateShift}\',\'{requster}\',0,{sendedForCreator},{idDetailSh
             return 1
         except:
             return 0
+        
+    def insertSendMsg(self,chatId,msgId,typemsg,reqCode):
+        sqlQuery = f'''insert into `botshiftkari`.`lstmsg` (`chatId`,`msgId`,`typemsg`,`reqCode`)values(\'{chatId}\',
+                        \'{msgId}\',{typemsg},\'{reqCode}\')'''
+        print(sqlQuery)
+        mydb = self.connector()
+        mydb.autocommit = True
+        myCursor = mydb.cursor()
+        myCursor.execute(sqlQuery)
+        return myCursor.lastrowid
+    def getLstMsg(self,chatId,typemsg,reqCode):
+        sqlQuery = f'select msgId from `botshiftkari`.`lstmsg` where typemsg={typemsg} and chatId = \'{chatId}\' and reqCode=\'{reqCode}\''
+        mydb = self.connector()
+        myCursor = mydb.cursor()
+        myCursor.execute(sqlQuery)
+        result = myCursor.fetchone()
+        return result
+    

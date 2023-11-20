@@ -332,6 +332,7 @@ class HelperFunder:
                                 self=None,
                                 idShift=shiftRow[9],
                                 ability=ability))
+            
 
     def send_shift_to_studentEM(self, idShift, bot, creator=None):
         shiftRow = mydb.get_all_property_shift_byId(idShift)
@@ -351,8 +352,9 @@ class HelperFunder:
                     bot.sendMessage(st[0], self.formatShiftMessage(shiftRow, 3),
                                     reply_markup=menu.keyLib.kbCreateMenuApproveShift(shiftId=shiftRow[9]))
 
-    def send_profile(self, chatid, bot, forUser=None):
+    def send_profile(self, chatid, bot, forUser=None,idShift=None):
         fuser = None
+        lstMsg =[]
         if forUser is None:
             fuser = chatid
         else:
@@ -369,24 +371,27 @@ class HelperFunder:
                 mydb.get_funder_property(fieldName='pharmacy_type', chatid=chatid))
             profileInfo += 'تصویر مجوز داروخانه:\t\n'
             img = 'download/{}'.format(mydb.get_funder_property('license_photo', chatid))
-            bot.sendMessage(fuser, profileInfo)
+            msgInfo = bot.sendMessage(fuser, profileInfo)
+            lstMsg.append(msgInfo['message_id'])
             isExisting = os.path.exists(img)
             if isExisting:
-                bot.sendPhoto(fuser, open(img, 'rb'))
+                msgInfo = bot.sendPhoto(fuser, open(img, 'rb'))
             else:
-                bot.sendMessage(fuser, 'فایل تصویر پیدا نشد')
+                msInfo = bot.sendMessage(fuser, 'فایل تصویر پیدا نشد')
+            lstMsg.append(msgInfo['message_id'])
         elif mem.membership_type == 2:
             profileInfo += 'نوع کاربری:\t{0}\n'.format('مسئول فنی')
             profileInfo += 'کد ملی:\t{0}\n'.format(
                 mydb.get_technical_property(fieldName='national_code', chatid=chatid))
             profileInfo += 'تصویر مجوز نظام پزشکی:\t\n'
             img = 'download/{}'.format(mydb.get_technical_property('membership_card_photo', chatid))
-            bot.sendMessage(fuser, profileInfo)
+            msgInfo = bot.sendMessage(fuser, profileInfo)
+            lstMsg.append(msgInfo['message_id'])
             isExisting = os.path.exists(img)
             if isExisting:
-                bot.sendPhoto(fuser, open(img, 'rb'))
+                msgInfo =bot.sendPhoto(fuser, open(img, 'rb'))
             else:
-                bot.sendMessage(fuser, 'فایل تصویر پیدا نشد')
+                msgInfo = bot.sendMessage(fuser, 'فایل تصویر پیدا نشد')
         elif mem.membership_type == 3:
             profileInfo += 'نوع کاربری:\t{0}\n'.format('دانشجو')
             profileInfo += 'کد ملی:\t{0}\n'.format(mydb.get_student_property(fieldName='national_code', chatid=chatid))
@@ -400,22 +405,30 @@ class HelperFunder:
                 mydb.get_student_property(fieldName='shift_access', chatid=chatid))
             profileInfo += 'تصویر مجوز نظام پزشکی:'
             img = 'download/{}'.format(mydb.get_student_property('overtime_license_photo', chatid))
-            bot.sendMessage(fuser, profileInfo)
+            msgInfo = bot.sendMessage(fuser, profileInfo)
+            lstMsg.append(msgInfo['message_id'])
             isExisting = os.path.exists(img)
             if isExisting:
-                bot.sendPhoto(fuser, open(img, 'rb'))
+                msgInfo = bot.sendPhoto(fuser, open(img, 'rb'))
             else:
-                bot.sendMessage(fuser, 'فایل تصویر پیدا نشد')
-            bot.sendMessage(fuser, ':تصویر پروفایل')
+                msgInfo = bot.sendMessage(fuser, 'فایل تصویر پیدا نشد')
+            lstMsg.append(msgInfo['message_id'])
+            msgInfo = bot.sendMessage(fuser, ':تصویر پروفایل')
+            lstMsg.append(msgInfo['message_id'])
             img = 'download/{}'.format(mydb.get_student_property('personal_photo', chatid))
             isExisting = os.path.exists(img)
             if isExisting:
-                bot.sendPhoto(fuser, open(img, 'rb'))
+                msgInfo = bot.sendPhoto(fuser, open(img, 'rb'))
             else:
-                bot.sendMessage(fuser, 'فایل تصویر پیدا نشد')
+                msgInfo = bot.sendMessage(fuser, 'فایل تصویر پیدا نشد')
+            lstMsg.append(msgInfo['message_id'])
         elif mem.membership_type == 4:
             profileInfo += 'نوع کاربری:\t{0}\n'.format('ادمین')
-            bot.sendMessage(fuser, profileInfo)
+            msgInfo = bot.sendMessage(fuser, profileInfo)
+            lstMsg.append(msgInfo['message_id'])
+        if idShift is not None:
+            for item in lstMsg:
+                mydb.insertSendMsg(forUser,item,idShift,chatid)
 
     def editProfile(self, bot, spBtn, mem: Membership):
         userId = mem.chatId
@@ -627,17 +640,19 @@ class HelperFunder:
 
     def send_shift_to_other(self, bot, idshift, userId, typeMember=2):
         shiftRow = mydb.get_all_property_shift_byId(idshift)  # shift's for student
-        bot.sendMessage(userId, self.formatShiftMessage(shiftRow, typeMember),
+        msgInfo = bot.sendMessage(userId, self.formatShiftMessage(shiftRow, typeMember),
                         reply_markup=menu.keyLib.kbCreateMenuShiftApproveFunder(shiftId=shiftRow[9]))
+        return msgInfo['message_id']
 
     def yesApproveAllShift(self, idShift, userId, bot):
         mydb.shift_update_by_id('approver', userId, idShift)
         creator = mydb.get_shift_property('Creator', idShift)
         bot.sendMessage(creator, msg.messageLib.reqTitleMessageForCreator.value)
-        self.send_profile(userId, bot, creator)
-        self.send_shift_to_other(bot, idShift, creator)
-        bot.sendMessage(userId, msg.messageLib.YourInfoToCreatorShift.value)
-
+        self.send_profile(userId, bot, creator,idShift=idShift)
+        msgId = self.send_shift_to_other(bot, idShift, creator)
+        mydb.insertSendMsg(creator,msgId,idShift,userId)
+        msgInfo = bot.sendMessage(userId, msg.messageLib.YourInfoToCreatorShift.value)
+        mydb.insertSendMsg(creator,msgInfo['message_id'],idShift,userId)
     def registerFullShiftDay(self, idShift, requester):
         dateStart = str(mydb.get_shift_property('DateShift', idShift)).split('-')
         dateEnd = str(mydb.get_shift_property('dateEndShift', idShift)).split('-')
@@ -654,7 +669,6 @@ class HelperFunder:
             mydb.registerDayShift(idShift, txtTmp, requester, 0, 2)
 
     def NOApproveAllShift(self, idShift, userID, bot):
-
         bot.sendMessage(userID,
                         msg.messageLib.shiftSelectDay.value,
                         reply_markup=menu.keyLib.createMenuFromListDayForApproveCreatorNew(self=None, idShift=idShift,

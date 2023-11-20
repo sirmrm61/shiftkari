@@ -692,6 +692,11 @@ def handle_new_messages(user_id, userName, update):
             elif spBtn[1] == 'delLicense':
                 mydb.delLisence(1, spBtn[2])
                 bot.sendMessage(user_id, msg.messageLib.delLicensed.value)
+            elif spBtn[1] == 'noApproveCreator':
+                lstmsg =mydb.getLstMsg(user_id,spBtn[2],spBtn[3])
+                if lstmsg is not None:
+                    for item in lstmsg:
+                        bot.deleteMessage((user_id,item[0]))
             elif spBtn[1] == 'sendToCreator':
                 creatorChatID = mydb.get_shift_property(fieldName='Creator', idShift=spBtn[2])
                 listDayAccept = mydb.getListDaySelection(idShift=spBtn[2], requsterShift=user_id)
@@ -699,13 +704,15 @@ def handle_new_messages(user_id, userName, update):
                 lname = mydb.get_member_property_chatid('last_name', user_id)
                 fullName = fname + ' ' + lname
                 if len(listDayAccept) > 0:
-                    bot.sendMessage(creatorChatID, str(msg.messageLib.sendDayForApproveCreator.value).format(fullName))
+                    msgInfo = bot.sendMessage(creatorChatID, str(msg.messageLib.sendDayForApproveCreator.value).format(fullName))
+                    mydb.insertSendMsg(creatorChatID,msgInfo['message_id'],spBtn[2],user_id)
                     helper.send_profile(user_id, bot, creatorChatID)
-                    bot.sendMessage(creatorChatID,
+                    msgInfo = bot.sendMessage(creatorChatID,
                                     'روز های مورد تائید را نتخاب نمائید سپس به کلید اطلاع به درخواست دهنده را کلیک نمائید',
                                     reply_markup=menu.keyLib.createMenuFromListDayForApproveCreator(None,
                                                                                                     listDayAccept,
                                                                                                     2))
+                    mydb.insertSendMsg(creatorChatID,msgInfo['message_id'],spBtn[2],user_id)
                 else:
                     bot.sendMessage(creatorChatID, str(msg.messageLib.senndAcceptAllDayInShift.value).format(fullName),
                                     reply_markup=menu.keyLib.kbCreateMenuShiftApproveManager(shiftId=spBtn[2]))
@@ -1482,6 +1489,10 @@ def handle_new_messages(user_id, userName, update):
                 tmr = mydb.get_member_property_chatid('membership_type', requester)
                 bot.sendMessage(requester, msg.messageLib.disAcceptShift.value)
                 helper.send_shift_to_other(bot, spBtn[2], requester, tmr)
+                lstMsg = mydb.getLstMsg(user_id,spBtn[2],requester)
+                for item in lstMsg:
+                    print(f'lstMsg={item}')
+                    bot.deleteMessage((user_id,item))
             # آپدیت کردن شیفت
             #             پس از فشردن کلید شیفت را می پذیرم اجرا می شود
             elif spBtn[1] == 'shiftApprove':

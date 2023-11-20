@@ -421,7 +421,7 @@ class keyLib:
             [InlineKeyboardButton(text='عادی', callback_data='btn_pharmacyType_{}'.format(str(idShift)))]
         ])
 
-    def createMenuFromListDayForApproveCreator(self, listDay, totalInRow=1):
+    def createMenuFromListDayForApproveCreator(self, listDay, totalInRow=1,idShift=None,reqUser=None):
         lk = []
         listIdDay = ''
         print(listDay)
@@ -433,6 +433,9 @@ class keyLib:
         listIdDay = listIdDay[:-1]
         if len(lk) > 1: lk.append(InlineKeyboardButton(text="همه روزها",
                                                        callback_data='btn_approveAllDay_{}'.format(listIdDay)))
+        if idShift is not None: 
+            lk.append(InlineKeyboardButton(text="نمی پذیرم",
+                                                       callback_data=f'btn_noApproveCreator_{idShift}_{reqUser}'))
         N = totalInRow
         res = []
         mod = 0
