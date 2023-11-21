@@ -1493,9 +1493,11 @@ def handle_new_messages(user_id, userName, update):
                 print(f'user_id={user_id}')
                 print(f'spBtn[2]={spBtn[2]}')
                 print(f'requester={requester}')
-                # for item in lstMsg:
-                #     print(f'lstMsg={item}')
-                #     bot.deleteMessage((user_id,item))
+                for item in lstMsg:
+                    try:
+                        bot.deleteMessage((user_id,item))
+                    except:
+                        print(f'error item:{item}')
             # آپدیت کردن شیفت
             #             پس از فشردن کلید شیفت را می پذیرم اجرا می شود
             elif spBtn[1] == 'shiftApprove':
