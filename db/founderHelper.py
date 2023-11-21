@@ -377,7 +377,7 @@ class HelperFunder:
             if isExisting:
                 msgInfo = bot.sendPhoto(fuser, open(img, 'rb'))
             else:
-                msInfo = bot.sendMessage(fuser, 'فایل تصویر پیدا نشد')
+                msgInfo = bot.sendMessage(fuser, 'فایل تصویر پیدا نشد')
             lstMsg.append(msgInfo['message_id'])
         elif mem.membership_type == 2:
             profileInfo += 'نوع کاربری:\t{0}\n'.format('مسئول فنی')
@@ -392,6 +392,7 @@ class HelperFunder:
                 msgInfo =bot.sendPhoto(fuser, open(img, 'rb'))
             else:
                 msgInfo = bot.sendMessage(fuser, 'فایل تصویر پیدا نشد')
+            lstMsg.append(msgInfo['message_id'])
         elif mem.membership_type == 3:
             profileInfo += 'نوع کاربری:\t{0}\n'.format('دانشجو')
             profileInfo += 'کد ملی:\t{0}\n'.format(mydb.get_student_property(fieldName='national_code', chatid=chatid))
@@ -638,21 +639,25 @@ class HelperFunder:
             bot.sendMessage(userId, msg.messageLib.sendForCreatorMessage.value,
                             reply_markup=menu.keyLib.kbCreateMenuSendForCreator(None, idShift))
 
-    def send_shift_to_other(self, bot, idshift, userId, typeMember=2):
+    def send_shift_to_other(self, bot, idshift, userId, typeMember=2,notify=0):
         shiftRow = mydb.get_all_property_shift_byId(idshift)  # shift's for student
-        msgInfo = bot.sendMessage(userId, self.formatShiftMessage(shiftRow, typeMember),
+        msgInfo = None
+        if notify == 0:
+            msgInfo = bot.sendMessage(userId, self.formatShiftMessage(shiftRow, typeMember),
                         reply_markup=menu.keyLib.kbCreateMenuShiftApproveFunder(shiftId=shiftRow[9]))
+        else:
+            msgInfo = bot.sendMessage(userId, self.formatShiftMessage(shiftRow, typeMember))
         return msgInfo['message_id']
 
     def yesApproveAllShift(self, idShift, userId, bot):
         mydb.shift_update_by_id('approver', userId, idShift)
         creator = mydb.get_shift_property('Creator', idShift)
-        bot.sendMessage(creator, msg.messageLib.reqTitleMessageForCreator.value)
+        msgInfo = bot.sendMessage(creator, msg.messageLib.reqTitleMessageForCreator.value)
+        mydb.insertSendMsg(creator,msgInfo['message_id'],idShift,userId)
         self.send_profile(userId, bot, creator,idShift=idShift)
         msgId = self.send_shift_to_other(bot, idShift, creator)
         mydb.insertSendMsg(creator,msgId,idShift,userId)
-        msgInfo = bot.sendMessage(userId, msg.messageLib.YourInfoToCreatorShift.value)
-        mydb.insertSendMsg(creator,msgInfo['message_id'],idShift,userId)
+        bot.sendMessage(userId, msg.messageLib.YourInfoToCreatorShift.value)
     def registerFullShiftDay(self, idShift, requester):
         dateStart = str(mydb.get_shift_property('DateShift', idShift)).split('-')
         dateEnd = str(mydb.get_shift_property('dateEndShift', idShift)).split('-')
@@ -676,19 +681,28 @@ class HelperFunder:
 
     def registerDay(self, idDay, bot, userId, idDetailShift):
         statusDay = mydb.getShiftDayProperty('status', idDay)
+        ft = mydb.getShiftDayProperty('flagtime', idDay)
         if statusDay == None:
             bot.sendMessage('6274361322', f'Can not find {idDay} in id to dayshift table')
             return None
         dateReq = mydb.getShiftDayProperty('dateShift', idDay)
-        if mydb.isShiftDayFull(idDetailShift) > 0:
+        print(f'idDay={idDay}')
+        if mydb.isShiftDayFull(idDetailShift,flagTime=ft) > 0:
             bot.sendMessage(userId, msg.messageLib.invalidApproveDate.value)
             return None
         if (int(statusDay) != 2):
             mydb.updateShiftDay(fieldName='status', fieldValue=2, idDayShift=idDay)
-            mydb.detailShift_update_by_id('status', 1, idDetailShift)
-            print(idDay)
+            if int(ft) == 0:
+                mydb.detailShift_update_by_id('status', 1, idDetailShift)
+            elif int(ft) == 1:
+                 mydb.detailShift_update_by_id('status_e', 1, idDetailShift)
+            elif int(ft) == 2:
+                 mydb.detailShift_update_by_id('status_n', 1, idDetailShift)
+            elif int(ft) == 3:
+                 mydb.detailShift_update_by_id('status_f', 1, idDetailShift)
             requesterShift = mydb.getShiftDayProperty('requster', idDay)
-            bot.sendMessage(requesterShift, str(msg.messageLib.approvedDay.value).format(dateReq))
+            bot.sendMessage(requesterShift, str(msg.messageLib.approvedDay.value).format(dateReq),
+                            reply_markup = menu.keyLib.kbCreateMenuInfoShiftCreator(creator=userId))
             return requesterShift
 
     def sendCalendar(self, bot, user_id, msgId, yearC, monthC, dayC, endDay, idShift=0, isEm=2, typeShift=0,

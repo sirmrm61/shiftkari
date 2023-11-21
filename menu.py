@@ -218,6 +218,11 @@ class keyLib:
             [InlineKeyboardButton(text='کنسل می کنم'
                                        ' ', callback_data='btn_cancelShiftBtnList_{}'.format(str(shiftId)))]
         ])
+    def kbCreateMenuInfoShiftCreator(self=None, creator=None):
+        return InlineKeyboardMarkup(inline_keyboard=[
+            [InlineKeyboardButton(text='ایجاد کننده شیفت'
+                                       ' ', callback_data='btn_sendInfoCreator_{}'.format(str(creator)))]
+        ])
 
     def kbCreateMenuReactive(self=None, memberId=None):
         return InlineKeyboardMarkup(inline_keyboard=[
@@ -418,7 +423,7 @@ class keyLib:
     def kbCreateMenuTypePharmacy(self=None, idShift=None):
         return InlineKeyboardMarkup(inline_keyboard=[
             [InlineKeyboardButton(text='شبانه روزی', callback_data='btn_pharmacyType_{}'.format(str(idShift)))],
-            [InlineKeyboardButton(text='عادی', callback_data='btn_pharmacyType_{}'.format(str(idShift)))]
+            [InlineKeyboardButton(text='روزانه', callback_data='btn_pharmacyType_{}'.format(str(idShift)))]
         ])
 
     def createMenuFromListDayForApproveCreator(self, listDay, totalInRow=1,idShift=None,reqUser=None):
@@ -580,7 +585,7 @@ class keyLib:
         lk = []
         listIdDay = []
         listDay = mydb.getListSelectedDay(idShift)
-        print(f'len(listDay)={len(listDay)}')
+        print(listDay)
         for item in listDay:
             listIdDay += str(item[1]) + '#'
             actionText = 'spare'
@@ -590,30 +595,30 @@ class keyLib:
                 actionText = f'btn_enterTime_{idShift}_{str(item[1])}_{item[0]}'
             elif ability == 4:
                 actionText = f'btn_dayShift_{idShift}_{str(item[1])}_{item[0]}<->'
-            if item[3] is not None:
-                if ability not in (2,0):actionText = f'btn_dayApproveNew_{str(item[1])}'
+            if item[3] is not None and int(item[8])==0 :
+                if ability not in (2,0,4):actionText = f'btn_dayApproveNew_{str(item[1])}'
                 if ability == 4:
-                    actionText += f'{item[3]}_0'
+                  actTmp =  actionText + f'{item[3]}_0'
                 lk.append(InlineKeyboardButton(text=f'{item[0]}<=>{item[3]}',
-                                               callback_data=actionText))
+                                               callback_data=actTmp))
 
-            if item[4] is not None  and ability != 0:
+            if item[4] is not None  and ability != 0 and int(item[9])==0:
                 if ability == 4:
-                    actionText += f'{item[4]}_1'
+                    actTmp = actionText + f'{item[4]}_1'
                 lk.append(InlineKeyboardButton(text=f'{item[0]}<=>{item[4]}',
-                                               callback_data=actionText))
+                                               callback_data=actTmp))
 
-            if item[5] is not None  and ability != 0:
+            if item[5] is not None  and ability != 0 and int(item[10])==0:
                 if ability == 4:
-                    actionText += f'{item[5]}_2'
+                    actTmp =  actionText + f'{item[5]}_2'
                 lk.append(InlineKeyboardButton(text=f'{item[0]}<=>{item[5]}',
-                                               callback_data=actionText))
+                                               callback_data=actTmp))
 
-            if item[6] is not None and ability != 3  and ability != 0:
+            if item[6] is not None and ability != 3  and ability != 0 and int(item[11])==0:
                 if ability == 4:
-                    actionText += f'{item[6]}_3'
+                    actTmp = actionText + f'{item[6]}_3'
                 lk.append(InlineKeyboardButton(text=f'{item[0]}<=>{item[6]}',
-                                               callback_data=actionText))
+                                               callback_data=actTmp))
 
             if ability == 3:
                 lk.append(InlineKeyboardButton(text=f'{item[0]}<=>{item[6]}',

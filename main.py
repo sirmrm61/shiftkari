@@ -693,10 +693,14 @@ def handle_new_messages(user_id, userName, update):
                 mydb.delLisence(1, spBtn[2])
                 bot.sendMessage(user_id, msg.messageLib.delLicensed.value)
             elif spBtn[1] == 'noApproveCreator':
+                bot.sendMessage(spBtn[3], msg.messageLib.disAcceptShift.value)
+                tmr = mydb.get_member_property_chatid('membership_type', spBtn[3])
+                helper.send_shift_to_other(bot, spBtn[2], spBtn[3], tmr,1)
                 lstmsg =mydb.getLstMsg(user_id,spBtn[2],spBtn[3])
                 if lstmsg is not None:
                     for item in lstmsg:
                         bot.deleteMessage((user_id,item[0]))
+                        mydb.delMsg(user_id,item[0])
             elif spBtn[1] == 'sendToCreator':
                 creatorChatID = mydb.get_shift_property(fieldName='Creator', idShift=spBtn[2])
                 listDayAccept = mydb.getListDaySelection(idShift=spBtn[2], requsterShift=user_id)
@@ -706,12 +710,12 @@ def handle_new_messages(user_id, userName, update):
                 if len(listDayAccept) > 0:
                     msgInfo = bot.sendMessage(creatorChatID, str(msg.messageLib.sendDayForApproveCreator.value).format(fullName))
                     mydb.insertSendMsg(creatorChatID,msgInfo['message_id'],spBtn[2],user_id)
-                    helper.send_profile(user_id, bot, creatorChatID)
+                    helper.send_profile(user_id, bot, creatorChatID,idShift=spBtn[2])
                     msgInfo = bot.sendMessage(creatorChatID,
                                     'روز های مورد تائید را نتخاب نمائید سپس به کلید اطلاع به درخواست دهنده را کلیک نمائید',
                                     reply_markup=menu.keyLib.createMenuFromListDayForApproveCreator(None,
                                                                                                     listDayAccept,
-                                                                                                    2))
+                                                                                                    2,idShift=spBtn[2],reqUser=user_id))
                     mydb.insertSendMsg(creatorChatID,msgInfo['message_id'],spBtn[2],user_id)
                 else:
                     bot.sendMessage(creatorChatID, str(msg.messageLib.senndAcceptAllDayInShift.value).format(fullName),
@@ -720,18 +724,20 @@ def handle_new_messages(user_id, userName, update):
                 ids = str(spBtn[2]).split('=')
                 requsterSift = helper.registerDay(ids[0], bot, user_id, ids[1])
                 if requsterSift is not None:
-                    bot.sendMessage(requsterSift, msg.messageLib.propertyShiftCreator.value)
-                    helper.send_profile(user_id, bot, requsterSift)
+                    # bot.sendMessage(requsterSift, msg.messageLib.propertyShiftCreator.value)
+                    # helper.send_profile(user_id, bot, requsterSift)
                     bot.sendMessage(user_id, msg.messageLib.requesterNotify.value)
+           
+            elif spBtn[1] == 'sendInfoCreator':
+                helper.send_profile(spBtn[2], bot, user_id)
             elif spBtn[1] == 'approveAllDay':
                 listIdDay = str(spBtn[2]).split('#')
                 requsterSift = None
+                print(f'listIdDay={len(listIdDay)}')
                 for item in listIdDay:
                     ids = str(item).split('=')
                     requsterSift = helper.registerDay(ids[0], bot, user_id, ids[1])
-                if requsterSift is not None:
-                    bot.sendMessage(requsterSift, msg.messageLib.propertyShiftCreator.value)
-                    helper.send_profile(user_id, bot, requsterSift)
+                bot.sendMessage(user_id, msg.messageLib.requesterNotify.value)
             elif spBtn[1] == 'editProfile':
                 # آماده‌سازی دریافت اطلاعات کاربر جهت ویرایش
                 helper.editProfile(bot=bot, spBtn=spBtn, mem=tempMember)
@@ -1463,7 +1469,7 @@ def handle_new_messages(user_id, userName, update):
             elif spBtn[1] == 'approveShiftFunder':
                 requester = mydb.get_shift_property(fieldName='approver', idShift=spBtn[2])
                 shiftRow = mydb.get_all_property_shift_byId(spBtn[2])
-                mydb.shift_update('progress', 4, spBtn[2])
+                mydb.shift_update_by_id('progress', 4, spBtn[2])
                 bot.sendMessage(requester, msg.messageLib.acceptShift.value)
                 bot.sendMessage(requester, helper.formatShiftMessage(shiftRow))
                 bot.sendMessage(user_id, msg.messageLib.requesterNotify.value)
@@ -1488,28 +1494,35 @@ def handle_new_messages(user_id, userName, update):
                 mydb.shift_update('progress', 4, spBtn[2])
                 tmr = mydb.get_member_property_chatid('membership_type', requester)
                 bot.sendMessage(requester, msg.messageLib.disAcceptShift.value)
-                helper.send_shift_to_other(bot, spBtn[2], requester, tmr)
+                helper.send_shift_to_other(bot, spBtn[2], requester, tmr,1)
                 lstMsg = mydb.getLstMsg(user_id,spBtn[2],requester)
-                print(f'user_id={user_id}')
-                print(f'spBtn[2]={spBtn[2]}')
-                print(f'requester={requester}')
                 for item in lstMsg:
                     try:
-                        bot.deleteMessage((user_id,item))
+                        bot.deleteMessage((user_id,item[0]))
+                        mydb.delMsg(user_id,item[0])
                     except:
                         print(f'error item:{item}')
+                        continue
             # آپدیت کردن شیفت
             #             پس از فشردن کلید شیفت را می پذیرم اجرا می شود
             elif spBtn[1] == 'shiftApprove':
+                shiftIsFull = mydb.get_shift_property('progress',spBtn[2])
+                if int(shiftIsFull)==4:
+                    bot.sendMessage(user_id,msg.messageLib.shiftIsFull.value)
+                    return
                 # todo: new approve shift
                 tds = mydb.getTotalDayShift(spBtn[2], 1)
-                if tds == 0:
-                    tds = mydb.getTotalDayShift(spBtn[2], 0)
-                    bot.sendMessage(user_id, str(msg.messageLib.shiftTotalDay.value).format(tds),
-                                    reply_markup=menu.keyLib.kbApproveAllShiftYesNO(shiftId=spBtn[2]))
+                emptyDay = mydb.getTotalDayShift(spBtn[2], 0)
+                if emptyDay>0:
+                    if tds == 0:
+                        bot.sendMessage(user_id, str(msg.messageLib.shiftTotalDay.value).format(emptyDay),
+                                        reply_markup=menu.keyLib.kbApproveAllShiftYesNO(shiftId=spBtn[2]))
+                    else:
+                        helper.NOApproveAllShift(spBtn[2], user_id, bot)
                 else:
-                    helper.NOApproveAllShift(spBtn[2], user_id, bot)
-
+                    mydb.shift_update_by_id('progress',4,spBtn[2])  
+                    bot.sendMessage(user_id,msg.messageLib.shiftIsFull.value)
+                    return
             elif spBtn[1] == 'endSelection':
                 helper.endSelectionDayBtnClick(spBtn[2], user_id, bot)
             elif spBtn[1] == 'daySelectedRemove':
@@ -1524,7 +1537,7 @@ def handle_new_messages(user_id, userName, update):
                 if mydb.isShiftDayFull(idDetailShift, ft) > 0:
                     bot.sendMessage(user_id, str(msg.messageLib.shiftDayIsFull.value))
                     return
-                tmpRes = mydb.registerDayShift(idShift, dateStr, user_id, 0, idDetailShift)
+                tmpRes = mydb.registerDayShift(idShift, dateStr, user_id, 0, idDetailShift,ft=ft)
                 if tmpRes != 0:
                     bot.sendMessage(user_id, str(msg.messageLib.afterDaySelction.value).format(dateStr))
                 else:
@@ -1532,7 +1545,11 @@ def handle_new_messages(user_id, userName, update):
             elif spBtn[1] == 'NOApproveAllShift':
                 helper.NOApproveAllShift(spBtn[2], user_id, bot)
             elif spBtn[1] == 'yesApproveAllShift':
-                helper.yesApproveAllShift(spBtn[2], user_id, bot)
+                shiftIsFull = mydb.get_shift_property('progress',spBtn[2])
+                if int(shiftIsFull) != 4:
+                    helper.yesApproveAllShift(spBtn[2], user_id, bot)
+                else:
+                    bot.sendMessage(user_id,msg.messageLib.shiftIsFull.value)
             elif spBtn[1] == 'deleteShift':
                 allShift = mydb.get_all_shift_by_creator(creator=message['chat']["id"])
                 if len(allShift) == 0:
@@ -2032,5 +2049,5 @@ def main(lui=0):
 
 
 if __name__ == '__main__':
-    helper.send_shift_to_technicalResponsible(125, bot, '6274361322',2)
+    # helper.send_shift_to_technicalResponsible(125, bot, '6274361322',2)
     main()

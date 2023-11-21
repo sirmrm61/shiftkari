@@ -101,7 +101,6 @@ class mysqlconnector:
                     updateExp = '`last_message_sent` = \'{}\''.format(member.lastMessage)
                 else:
                     updateExp = ', `last_message_sent` = \'{}\''.format(member.lastMessage)
-            print(updateExp)
             if len(updateExp) > 0:
                 updateExp += ' WHERE `chat_id` = \'{0}\';'.format(member.chatId)
                 sql += updateExp
@@ -185,8 +184,6 @@ class mysqlconnector:
         myCursor = mydb.cursor()
         myCursor.execute(sqlQuery)
         result = myCursor.fetchone();
-        print(chatid)
-        print(result[0])
         if result is None:
             return None
         else:
@@ -230,7 +227,6 @@ class mysqlconnector:
 
     def get_member_property_chatid(self, fieldName, chatid):
         sqlQuery = 'select `{1}` from `botshiftkari`.`membership` where  chat_id = \'{0}\''.format(chatid, fieldName)
-        print(sqlQuery)
         mydb = self.connector()
         mydb.autocommit = True
         myCursor = mydb.cursor()
@@ -389,7 +385,6 @@ class mysqlconnector:
         else:
             sqlQuery = 'UPDATE `botshiftkari`.`shift` SET `{0}` = \'{1}\'  where progress=0 and Creator = \'{2}\''.format(
                 fieldName, fieldValue, chatid)
-        print(sqlQuery)
         myCursor.execute(sqlQuery)
         if not isinstance(result, int):
             result = result[0]
@@ -401,7 +396,6 @@ class mysqlconnector:
         mydb.autocommit = True
         myCursor = mydb.cursor()
         sqlQuery = 'insert into `botshiftkari`.`shift` (Creator) values (\'{0}\')'.format(userid)
-        print(sqlQuery)
         myCursor.execute(sqlQuery)
         result = myCursor.lastrowid
         return result
@@ -422,7 +416,6 @@ class mysqlconnector:
         myCursor = mydb.cursor()
         sqlQuery = 'UPDATE `botshiftkari`.`shift` SET `progress` = 3,`approver`=\'{1}\'  where progress=2 and idshift = \'{0}\''.format(
             idshift, chatid)
-        print(sqlQuery)
         myCursor.execute(sqlQuery)
         myCursor.reset()
         return None
@@ -463,7 +456,6 @@ class mysqlconnector:
                          FROM botshiftkari.shift shi inner join botshiftkari.membership mem on
                           mem.chat_id = shi.Creator where approver is null and not shi.creator = '{0}' and shi.progress={1}'''.format(
             creator, progress)
-        print(sqlQuery)
         myCursor.execute(sqlQuery)
         result = myCursor.fetchall()
         return result
@@ -641,7 +633,6 @@ class mysqlconnector:
         mydb.autocommit = True
         myCursor = mydb.cursor()
         sqlQuery = 'UPDATE `botshiftkari`.`domain` SET `value` = \'{0}\'  where `key` = \'{1}\''.format(value, key)
-        print(sqlQuery)
         myCursor.execute(sqlQuery)
         myCursor.reset()
         return None
@@ -724,16 +715,15 @@ class mysqlconnector:
         myCursor.execute(sqlQuery)
         result = myCursor.fetchone()
         count = int(result[0])
-        print(f'Count={count}')
         if count == 1:
             return True
         else:
             return False
 
-    def registerDayShift(self, idShift, dateShift, requster, sendedForCreator, idDetailShift, status=None):
-        tmpIdDayShift = self.getIdRegisterDayOfShift(idShift, dateShift, requster, idDetailShift)
+    def registerDayShift(self, idShift, dateShift, requster, sendedForCreator, idDetailShift, status=None,ft=-1):
+        tmpIdDayShift = self.getIdRegisterDayOfShift(idShift, dateShift, requster, idDetailShift,ft=ft)
         if tmpIdDayShift != 0:
-            return tmpIdDayShift
+            return 0
         mydb = self.connector()
         myCursor = mydb.cursor()
         mydb.autocommit = True
@@ -744,16 +734,18 @@ class mysqlconnector:
 `requster`,
 `approveCreator`,
 `sendedForCreator`,
-`idDetailShift`)
-VALUES({idShift},\'{dateShift}\',\'{requster}\',0,{sendedForCreator},{idDetailShift})'''
+`idDetailShift`,
+`flagtime`)
+VALUES({idShift},\'{dateShift}\',\'{requster}\',0,{sendedForCreator},{idDetailShift},{ft})'''
         else:
             sqlQuery = f'''INSERT INTO `botshiftkari`.`dayshift`
             (`idShift`,
             `dateShift`,
             `requster`,
             `approveCreator`,
-            `sendedForCreator`,`status`,`idDetailShift`)
-            VALUES({idShift},\'{dateShift}\',\'{requster}\',0,{sendedForCreator},{status},{idDetailShift})'''
+            `sendedForCreator`,`status`,`idDetailShift`,`flagtime`)
+            VALUES({idShift},\'{dateShift}\',\'{requster}\',0,{sendedForCreator},{status},{idDetailShift},{ft})'''
+        print(sqlQuery)
         myCursor.execute(sqlQuery)
         return myCursor.lastrowid
 
@@ -809,11 +801,11 @@ VALUES({idShift},\'{dateShift}\',\'{requster}\',0,{sendedForCreator},{idDetailSh
         result = myCursor.fetchall()
         return result
 
-    def getIdRegisterDayOfShift(self, idShift, dateShift, requsterShift, idDetailShift):
+    def getIdRegisterDayOfShift(self, idShift, dateShift, requsterShift, idDetailShift,ft):
         mydb = self.connector()
         myCursor = mydb.cursor()
         sqlQuery = f'SELECT iddayShift from botshiftkari.dayshift  where  idShift={idShift} and dateShift=\'{dateShift}\'' + \
-                   f' and requster=\'{requsterShift}\' and idDetailShift={idDetailShift}'
+                   f' and requster=\'{requsterShift}\' and idDetailShift={idDetailShift} and flagtime={ft}'
         myCursor.execute(sqlQuery)
         result = myCursor.fetchone()
         if result is not None:
@@ -824,7 +816,6 @@ VALUES({idShift},\'{dateShift}\',\'{requster}\',0,{sendedForCreator},{idDetailSh
     def isShiftDayFull(self, idDetailShift, flagTime=0):
         mydb = self.connector()
         myCursor = mydb.cursor()
-        print(f'flagtime={flagTime}')
         sqlQuery = ''
         if int(flagTime) == 0:
             sqlQuery = f'SELECT count(*) from botshiftkari.detailshift  where  idDetailShift={idDetailShift} and status=1'
@@ -834,9 +825,9 @@ VALUES({idShift},\'{dateShift}\',\'{requster}\',0,{sendedForCreator},{idDetailSh
             sqlQuery = f'SELECT count(*) from botshiftkari.detailshift  where  idDetailShift={idDetailShift} and status_n=1'
         elif int(flagTime) == 3:
             sqlQuery = f'SELECT count(*) from botshiftkari.detailshift  where  idDetailShift={idDetailShift} and status_f=1'
-        print(sqlQuery)
         myCursor.execute(sqlQuery)
         result = myCursor.fetchone()
+        print(result[0])
         return result[0]
 
     def getListDaySelection(self, idShift, requsterShift):
@@ -907,7 +898,11 @@ VALUES({idShift},\'{dateShift}\',\'{requster}\',0,{sendedForCreator},{idDetailSh
                     when morning is not null and evening is  null and night is not null then 5
                     when morning is  null and evening is not null and night is not null then 6
                     when morning is not null and evening is not null and night is not null then 7
-                    else 0 end selectStatus FROM  
+                    else 0 end selectStatus,
+                    ds.status,
+                    ds.status_e,
+                    ds.status_n,
+                    ds.status_f FROM  
                    botshiftkari.detailshift as ds   
                     where idShift = {idShift}  '''
         if status > -1:
@@ -946,7 +941,6 @@ VALUES({idShift},\'{dateShift}\',\'{requster}\',0,{sendedForCreator},{idDetailSh
         sqlQuery = f'select * from  botshiftkari.detailshift where idShift= {idShift} order by year,month,day;'
         mydb = self.connector()
         myCursor = mydb.cursor()
-        print(sqlQuery)
         myCursor.execute(sqlQuery)
         result = myCursor.fetchall()
         startDate = endDate = '0001-01-01'
@@ -957,7 +951,21 @@ VALUES({idShift},\'{dateShift}\',\'{requster}\',0,{sendedForCreator},{idDetailSh
         self.shift_update_by_id('dateEndShift', endDate, idShift)
 
     def getTotalDayShift(self, idShift, status=0):
-        sqlQuery = f'select count(*) from botshiftkari.detailshift where idShift = {idShift} and status = {status} '
+        sqlQuery = f'''SELECT  sum((case
+ WHEN morning IS NOT NULL AND status = {status} THEN 1
+ else 0
+ end +
+ case
+ WHEN evening IS NOT NULL AND status_e = {status} THEN 1
+ else 0
+ end + case
+ WHEN night IS NOT NULL AND status_n = {status} THEN 1
+ else 0
+ end  + case
+ WHEN freeTime IS NOT NULL AND status_f = {status} THEN 1
+ else 0
+ end )) as ct
+ FROM botshiftkari.detailshift where idshift = {idShift}; '''
         mydb = self.connector()
         myCursor = mydb.cursor()
         myCursor.execute(sqlQuery)
@@ -1052,7 +1060,6 @@ VALUES({idShift},\'{dateShift}\',\'{requster}\',0,{sendedForCreator},{idDetailSh
         myCursor = mydb.cursor()
         sqlQuery = 'UPDATE `botshiftkari`.`activity_license` SET `{0}` = \'{1}\'  where `id_activity_license` = {2}' \
             .format(fieldName, fieldValue, idL)
-        print(sqlQuery)
         myCursor.execute(sqlQuery)
         myCursor.reset()
         return None
@@ -1063,7 +1070,6 @@ VALUES({idShift},\'{dateShift}\',\'{requster}\',0,{sendedForCreator},{idDetailSh
         myCursor = mydb.cursor()
         sqlQuery = 'UPDATE `botshiftkari`.`activity_license` SET `del` = {0}  where `id_activity_license` = {1}' \
             .format(fieldValue, idL)
-        print(sqlQuery)
         myCursor.execute(sqlQuery)
         myCursor.reset()
         return None
@@ -1150,7 +1156,6 @@ VALUES({idShift},\'{dateShift}\',\'{requster}\',0,{sendedForCreator},{idDetailSh
     def insertSendMsg(self,chatId,msgId,typemsg,reqCode):
         sqlQuery = f'''insert into `botshiftkari`.`lstmsg` (`chatId`,`msgId`,`typemsg`,`reqCode`)values(\'{chatId}\',
                         \'{msgId}\',{typemsg},\'{reqCode}\')'''
-        print(sqlQuery)
         mydb = self.connector()
         mydb.autocommit = True
         myCursor = mydb.cursor()
@@ -1161,6 +1166,15 @@ VALUES({idShift},\'{dateShift}\',\'{requster}\',0,{sendedForCreator},{idDetailSh
         mydb = self.connector()
         myCursor = mydb.cursor()
         myCursor.execute(sqlQuery)
-        result = myCursor.fetchone()
+        result = myCursor.fetchall()
         return result
-    
+    def delMsg(self, chatId,msgId):
+        try:
+            mydb = self.connector()
+            myCursor = mydb.cursor()
+            mydb.autocommit = True
+            sqlQuery = f'delete from botshiftkari.lstmsg  where  msgId=\'{msgId}\' and chatId = \'{chatId}\' '
+            myCursor.execute(sqlQuery)
+            return 1
+        except:
+            return 0
