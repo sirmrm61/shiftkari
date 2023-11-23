@@ -92,7 +92,8 @@ def handle_new_messages(user_id, userName, update):
             elif tempMember.membership_type == 4:
                 titlePos = 'مدیر'
             else:
-                titlePos = 'نا مشخص'
+                bot.sendMessage(user_id,msg.messageLib.noRegisterUser.value)
+                return
             bot.sendMessage(message['chat']['id'],
                             str(msg.messageLib.myInfo.value).format(titlePos))
             bot.sendMessage(message['chat']['id'],
