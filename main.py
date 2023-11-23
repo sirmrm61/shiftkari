@@ -93,6 +93,7 @@ def handle_new_messages(user_id, userName, update):
                 titlePos = 'مدیر'
             else:
                 bot.sendMessage(user_id,msg.messageLib.noRegisterUser.value)
+                bot.sendMessage(user_id, msg.messageLib.noForRegisterUser.value)
                 return
             bot.sendMessage(message['chat']['id'],
                             str(msg.messageLib.myInfo.value).format(titlePos))
