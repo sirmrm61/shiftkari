@@ -689,10 +689,10 @@ class mysqlconnector:
         sqlQuery = ''
         if creator is None:
             sqlQuery = 'SELECT mem.chat_id from botshiftkari.membership as mem where mem.del=0 ' \
-                       'and mem.membership_type=3 '
+                       'and mem.membership_type=3 and mem.verifyAdmin = 1 '
         else:
             sqlQuery = f'SELECT mem.chat_id from botshiftkari.membership as mem where mem.del=0 ' \
-                       f'and mem.membership_type=3 and not mem.chat_id = \'{creator}\' '
+                       f'and mem.membership_type=3  and mem.verifyAdmin = 1 and not mem.chat_id = \'{creator}\' '
         myCursor.execute(sqlQuery)
         result = myCursor.fetchall()
         return result

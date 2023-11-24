@@ -673,7 +673,6 @@ def handle_new_messages(user_id, userName, update):
             elif spBtn[1] == 'searchMenu':
                 bot.sendMessage(user_id, msg.messageLib.searchMessage.value,
                                 reply_markup=menu.keyLib.kbCreateSearchMenu())
-
             elif spBtn[1] == 'regFromFirstStep':
                 tempMember.register_progress=0
                 mydb.member_update('registration_progress',0,user_id)
@@ -1413,7 +1412,6 @@ def handle_new_messages(user_id, userName, update):
                 if int(op) == 3:
                     bot.sendMessage(message['chat']['id'], msg.messageLib.shiftEndTime.value)
                     mydb.member_update('op', 4, message['chat']['id'])
-
                 if int(op) == 5:
                     minWage = mydb.get_property_domain('wage')
                     bot.sendMessage(user_id, str(msg.messageLib.minWage.value).format(minWage))

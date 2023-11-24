@@ -338,7 +338,7 @@ class HelperFunder:
         shiftRow = mydb.get_all_property_shift_byId(idShift)
         st = mydb.get_all_student_chatid()
         for s in st:
-            bot.sendMessage(s[0], self.formatShiftMessage(shiftRow, 2),
+            bot.sendMessage(s[0], self.formatShiftMessage(shiftRow, 3),
                             reply_markup=menu.keyLib.kbCreateMenuApproveShift(shiftId=shiftRow[9]))
         mydb.shift_update_by_id('send', 1, idShift)
 
