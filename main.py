@@ -676,7 +676,7 @@ def handle_new_messages(user_id, userName, update):
             elif spBtn[1] == 'regFromFirstStep':
                 tempMember.register_progress=0
                 mydb.member_update('registration_progress',0,user_id)
-                handle_new_messages(user_id,userName, update)
+                bot.sendMessage(user_id,msg.messageLib.noForRegisterUser.value)
             elif spBtn[1] == 'search':
                 if spBtn[2] == 'student':
                     mydb.member_update_chatid('registration_progress', 301, user_id)
