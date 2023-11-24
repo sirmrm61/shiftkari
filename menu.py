@@ -427,8 +427,7 @@ class keyLib:
         ])
     def kbCreateMenuNotCompelete(self=None):
         return InlineKeyboardMarkup(inline_keyboard=[
-            [InlineKeyboardButton(text='ادامه ثبت نام', callback_data='btn_continuReg'),
-             InlineKeyboardButton(text='ثبت نام از ابتدا', callback_data='btn_regFromFirstStep')]
+            [InlineKeyboardButton(text='ثبت نام از ابتدا', callback_data='btn_regFromFirstStep')]
         ])
     def kbCreateMenuTypePharmacy(self=None, idShift=None):
         return InlineKeyboardMarkup(inline_keyboard=[

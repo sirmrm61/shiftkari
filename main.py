@@ -670,8 +670,6 @@ def handle_new_messages(user_id, userName, update):
             elif spBtn[1] == 'searchMenu':
                 bot.sendMessage(user_id, msg.messageLib.searchMessage.value,
                                 reply_markup=menu.keyLib.kbCreateSearchMenu())
-            elif spBtn[1] == 'continuReg':
-                print('continReg')
 
             elif spBtn[1] == 'regFromFirstStep':
                 tempMember.register_progress=0
