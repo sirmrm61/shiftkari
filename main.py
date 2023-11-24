@@ -221,6 +221,10 @@ def handle_new_messages(user_id, userName, update):
                 titlePos = 'دانشجو'
             elif tempMember.membership_type == 4:
                 titlePos = 'مدیر'
+            if tempMember.register_progress < 10:
+                bot.sendMessage(user_id,msg.messageLib.userNotCompelete.value,
+                                reply_markup=menu.keyLib.kbCreateMenuNotCompelete())
+                return
             try:
                 bot.sendMessage(message['chat']['id'],
                                 str(msg.messageLib.duplicateregistration.value).format(titlePos),
@@ -666,6 +670,13 @@ def handle_new_messages(user_id, userName, update):
             elif spBtn[1] == 'searchMenu':
                 bot.sendMessage(user_id, msg.messageLib.searchMessage.value,
                                 reply_markup=menu.keyLib.kbCreateSearchMenu())
+            elif spBtn[1] == 'continuReg':
+                print('continReg')
+
+            elif spBtn[1] == 'regFromFirstStep':
+                tempMember.register_progress=0
+                mydb.member_update('registration_progress',0,user_id)
+                handle_new_messages(user_id,userName, update)
             elif spBtn[1] == 'search':
                 if spBtn[2] == 'student':
                     mydb.member_update_chatid('registration_progress', 301, user_id)

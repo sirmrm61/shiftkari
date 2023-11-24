@@ -422,10 +422,14 @@ class keyLib:
 
     def kbCreateMenuCancelShiftReg(self=None, idShift=None):
         return InlineKeyboardMarkup(inline_keyboard=[
-            [InlineKeyboardButton(text='اد امه ثبت', callback_data='btn_ContiReg_{}'.format(str(idShift))),
+            [InlineKeyboardButton(text='ادامه ثبت', callback_data='btn_ContiReg_{}'.format(str(idShift))),
              InlineKeyboardButton(text='انصراف', callback_data='btn_cancelReg_{}'.format(str(idShift)))]
         ])
-
+    def kbCreateMenuNotCompelete(self=None):
+        return InlineKeyboardMarkup(inline_keyboard=[
+            [InlineKeyboardButton(text='ادامه ثبت نام', callback_data='btn_continuReg'),
+             InlineKeyboardButton(text='ثبت نام از ابتدا', callback_data='btn_regFromFirstStep')]
+        ])
     def kbCreateMenuTypePharmacy(self=None, idShift=None):
         return InlineKeyboardMarkup(inline_keyboard=[
             [InlineKeyboardButton(text='شبانه روزی', callback_data='btn_pharmacyType_{}'.format(str(idShift)))],
