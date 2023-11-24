@@ -649,8 +649,7 @@ def handle_new_messages(user_id, userName, update):
                 mydb.shift_update_by_id('messageID', msgInfo['message_id'], idShift)
                 bot.deleteMessage((user_id, message['message_id']))
         else:
-            print(update)
-            bot.deleteMessage((user_id,update['message_id']))
+            bot.deleteMessage((user_id,update['message']['message_id']))
             bot.sendMessage(user_id,msg.messageLib.noBussiness.value)
 
     elif 'callback_query' in update:
