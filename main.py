@@ -648,6 +648,8 @@ def handle_new_messages(user_id, userName, update):
                                               text=f'{txtInput} \n {msg.messageLib.errorFormatTime.value}')
                 mydb.shift_update_by_id('messageID', msgInfo['message_id'], idShift)
                 bot.deleteMessage((user_id, message['message_id']))
+        else:
+            bot.sendMessage(user_id,msg.messageLib.noBussiness.value)
 
     elif 'callback_query' in update:
         message = update['callback_query']['message']
