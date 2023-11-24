@@ -83,6 +83,10 @@ def handle_new_messages(user_id, userName, update):
         message = update['message']
         if 'text' in message and message['text'] == '/myinfo':
             titlePos = None
+            if tempMember.register_progress < 10:
+                bot.sendMessage(user_id, msg.messageLib.noRegisterUser.value)
+                bot.sendMessage(user_id, msg.messageLib.noForRegisterUser.value)
+                return
             if tempMember.membership_type == 1:
                 titlePos = 'موسس'
             elif tempMember.membership_type == 2:
@@ -91,10 +95,7 @@ def handle_new_messages(user_id, userName, update):
                 titlePos = 'دانشجو'
             elif tempMember.membership_type == 4:
                 titlePos = 'مدیر'
-            else:
-                bot.sendMessage(user_id,msg.messageLib.noRegisterUser.value)
-                bot.sendMessage(user_id, msg.messageLib.noForRegisterUser.value)
-                return
+
             bot.sendMessage(message['chat']['id'],
                             str(msg.messageLib.myInfo.value).format(titlePos))
             bot.sendMessage(message['chat']['id'],
@@ -114,6 +115,9 @@ def handle_new_messages(user_id, userName, update):
                 bot.sendMessage(message['chat']['id'], msg.messageLib.yourOperation.value,
                                 reply_markup=menu.keyLib.kbCreateMenuManager(chatId=message['chat']['id']))
         elif 'text' in message and str(message['text']).lower().startswith('/changeHrStudent'.lower()):
+            if tempMember.membership_type is None or tempMember.membership_type != 4:
+                bot.sendMessage(user_id, msg.messageLib.userIsNotAdmin.value)
+                return
             hr = None
             try:
                 hr = int(str(message['text'])[16:])
@@ -123,6 +127,9 @@ def handle_new_messages(user_id, userName, update):
             mydb.domain_update_by_key('hrStudent', hr)
             bot.sendMessage(user_id, str(msg.messageLib.changeHourSuccess.value).format(hr))
         elif 'text' in message and str(message['text']).lower().startswith('/changeMinWage'.lower()):
+            if tempMember.membership_type is None or tempMember.membership_type != 4:
+                bot.sendMessage(user_id, msg.messageLib.userIsNotAdmin.value)
+                return
             wage = None
             try:
                 wage = int(str(message['text'])[14:])
@@ -132,6 +139,9 @@ def handle_new_messages(user_id, userName, update):
             mydb.domain_update_by_key('wage', wage)
             bot.sendMessage(user_id, str(msg.messageLib.changeWageSuccess.value).format(wage))
         elif 'text' in message and str(message['text']).lower().startswith('/changeWFS'.lower()):
+            if tempMember.membership_type is None or tempMember.membership_type != 4:
+                bot.sendMessage(user_id, msg.messageLib.userIsNotAdmin.value)
+                return
             wage = None
             try:
                 wage = int(str(message['text'])[10:])
@@ -141,6 +151,9 @@ def handle_new_messages(user_id, userName, update):
             mydb.domain_update_by_key('studentWage', wage)
             bot.sendMessage(user_id, str(msg.messageLib.changeWageSuccess.value).format(wage))
         elif 'text' in message and str(message['text']).lower().startswith('/changeShiftEmHr'.lower()):
+            if tempMember.membership_type is None or tempMember.membership_type != 4:
+                bot.sendMessage(user_id, msg.messageLib.userIsNotAdmin.value)
+                return
             emhr = None
             try:
                 emhr = int(str(message['text'])[16:])
@@ -150,6 +163,9 @@ def handle_new_messages(user_id, userName, update):
             mydb.domain_update_by_key('hrEmShift', emhr)
             bot.sendMessage(user_id, str(msg.messageLib.changeShiftEmHr.value).format(emhr))
         elif 'text' in message and str(message['text']).lower().startswith('/changePDEM'.lower()):
+            if tempMember.membership_type is None or tempMember.membership_type != 4:
+                bot.sendMessage(user_id, msg.messageLib.userIsNotAdmin.value)
+                return
             PDEM = None
             try:
                 PDEM = int(str(message['text'])[11:])
@@ -159,6 +175,9 @@ def handle_new_messages(user_id, userName, update):
             mydb.domain_update_by_key('PDEM', PDEM)
             bot.sendMessage(user_id, str(msg.messageLib.chandePDEM.value).format(PDEM))
         elif 'text' in message and str(message['text']).lower().startswith('/changeTPDEM'.lower()):
+            if tempMember.membership_type is None or tempMember.membership_type != 4:
+                bot.sendMessage(user_id, msg.messageLib.userIsNotAdmin.value)
+                return
             TSPDEM = None
             try:
                 TSPDEM = int(str(message['text'])[12:])
@@ -168,6 +187,9 @@ def handle_new_messages(user_id, userName, update):
             mydb.domain_update_by_key('TSPDEM', TSPDEM)
             bot.sendMessage(user_id, str(msg.messageLib.chageTSPDEM.value).format(TSPDEM))
         elif 'text' in message and str(message['text']).lower().startswith('/changeMinLicenss'.lower()):
+            if tempMember.membership_type is None or tempMember.membership_type != 4:
+                bot.sendMessage(user_id, msg.messageLib.userIsNotAdmin.value)
+                return
             licenssRent = None
             try:
                 licenssRent = int(str(message['text'])[17:])
@@ -181,6 +203,10 @@ def handle_new_messages(user_id, userName, update):
             mydb.member_update_chatid('op', 0, user_id)
             bot.sendMessage(user_id, msg.messageLib.cancelMsg.value)
         elif 'text' in message and message['text'] == '/myoperation':
+            if tempMember.register_progress < 10:
+                bot.sendMessage(user_id, msg.messageLib.noRegisterUser.value)
+                bot.sendMessage(user_id, msg.messageLib.noForRegisterUser.value)
+                return
             helper.send_operation(tempMember=tempMember, bot=bot, chatid=message['chat']['id'])
         elif 'text' in message and tempMember.register_progress == 0 and message['text'] == '/start':
             bot.sendMessage(message['chat']['id'], str(msg.messageLib.helloClient.value).format(
@@ -244,8 +270,6 @@ def handle_new_messages(user_id, userName, update):
                                     str(msg.messageLib.labelPhoneNumber.value).format(tempMember.phone_number))
                     bot.sendMessage(admin[0], msg.messageLib.messAdminApprove.value,
                                     reply_markup=menu.keyLib.kbCreateApproveKey(chat_id=message['chat']['id']))
-                mydb.member_update_chatid('registration_progress', 10, message['chat']['id'])
-                tempMember.register_progress = 10
                 mydb.member_update_chatid('registration_progress', 10, message['chat']['id'])
                 tempMember.register_progress = 10
         elif tempMember.register_progress == 4:
@@ -434,12 +458,12 @@ def handle_new_messages(user_id, userName, update):
                 else:
                     bot.sendMessage(message['chat']['id'],
                                     str(msg.messageLib.errorSendFile.value))
-        elif tempMember.register_progress == 10:
-            if tempMember.membership_type == 4 and message['text'] == '/start':
-                bot.sendMessage(message['chat']['id'],
-                                str(msg.messageLib.helloAdmin.value).format(
-                                    tempMember.name + ' ' + tempMember.last_name),
-                                reply_markup=menu.keyLib.kbAdmin())
+        # elif tempMember.register_progress == 10:
+        #     if tempMember.membership_type == 4 and message['text'] == '/start':
+        #         bot.sendMessage(message['chat']['id'],
+        #                         str(msg.messageLib.helloAdmin.value).format(
+        #                             tempMember.name + ' ' + tempMember.last_name),
+        #                         reply_markup=menu.keyLib.kbAdmin())
         elif tempMember.register_progress == 11:
             op = mydb.get_member_property_chatid('op', user_id)
             if op is not None:
@@ -620,7 +644,7 @@ def handle_new_messages(user_id, userName, update):
                                               text=f'{txtInput} \n {msg.messageLib.errorFormatTime.value}')
                 mydb.shift_update_by_id('messageID', msgInfo['message_id'], idShift)
                 bot.deleteMessage((user_id, message['message_id']))
-            
+
     elif 'callback_query' in update:
         message = update['callback_query']['message']
         btn = update['callback_query']['data']
@@ -697,12 +721,12 @@ def handle_new_messages(user_id, userName, update):
             elif spBtn[1] == 'noApproveCreator':
                 bot.sendMessage(spBtn[3], msg.messageLib.disAcceptShift.value)
                 tmr = mydb.get_member_property_chatid('membership_type', spBtn[3])
-                helper.send_shift_to_other(bot, spBtn[2], spBtn[3], tmr,1)
-                lstmsg =mydb.getLstMsg(user_id,spBtn[2],spBtn[3])
+                helper.send_shift_to_other(bot, spBtn[2], spBtn[3], tmr, 1)
+                lstmsg = mydb.getLstMsg(user_id, spBtn[2], spBtn[3])
                 if lstmsg is not None:
                     for item in lstmsg:
-                        bot.deleteMessage((user_id,item[0]))
-                        mydb.delMsg(user_id,item[0])
+                        bot.deleteMessage((user_id, item[0]))
+                        mydb.delMsg(user_id, item[0])
             elif spBtn[1] == 'sendToCreator':
                 creatorChatID = mydb.get_shift_property(fieldName='Creator', idShift=spBtn[2])
                 listDayAccept = mydb.getListDaySelection(idShift=spBtn[2], requsterShift=user_id)
@@ -710,15 +734,19 @@ def handle_new_messages(user_id, userName, update):
                 lname = mydb.get_member_property_chatid('last_name', user_id)
                 fullName = fname + ' ' + lname
                 if len(listDayAccept) > 0:
-                    msgInfo = bot.sendMessage(creatorChatID, str(msg.messageLib.sendDayForApproveCreator.value).format(fullName))
-                    mydb.insertSendMsg(creatorChatID,msgInfo['message_id'],spBtn[2],user_id)
-                    helper.send_profile(user_id, bot, creatorChatID,idShift=spBtn[2])
                     msgInfo = bot.sendMessage(creatorChatID,
-                                    'روز های مورد تائید را نتخاب نمائید سپس به کلید اطلاع به درخواست دهنده را کلیک نمائید',
-                                    reply_markup=menu.keyLib.createMenuFromListDayForApproveCreator(None,
-                                                                                                    listDayAccept,
-                                                                                                    2,idShift=spBtn[2],reqUser=user_id))
-                    mydb.insertSendMsg(creatorChatID,msgInfo['message_id'],spBtn[2],user_id)
+                                              str(msg.messageLib.sendDayForApproveCreator.value).format(fullName))
+                    mydb.insertSendMsg(creatorChatID, msgInfo['message_id'], spBtn[2], user_id)
+                    helper.send_profile(user_id, bot, creatorChatID, idShift=spBtn[2])
+                    msgInfo = bot.sendMessage(creatorChatID,
+                                              'روز های مورد تائید را نتخاب نمائید سپس به کلید اطلاع به درخواست دهنده را کلیک نمائید',
+                                              reply_markup=menu.keyLib.createMenuFromListDayForApproveCreator(None,
+                                                                                                              listDayAccept,
+                                                                                                              2,
+                                                                                                              idShift=
+                                                                                                              spBtn[2],
+                                                                                                              reqUser=user_id))
+                    mydb.insertSendMsg(creatorChatID, msgInfo['message_id'], spBtn[2], user_id)
                 else:
                     bot.sendMessage(creatorChatID, str(msg.messageLib.senndAcceptAllDayInShift.value).format(fullName),
                                     reply_markup=menu.keyLib.kbCreateMenuShiftApproveManager(shiftId=spBtn[2]))
@@ -729,7 +757,7 @@ def handle_new_messages(user_id, userName, update):
                     # bot.sendMessage(requsterSift, msg.messageLib.propertyShiftCreator.value)
                     # helper.send_profile(user_id, bot, requsterSift)
                     bot.sendMessage(user_id, msg.messageLib.requesterNotify.value)
-           
+
             elif spBtn[1] == 'sendInfoCreator':
                 helper.send_profile(spBtn[2], bot, user_id)
             elif spBtn[1] == 'approveAllDay':
@@ -1404,7 +1432,7 @@ def handle_new_messages(user_id, userName, update):
                     idShift = mydb.get_member_property_chatid('lastShiftId', user_id)
                     mydb.setMinMaxDate(idShift)
                     hrSendToStudent = mydb.get_property_domain('hrStudent')
-                    helper.send_shift_to_technicalResponsible(idShift, bot, user_id,2)
+                    helper.send_shift_to_technicalResponsible(idShift, bot, user_id, 2)
                     isShiftEm = mydb.get_shift_property('shiftIsEM', idShift)
                     if int(isShiftEm) == 1:
                         helper.send_shift_to_studentEM(spBtn[3], bot, user_id)
@@ -1496,34 +1524,34 @@ def handle_new_messages(user_id, userName, update):
                 mydb.shift_update('progress', 4, spBtn[2])
                 tmr = mydb.get_member_property_chatid('membership_type', requester)
                 bot.sendMessage(requester, msg.messageLib.disAcceptShift.value)
-                helper.send_shift_to_other(bot, spBtn[2], requester, tmr,1)
-                lstMsg = mydb.getLstMsg(user_id,spBtn[2],requester)
+                helper.send_shift_to_other(bot, spBtn[2], requester, tmr, 1)
+                lstMsg = mydb.getLstMsg(user_id, spBtn[2], requester)
                 for item in lstMsg:
                     try:
-                        bot.deleteMessage((user_id,item[0]))
-                        mydb.delMsg(user_id,item[0])
+                        bot.deleteMessage((user_id, item[0]))
+                        mydb.delMsg(user_id, item[0])
                     except:
                         print(f'error item:{item}')
                         continue
             # آپدیت کردن شیفت
             #             پس از فشردن کلید شیفت را می پذیرم اجرا می شود
             elif spBtn[1] == 'shiftApprove':
-                shiftIsFull = mydb.get_shift_property('progress',spBtn[2])
-                if int(shiftIsFull)==4:
-                    bot.sendMessage(user_id,msg.messageLib.shiftIsFull.value)
+                shiftIsFull = mydb.get_shift_property('progress', spBtn[2])
+                if int(shiftIsFull) == 4:
+                    bot.sendMessage(user_id, msg.messageLib.shiftIsFull.value)
                     return
                 # todo: new approve shift
                 tds = mydb.getTotalDayShift(spBtn[2], 1)
                 emptyDay = mydb.getTotalDayShift(spBtn[2], 0)
-                if emptyDay>0:
+                if emptyDay > 0:
                     if tds == 0:
                         bot.sendMessage(user_id, str(msg.messageLib.shiftTotalDay.value).format(emptyDay),
                                         reply_markup=menu.keyLib.kbApproveAllShiftYesNO(shiftId=spBtn[2]))
                     else:
                         helper.NOApproveAllShift(spBtn[2], user_id, bot)
                 else:
-                    mydb.shift_update_by_id('progress',4,spBtn[2])  
-                    bot.sendMessage(user_id,msg.messageLib.shiftIsFull.value)
+                    mydb.shift_update_by_id('progress', 4, spBtn[2])
+                    bot.sendMessage(user_id, msg.messageLib.shiftIsFull.value)
                     return
             elif spBtn[1] == 'endSelection':
                 helper.endSelectionDayBtnClick(spBtn[2], user_id, bot)
@@ -1539,7 +1567,7 @@ def handle_new_messages(user_id, userName, update):
                 if mydb.isShiftDayFull(idDetailShift, ft) > 0:
                     bot.sendMessage(user_id, str(msg.messageLib.shiftDayIsFull.value))
                     return
-                tmpRes = mydb.registerDayShift(idShift, dateStr, user_id, 0, idDetailShift,ft=ft)
+                tmpRes = mydb.registerDayShift(idShift, dateStr, user_id, 0, idDetailShift, ft=ft)
                 if tmpRes != 0:
                     bot.sendMessage(user_id, str(msg.messageLib.afterDaySelction.value).format(dateStr))
                 else:
@@ -1547,11 +1575,11 @@ def handle_new_messages(user_id, userName, update):
             elif spBtn[1] == 'NOApproveAllShift':
                 helper.NOApproveAllShift(spBtn[2], user_id, bot)
             elif spBtn[1] == 'yesApproveAllShift':
-                shiftIsFull = mydb.get_shift_property('progress',spBtn[2])
+                shiftIsFull = mydb.get_shift_property('progress', spBtn[2])
                 if int(shiftIsFull) != 4:
                     helper.yesApproveAllShift(spBtn[2], user_id, bot)
                 else:
-                    bot.sendMessage(user_id,msg.messageLib.shiftIsFull.value)
+                    bot.sendMessage(user_id, msg.messageLib.shiftIsFull.value)
             elif spBtn[1] == 'deleteShift':
                 allShift = mydb.get_all_shift_by_creator(creator=message['chat']["id"])
                 if len(allShift) == 0:
@@ -2209,7 +2237,7 @@ def main(lui=0):
         while True:
             # دریافت تمامی پیام های دریافتی
             helper.send_shift_to_student(bot=bot)
-            updates = bot.getUpdates( offset=lui)
+            updates = bot.getUpdates(offset=lui)
             if updates:
                 lui = int(updates[-1]['update_id']) + 1
                 handle_updates(updates)

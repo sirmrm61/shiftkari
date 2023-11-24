@@ -827,7 +827,6 @@ VALUES({idShift},\'{dateShift}\',\'{requster}\',0,{sendedForCreator},{idDetailSh
             sqlQuery = f'SELECT count(*) from botshiftkari.detailshift  where  idDetailShift={idDetailShift} and status_f=1'
         myCursor.execute(sqlQuery)
         result = myCursor.fetchone()
-        print(result[0])
         return result[0]
 
     def getListDaySelection(self, idShift, requsterShift):
@@ -1178,3 +1177,4 @@ VALUES({idShift},\'{dateShift}\',\'{requster}\',0,{sendedForCreator},{idDetailSh
             return 1
         except:
             return 0
+
