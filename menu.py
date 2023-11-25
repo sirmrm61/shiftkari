@@ -604,7 +604,7 @@ class keyLib:
                 actionText = f'btn_enterTime_{idShift}_{str(item[1])}_{item[0]}'
             elif ability == 4:
                 actionText = f'btn_dayShift_{idShift}_{str(item[1])}_{item[0]}<->'
-            actTmp = None
+            actTmp = 'spare'
             if item[3] is not None and int(item[8]) == 0:
                 if ability not in (2, 0, 4): actionText = f'btn_dayApproveNew_{str(item[1])}'
                 if ability == 4:
