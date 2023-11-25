@@ -331,7 +331,6 @@ class HelperFunder:
                                 self=None,
                                 idShift=shiftRow[9],
                                 ability=ability)
-            print(kb)
             bot.sendMessage(t[0], self.formatShiftMessage(shiftRow, 2),
                             reply_markup=kb)
             
