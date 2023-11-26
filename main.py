@@ -2246,6 +2246,7 @@ def main(lui=0):
     try:
         while True:
             td = last_ut - ut
+            print(td.total_seconds())
             if last_ut is None or td.total_seconds() > 1:
                 # دریافت تمامی پیام های دریافتی
                 helper.send_shift_to_student(bot=bot)
