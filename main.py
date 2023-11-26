@@ -222,7 +222,7 @@ def handle_new_messages(user_id, userName, update):
             elif tempMember.membership_type == 4:
                 titlePos = 'مدیر'
             if tempMember.register_progress < 10:
-                bot.sendMessage(user_id,msg.messageLib.userNotCompelete.value,
+                bot.sendMessage(user_id, msg.messageLib.userNotCompelete.value,
                                 reply_markup=menu.keyLib.kbCreateMenuNotCompelete())
                 return
             try:
@@ -649,8 +649,8 @@ def handle_new_messages(user_id, userName, update):
                 mydb.shift_update_by_id('messageID', msgInfo['message_id'], idShift)
                 bot.deleteMessage((user_id, message['message_id']))
         else:
-            bot.deleteMessage((user_id,update['message']['message_id']))
-            bot.sendMessage(user_id,msg.messageLib.noBussiness.value)
+            bot.deleteMessage((user_id, update['message']['message_id']))
+            bot.sendMessage(user_id, msg.messageLib.noBussiness.value)
 
     elif 'callback_query' in update:
         message = update['callback_query']['message']
@@ -674,9 +674,9 @@ def handle_new_messages(user_id, userName, update):
                 bot.sendMessage(user_id, msg.messageLib.searchMessage.value,
                                 reply_markup=menu.keyLib.kbCreateSearchMenu())
             elif spBtn[1] == 'regFromFirstStep':
-                tempMember.register_progress=0
-                mydb.member_update('registration_progress',0,user_id)
-                bot.sendMessage(user_id,msg.messageLib.noForRegisterUser.value)
+                tempMember.register_progress = 0
+                mydb.member_update('registration_progress', 0, user_id)
+                bot.sendMessage(user_id, msg.messageLib.noForRegisterUser.value)
             elif spBtn[1] == 'search':
                 if spBtn[2] == 'student':
                     mydb.member_update_chatid('registration_progress', 301, user_id)
@@ -2241,16 +2241,19 @@ def handle_updates(updates):
 
 # شروع برنامه
 def main(lui=0):
-    # HTML کد پیام
-    # html_message = '<table><tr><th>نام</th><th>سن</th></tr>''<tr><td>علی</td><td>30</td></tr><tr><td>محمد</td><td>25</td></tr></table>'
+    ut = datetime.now()
+    last_ut = datetime.now()
     try:
         while True:
-            # دریافت تمامی پیام های دریافتی
-            helper.send_shift_to_student(bot=bot)
-            updates = bot.getUpdates(offset=lui)
-            if updates:
-                lui = int(updates[-1]['update_id']) + 1
-                handle_updates(updates)
+            td = last_ut - ut
+            if last_ut is None or td.total_seconds() > 1:
+                # دریافت تمامی پیام های دریافتی
+                helper.send_shift_to_student(bot=bot)
+                updates = bot.getUpdates(offset=lui)
+                if updates:
+                    lui = int(updates[-1]['update_id']) + 1
+                    handle_updates(updates)
+            last_ut = datetime.now()
     except Exception as e:
         lui = lui + 1
         if type(e).__name__ in ('MaxRetryError', 'ProtocolError'):
