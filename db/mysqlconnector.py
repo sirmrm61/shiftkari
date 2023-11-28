@@ -697,6 +697,19 @@ class mysqlconnector:
         result = myCursor.fetchall()
         return result
 
+    def get_all_student_idmeMember(self, creator=None):
+        mydb = self.connector()
+        myCursor = mydb.cursor()
+        sqlQuery = ''
+        if creator is None:
+            sqlQuery = 'SELECT mem.chat_id,mem.id from botshiftkari.membership as mem where mem.del=0 ' \
+                       'and mem.membership_type=3 and mem.verifyAdmin = 1 '
+        else:
+            sqlQuery = f'SELECT mem.chat_id,mem.id from botshiftkari.membership as mem where mem.del=0 ' \
+                       f'and mem.membership_type=3  and mem.verifyAdmin = 1 and not mem.chat_id = \'{creator}\' '
+        myCursor.execute(sqlQuery)
+        result = myCursor.fetchall()
+        return result
     def checkExsistDetail(self, mem: Membership, newType):
         mydb = self.connector()
         myCursor = mydb.cursor()
@@ -720,8 +733,8 @@ class mysqlconnector:
         else:
             return False
 
-    def registerDayShift(self, idShift, dateShift, requster, sendedForCreator, idDetailShift, status=None,ft=-1):
-        tmpIdDayShift = self.getIdRegisterDayOfShift(idShift, dateShift, requster, idDetailShift,ft=ft)
+    def registerDayShift(self, idShift, dateShift, requster, sendedForCreator, idDetailShift, status=None, ft=-1):
+        tmpIdDayShift = self.getIdRegisterDayOfShift(idShift, dateShift, requster, idDetailShift, ft=ft)
         if tmpIdDayShift != 0:
             return 0
         mydb = self.connector()
@@ -801,7 +814,7 @@ VALUES({idShift},\'{dateShift}\',\'{requster}\',0,{sendedForCreator},{idDetailSh
         result = myCursor.fetchall()
         return result
 
-    def getIdRegisterDayOfShift(self, idShift, dateShift, requsterShift, idDetailShift,ft):
+    def getIdRegisterDayOfShift(self, idShift, dateShift, requsterShift, idDetailShift, ft):
         mydb = self.connector()
         myCursor = mydb.cursor()
         sqlQuery = f'SELECT iddayShift from botshiftkari.dayshift  where  idShift={idShift} and dateShift=\'{dateShift}\'' + \
@@ -1151,8 +1164,8 @@ VALUES({idShift},\'{dateShift}\',\'{requster}\',0,{sendedForCreator},{idDetailSh
             return 1
         except:
             return 0
-        
-    def insertSendMsg(self,chatId,msgId,typemsg,reqCode):
+
+    def insertSendMsg(self, chatId, msgId, typemsg, reqCode):
         sqlQuery = f'''insert into `botshiftkari`.`lstmsg` (`chatId`,`msgId`,`typemsg`,`reqCode`)values(\'{chatId}\',
                         \'{msgId}\',{typemsg},\'{reqCode}\')'''
         mydb = self.connector()
@@ -1160,14 +1173,16 @@ VALUES({idShift},\'{dateShift}\',\'{requster}\',0,{sendedForCreator},{idDetailSh
         myCursor = mydb.cursor()
         myCursor.execute(sqlQuery)
         return myCursor.lastrowid
-    def getLstMsg(self,chatId,typemsg,reqCode):
+
+    def getLstMsg(self, chatId, typemsg, reqCode):
         sqlQuery = f'select msgId from `botshiftkari`.`lstmsg` where typemsg={typemsg} and chatId = \'{chatId}\' and reqCode=\'{reqCode}\''
         mydb = self.connector()
         myCursor = mydb.cursor()
         myCursor.execute(sqlQuery)
         result = myCursor.fetchall()
         return result
-    def delMsg(self, chatId,msgId):
+
+    def delMsg(self, chatId, msgId):
         try:
             mydb = self.connector()
             myCursor = mydb.cursor()
@@ -1178,3 +1193,10 @@ VALUES({idShift},\'{dateShift}\',\'{requster}\',0,{sendedForCreator},{idDetailSh
         except:
             return 0
 
+    def getDayShiftForStudent(self, idMember, idShift):
+        sqlQuery = f'call getDayShiftForStudent({idMember},{idShift})'
+        mydb = self.connector()
+        myCursor = mydb.cursor()
+        myCursor.execute(sqlQuery)
+        result = myCursor.fetchall()
+        return result

@@ -656,7 +656,19 @@ class keyLib:
                                              callback_data='btn_endSelection_{}'.format(str(idShift)))])
         return InlineKeyboardMarkup(inline_keyboard=res)
 
-    def kbCreateMenuApproveShift(self=None, shiftId=None):
-        return InlineKeyboardMarkup(inline_keyboard=[
-            [InlineKeyboardButton(text='شیفت را می پذیرم', callback_data='btn_shiftApprove_{}'.format(str(shiftId)))]
-        ])
+    def kbCreateMenuApproveShift(self=None, idShift=None,days=None,ability=0):
+        actionText = 'spare'
+        ht = ''
+        lkb = []
+        for day in days:
+            if int(day[0]) == 1:
+                ht=f'{day[10]}-{day[11]}_0'
+            elif int(day[1]) == 1:
+                ht = f'{day[10]}-{day[11]}_1'
+            elif int(day[2]) == 1:
+                ht = f'{day[10]}-{day[11]}_2'
+            elif int(day[3]) == 1:
+                ht = f'{day[10]}-{day[11]}_3'
+            lkb.append(InlineKeyboardButton(text=f'{day[6]}-{day[7]}-{day[8]}<>{day[10]}-{day[11]}',
+                                            callback_data=f'btn_dayShift_{idShift}_{day[4]}<->{ht}'))
+        return InlineKeyboardMarkup(inline_keyboard=lkb)
