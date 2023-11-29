@@ -341,19 +341,21 @@ class HelperFunder:
             days = mydb.getDayShiftForStudent(s[1], idShift)
             if len(days) > 0:
                 bot.sendMessage(s[0], self.formatShiftMessage(shiftRow, 3),
-                                reply_markup=menu.keyLib.kbCreateMenuApproveShift(shiftId=shiftRow[9], days=days,
+                                reply_markup=menu.keyLib.kbCreateMenuApproveShift(idShift=shiftRow[9], days=days,
                                                                                   ability=0))
         mydb.shift_update_by_id('send', 1, idShift)
 
     def send_shift_to_student(self, bot):
         shiftRows = mydb.get_list_shift_for_student()  # shift's for student
         if len(shiftRows) > 0:
-            students = mydb.get_all_student_chatid()  # 3 is tpe of student
+            students = mydb.get_all_student_idmeMember()  # 3 is tpe of student
             for shiftRow in shiftRows:
                 for st in students:
-                    mydb.shift_update_by_id(fieldName='send', fieldValue=1, idshift=shiftRow[9])
+                    days = mydb.getDayShiftForStudent(st[1], shiftRow[9])
                     bot.sendMessage(st[0], self.formatShiftMessage(shiftRow, 3),
-                                    reply_markup=menu.keyLib.kbCreateMenuApproveShift(shiftId=shiftRow[9]))
+                                    reply_markup=menu.keyLib.kbCreateMenuApproveShift(idShift=shiftRow[9], days=days,
+                                                                                  ability=0))
+                mydb.shift_update_by_id(fieldName='send', fieldValue=1, idshift=shiftRow[9])
 
     def send_profile(self, chatid, bot, forUser=None, idShift=None):
         fuser = None

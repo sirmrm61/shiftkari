@@ -304,7 +304,7 @@ class mysqlconnector:
         idMember = result[0]
         sqlQuery = 'select {0} from `botshiftkari`.`student` where idMember={1}'.format(fieldName, idMember)
         myCursor.execute(sqlQuery)
-        result = myCursor.fetchone()
+        result = myCursor.fetch()
         if result is None:
             return None
         else:
@@ -316,7 +316,7 @@ class mysqlconnector:
         mydb.autocommit = True
         myCursor = mydb.cursor()
         myCursor.execute(sqlQuery)
-        result = myCursor.fetchone();
+        result = myCursor.fetchone()
         idMember = result[0]
         sqlQuery = 'select id from `botshiftkari`.`student` where idMember={}'.format(idMember)
         myCursor.execute(sqlQuery)
