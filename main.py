@@ -1449,7 +1449,7 @@ def handle_new_messages(user_id, userName, update):
                     if int(isShiftEm) == 1:
                         helper.send_shift_to_studentEM(spBtn[3], bot, user_id)
                         bot.sendMessage(user_id,
-                                        str(msg.messageLib.endRegisterShift.value))
+                                        str(msg.messageLib.msgIsEm.value))
                     else:
                         bot.sendMessage(user_id,
                                         str(msg.messageLib.endRegisterShift.value).format(hrSendToStudent))
