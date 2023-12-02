@@ -299,12 +299,14 @@ class mysqlconnector:
         mydb = self.connector()
         mydb.autocommit = True
         myCursor = mydb.cursor()
+        myCursor.reset()
         myCursor.execute(sqlQuery)
         result = myCursor.fetchone()
         idMember = result[0]
+        myCursor.reset()
         sqlQuery = 'select {0} from `botshiftkari`.`student` where idMember={1}'.format(fieldName, idMember)
         myCursor.execute(sqlQuery)
-        result = myCursor.fetch()
+        result = myCursor.fetchall()
         if result is None:
             return None
         else:
