@@ -661,7 +661,7 @@ class mysqlconnector:
         mydb = self.connector()
         myCursor = mydb.cursor()
         sqlQuery = f'SELECT count(*) FROM botshiftkari.shift where Creator=\'{creator}\' and shiftIsEM = 1 and dateRegiter between' \
-                   f' \'{dateStart}\' and \'{dateEnd}\'  '
+                   f' \'{dateStart}\' and \'{dateEnd}\' and progress = 2 '
         myCursor.execute(sqlQuery)
         result = myCursor.fetchone()
         return int(result[0])
