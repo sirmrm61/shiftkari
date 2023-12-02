@@ -879,27 +879,29 @@ def handle_new_messages(user_id, userName, update):
                 PDEM = mydb.get_property_domain('PDEM')  # دوره شیفت اضطراری هر چند روز
                 bot.sendMessage(user_id, str(msg.messageLib.emShiftMsgCreate.value).format(PDEM, TSPDEM))
                 totalEM = mydb.getTotalShiftEM(date7ago, dateNow, user_id)
-                print(f'int(totalEM) < int(TSPDEM) ==>{totalEM} >{TSPDEM}')
                 if int(totalEM) < int(TSPDEM):
-                    bot.sendMessage(user_id, msg.messageLib.emShiftRegister.value)
-                    splitDate = str(JalaliDate(datetime.now())).split('-')
-                    dateEndMonth = None
-                    if int(splitDate[1]) < 12:
-                        dateEndMonth = JalaliDate(
-                            JalaliDate(int(splitDate[0]), int(splitDate[1]) + 1, 1).to_gregorian() - timedelta(days=1))
+                    idShift = mydb.create_shift(user_id)
+                    if tempMember.membership_type != 1:
+                        msgInfo = bot.sendMessage(user_id, msg.messageLib.promptChoseTypePharmacy.value,
+                                                  reply_markup=menu.keyLib.kbTypePharmacyCS(idShift=idShift))
                     else:
-                        dateEndMonth = JalaliDate(
-                            JalaliDate(int(splitDate[0]) + 1, 1, 1).to_gregorian() - timedelta(days=1))
-                    sde = str(dateEndMonth).split('-')
-                    getMsgId = mydb.get_member_property_chatid('editMsgId', user_id)
-                    msgInfo = helper.sendCalendar(bot, user_id, None, int(splitDate[0]), int(splitDate[1]),
-                                                  int(splitDate[2]), int(sde[2]), isEm=1)
-                    mydb.member_update_chatid('editMsgId', msgInfo["message_id"], user_id)
-                    # bot.sendMessage(user_id, msg.messageLib.dateShift.value)
-                    # bot.sendMessage(chat_id=user_id, parse_mode='HTML', text='سال را انتخاب کنید',
-                    #                 reply_markup=menu.keyLib.kbCreateMenuYear(tag=6))
-                    # mydb.member_update('registration_progress', 11, user_id)
-                    # mydb.member_update('op', 0, message['chat']['id'])
+                        pharmacyTypeTmp = mydb.get_funder_property('pharmacy_type', user_id)
+                        if pharmacyTypeTmp == 'شبانه روزی':
+                            mydb.shift_update_by_id('pharmacyType', 1, idShift)
+                            morning = mydb.get_property_domain('morning')
+                            evening = mydb.get_property_domain('evening')
+                            night = mydb.get_property_domain('night')
+                            msgInfo = bot.sendMessage(user_id,
+                                                      str(msg.messageLib.promptStandardShift.value).format(morning,
+                                                                                                           evening,
+                                                                                                           night),
+                                                      reply_markup=menu.keyLib.kbTypePharmacyTime(idShift=idShift))
+                        else:
+                            mydb.shift_update_by_id('pharmacyType', 2, idShift)
+                            msgInfo = helper.send_createShift(bot, user_id, idShift, 2, None)
+                    mydb.shift_update_by_id('shiftIsEM', 1, idShift)
+                    mydb.shift_update_by_id('messageID', msgInfo['message_id'], idShift)
+                    mydb.member_update_chatid('lastShiftId', idShift, user_id)
                 else:
                     bot.sendMessage(user_id, msg.messageLib.emShiftFull.value)
                     return
