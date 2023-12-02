@@ -713,7 +713,6 @@ class HelperFunder:
 
     def sendCalendar(self, bot, user_id, msgId, yearC, monthC, dayC, endDay, idShift=0, isEm=2, typeShift=0,
                      isMorning=0):
-        print(f'sendCalendar-isMorning={isMorning}')
         msgInfo = None
         msgStr = 'empty'
         if int(typeShift) == 1:
@@ -754,7 +753,7 @@ class HelperFunder:
                 print((user_id, msgId))
         return msgInfo
 
-    def send_createShift(self, bot, user_id, idShift, typeShift, msgId, isMorning=0):
+    def send_createShift(self, bot, user_id, idShift, typeShift, msgId, isMorning=0,isEM=2):
         splitDate = str(JalaliDate(datetime.datetime.now())).split('-')
         dateEndMonth = None
         if int(splitDate[1]) < 12:
@@ -765,6 +764,6 @@ class HelperFunder:
                 JalaliDate(int(splitDate[0]) + 1, 1, 1).to_gregorian() - timedelta(days=1))
         sde = str(dateEndMonth).split('-')
         msgInfo = self.sendCalendar(bot, user_id, msgId, int(splitDate[0]), int(splitDate[1]),
-                                    int(splitDate[2]), int(sde[2]), idShift, 2, typeShift, isMorning)
+                                    int(splitDate[2]), int(sde[2]), idShift, isEM, typeShift, isMorning)
         mydb.member_update_chatid('editMsgId', msgInfo["message_id"], user_id)
         return msgInfo

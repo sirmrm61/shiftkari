@@ -881,6 +881,7 @@ def handle_new_messages(user_id, userName, update):
                 totalEM = mydb.getTotalShiftEM(date7ago, dateNow, user_id)
                 if int(totalEM) < int(TSPDEM):
                     idShift = mydb.create_shift(user_id)
+                    mydb.shift_update_by_id('shiftIsEM', 1, idShift)
                     if tempMember.membership_type != 1:
                         msgInfo = bot.sendMessage(user_id, msg.messageLib.promptChoseTypePharmacy.value,
                                                   reply_markup=menu.keyLib.kbTypePharmacyCS(idShift=idShift))
@@ -899,7 +900,6 @@ def handle_new_messages(user_id, userName, update):
                         else:
                             mydb.shift_update_by_id('pharmacyType', 2, idShift)
                             msgInfo = helper.send_createShift(bot, user_id, idShift, 2, None)
-                    mydb.shift_update_by_id('shiftIsEM', 1, idShift)
                     mydb.shift_update_by_id('messageID', msgInfo['message_id'], idShift)
                     mydb.member_update_chatid('lastShiftId', idShift, user_id)
                 else:
@@ -975,22 +975,38 @@ def handle_new_messages(user_id, userName, update):
             elif spBtn[1] == 'backToSelectDay':
                 idShift = spBtn[2]
                 msgId = mydb.get_shift_property('messageID', idShift)
-                helper.send_createShift(bot, user_id, idShift, 1, msgId, 3)
+                isEM = mydb.get_shift_property('shiftIsEM', idShift)
+                if isEM == 0:
+                    helper.send_createShift(bot, user_id, idShift, 2, msgId, 3, 2)
+                elif isEM == 1:
+                    helper.send_createShift(bot, user_id, idShift, 2, msgId, 3, 0)
             elif spBtn[1] == 'freeTime':
                 idShift = spBtn[2]
                 mydb.shift_update_by_id('pharmacyType', 1, idShift)
                 msgId = mydb.get_shift_property('messageID', idShift)
-                helper.send_createShift(bot, user_id, idShift, 1, msgId, 3)
+                isEM = mydb.get_shift_property('shiftIsEM', idShift)
+                if isEM == 0:
+                    helper.send_createShift(bot, user_id, idShift, 2, msgId, 3, 2)
+                elif isEM == 1:
+                    helper.send_createShift(bot, user_id, idShift, 2, msgId, 3, 0)
             elif spBtn[1] == 'timeStandard':
                 idShift = spBtn[2]
                 mydb.shift_update_by_id('pharmacyType', 1, idShift)
                 msgId = mydb.get_shift_property('messageID', idShift)
-                helper.send_createShift(bot, user_id, idShift, 2, msgId)
+                isEM = mydb.get_shift_property('shiftIsEM', idShift)
+                if isEM == 0:
+                    helper.send_createShift(bot, user_id, idShift, 2, msgId, 0, 2)
+                elif isEM == 1:
+                    helper.send_createShift(bot, user_id, idShift, 2, msgId, 0, 0)
             elif spBtn[1] == 'btnNormalCS':
                 idShift = spBtn[2]
                 mydb.shift_update_by_id('pharmacyType', 2, idShift)
                 msgId = mydb.get_shift_property('messageID', idShift)
-                helper.send_createShift(bot, user_id, idShift, 2, msgId)
+                isEM = mydb.get_shift_property('shiftIsEM', idShift)
+                if isEM == 0:
+                    helper.send_createShift(bot, user_id, idShift, 2, msgId, 0, 2)
+                elif isEM == 1:
+                    helper.send_createShift(bot, user_id, idShift, 2, msgId, 0, 0)
             elif spBtn[1] == 'nextMonth':
                 sd = str(spBtn[2]).split('#')
                 yearC = int(sd[0])
