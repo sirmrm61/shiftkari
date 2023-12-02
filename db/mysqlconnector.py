@@ -1196,7 +1196,7 @@ VALUES({idShift},\'{dateShift}\',\'{requster}\',0,{sendedForCreator},{idDetailSh
             return 0
 
     def getDayShiftForStudent(self, idMember, idShift):
-        sqlQuery = f'call getDayShiftForStudent({idMember},{idShift})'
+        sqlQuery = f'call getDayShiftForStudent({idShift},{idMember})'
         mydb = self.connector()
         myCursor = mydb.cursor()
         myCursor.execute(sqlQuery)
