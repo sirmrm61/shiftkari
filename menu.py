@@ -175,14 +175,15 @@ class keyLib:
 
     def kbCreateOperateAdminForUser(self=None, chatId=None):
         typeMember = mydb.get_member_property_chatid('membership_type',chatId)
-        disableMember = mydb.get_member_property_chatid('del', chatId)
+        disableMember = mydb.get_member_property_chatid('botshiftkari.membership.del', chatId)
+        print(f'disableMember={disableMember}')
         lk = []
         lk.append([InlineKeyboardButton(text='حذف کاربر', callback_data='btn_operateAdmin_remove_{0}'.format(
             chatId))])
-        if int(disableMember) == 0:
+        if disableMember==0:
             lk.append([InlineKeyboardButton(text='غیر فعال کردن کاربر', callback_data='btn_operateAdmin_disable_{0}'.format(
                 chatId))])
-        elif int(disableMember) == 1:
+        elif disableMember == 1:
             lk.append(
                 [InlineKeyboardButton(text='فعال کردن کاربر', callback_data='btn_operateAdmin_disable_{0}'.format(
                     chatId))])
