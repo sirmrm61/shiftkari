@@ -237,6 +237,18 @@ class mysqlconnector:
         else:
             return result[0]
 
+    def get_member_property_id(self, fieldName, idMember):
+        sqlQuery = 'select `{1}` from `botshiftkari`.`membership` where  id = \'{0}\''.format(idMember, fieldName)
+        mydb = self.connector()
+        mydb.autocommit = True
+        myCursor = mydb.cursor()
+        myCursor.execute(sqlQuery)
+        result = myCursor.fetchone();
+        if result is None:
+            return None
+        else:
+            return result[0]
+
     def create_member(self, member: Membership):
         sqlQuery = 'select * from `botshiftkari`.`membership` where chat_id = \'{}\''.format(member.chatId)
         mydb = self.connector()

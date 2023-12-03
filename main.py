@@ -627,8 +627,8 @@ def handle_new_messages(user_id, userName, update):
                 return
             for item in resultSearch:
                 bot.sendMessage(user_id, helper.formatSearchFounder(item, tempMember.register_progress),
-                                reply_markup=menu.keyLib.kbCreateOperateSearchMenu(item[3],
-                                                                                   tempMember.register_progress))
+                                reply_markup=menu.keyLib.kbCreateOperateSearchMenu(chatId= item[3],
+                                                                                   op=tempMember.register_progress))
             mydb.member_update_chatid('registration_progress', 10, user_id)
         elif tempMember.register_progress == 400:
             idDetailShift = mydb.get_member_property_chatid('editMsgId', user_id)
@@ -1719,6 +1719,10 @@ def handle_new_messages(user_id, userName, update):
 {2}'''.format(itemRow1, itemRow2, itemRow3))
                 else:
                     bot.sendMessage(message['chat']['id'], msg.messageLib.emptyList.value)
+            elif spBtn[1] == 'operate':
+                helper.send_profile(spBtn[2],bot,user_id)
+                bot.sendMessage(user_id,'عملیات در دسترس',
+                                reply_markup=menu.keyLib.kbCreateOperateAdminForUser(spBtn[2]))
         if btn == 'btnFounder':
             if tempMember.register_progress == 18 and tempMember.op == 16:
                 mydb.member_update_chatid('membership_type', 1, user_id)

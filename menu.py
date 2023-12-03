@@ -173,6 +173,32 @@ class keyLib:
                                                                            callback_data='btn_operate_{0}_{1}'.format(
                                                                                chatId, op))]])
 
+    def kbCreateOperateAdminForUser(self=None, chatId=None):
+        typeMember = mydb.get_member_property_chatid('membership_type',chatId)
+        disableMember = mydb.get_member_property_chatid('del', chatId)
+        lk = []
+        lk.append([InlineKeyboardButton(text='حذف کاربر', callback_data='btn_operateAdmin_remove_{0}'.format(
+            chatId))])
+        if disableMember==0:
+            lk.append([InlineKeyboardButton(text='غیر فعال کردن کاربر', callback_data='btn_operateAdmin_disable_{0}'.format(
+                chatId))])
+        elif disableMember == 1:
+            lk.append(
+                [InlineKeyboardButton(text='فعال کردن کاربر', callback_data='btn_operateAdmin_disable_{0}'.format(
+                    chatId))])
+        if typeMember != 4:
+            lk.append([InlineKeyboardButton(text='شیفت های ایجاد شده', callback_data='btn_operateAdmin_createShift_{0}'.format(
+                chatId))])
+            lk.append(
+                [InlineKeyboardButton(text='شیفت های درخواست شده', callback_data='btn_operateAdmin_requestShift_{0}'.format(
+                    chatId))])
+            lk.append(
+                [InlineKeyboardButton(text='شیفت های پذیرش شده', callback_data='btn_operateAdmin_remove_{0}'.format(
+                    chatId))])
+
+
+        return InlineKeyboardMarkup(inline_keyboard=lk)
+
     def kbcreateSendMessage(self=None, chatId=None):
         return InlineKeyboardMarkup(inline_keyboard=[
             [InlineKeyboardButton(text='مدیران', callback_data='btn_SM_0_{}'.format(str(chatId))),
@@ -425,10 +451,12 @@ class keyLib:
             [InlineKeyboardButton(text='ادامه ثبت', callback_data='btn_ContiReg_{}'.format(str(idShift))),
              InlineKeyboardButton(text='انصراف', callback_data='btn_cancelReg_{}'.format(str(idShift)))]
         ])
+
     def kbCreateMenuNotCompelete(self=None):
         return InlineKeyboardMarkup(inline_keyboard=[
             [InlineKeyboardButton(text='ثبت نام از ابتدا', callback_data='btn_regFromFirstStep')]
         ])
+
     def kbCreateMenuTypePharmacy(self=None, idShift=None):
         return InlineKeyboardMarkup(inline_keyboard=[
             [InlineKeyboardButton(text='شبانه روزی', callback_data='btn_pharmacyType_{}'.format(str(idShift)))],
@@ -656,13 +684,13 @@ class keyLib:
                                              callback_data='btn_endSelection_{}'.format(str(idShift)))])
         return InlineKeyboardMarkup(inline_keyboard=res)
 
-    def kbCreateMenuApproveShift(self=None, idShift=None,days=None,ability=0):
+    def kbCreateMenuApproveShift(self=None, idShift=None, days=None, ability=0):
         actionText = 'spare'
         ht = ''
         lkb = []
         for day in days:
             if int(day[0]) == 1:
-                ht=f'{day[10]}-{day[11]}_0'
+                ht = f'{day[10]}-{day[11]}_0'
             elif int(day[1]) == 1:
                 ht = f'{day[10]}-{day[11]}_1'
             elif int(day[2]) == 1:
@@ -670,7 +698,7 @@ class keyLib:
             elif int(day[3]) == 1:
                 ht = f'{day[10]}-{day[11]}_3'
             lkb.append([InlineKeyboardButton(text=f'{day[6]}-{day[7]}-{day[8]}-<>{day[10]}-{day[11]}',
-                                            callback_data=f'btn_dayShift_{idShift}_{day[4]}_{day[6]}-{day[7]}-{day[8]}<->{ht}')])
+                                             callback_data=f'btn_dayShift_{idShift}_{day[4]}_{day[6]}-{day[7]}-{day[8]}<->{ht}')])
         lkb.append([InlineKeyboardButton(text='پایان انتخاب',
-                                             callback_data='btn_endSelection_{}'.format(str(idShift)))])
+                                         callback_data='btn_endSelection_{}'.format(str(idShift)))])
         return InlineKeyboardMarkup(inline_keyboard=lkb)
