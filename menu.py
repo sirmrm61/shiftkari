@@ -179,10 +179,10 @@ class keyLib:
         lk = []
         lk.append([InlineKeyboardButton(text='حذف کاربر', callback_data='btn_operateAdmin_remove_{0}'.format(
             chatId))])
-        if disableMember==0:
+        if int(disableMember) == 0:
             lk.append([InlineKeyboardButton(text='غیر فعال کردن کاربر', callback_data='btn_operateAdmin_disable_{0}'.format(
                 chatId))])
-        elif disableMember == 1:
+        elif int(disableMember) == 1:
             lk.append(
                 [InlineKeyboardButton(text='فعال کردن کاربر', callback_data='btn_operateAdmin_disable_{0}'.format(
                     chatId))])
