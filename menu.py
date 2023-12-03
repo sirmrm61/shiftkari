@@ -175,7 +175,7 @@ class keyLib:
 
     def kbCreateOperateAdminForUser(self=None, chatId=None):
         typeMember = mydb.get_member_property_chatid('membership_type',chatId)
-        disableMember = mydb.get_member_property_chatid('botshiftkari.membership.del', chatId)
+        disableMember = mydb.get_member_property_chatid('del', chatId)
         print(f'disableMember={disableMember}')
         lk = []
         lk.append([InlineKeyboardButton(text='حذف کاربر', callback_data='btn_operateAdmin_remove_{0}'.format(
