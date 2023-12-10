@@ -2290,11 +2290,11 @@ def callTelegram(luiIn):
         else:
             bot.sendMessage('6274361322', traceback.format_exc())
             print(traceback.format_exc())
-            threadCallTelegram = threading.Thread(target=callTelegram,args=(lui+1))
+            threadCallTelegram = threading.Thread(target=callTelegram(lui+1))
             threadCallTelegram.start()
 def main():
     threadDelOldData = threading.Thread(target=delOldData)
-    threadCallTelegram = threading.Thread(target=callTelegram,args=(0,))
+    threadCallTelegram = threading.Thread(target=callTelegram(0))
     threadDelOldData.start()
     threadCallTelegram.start()
 
