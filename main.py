@@ -1,3 +1,4 @@
+import threading
 import traceback
 import telepot
 import time
@@ -27,7 +28,8 @@ idFromFile = None
 botKeyApi = mydb.get_property_domain('botkey')
 bot = telepot.Bot(botKeyApi)
 
-
+# splitDate = JalaliDate(datetime.now())
+# print(splitDate)
 # helper.send_shift_to_technicalResponsible(29, bot )
 # exit()
 # admins = mydb.getAdmins()
@@ -2260,11 +2262,15 @@ def handle_updates(updates):
         # پردازش پیام جدید
         handle_new_messages(user_id, user_name, update)
 
-
-# شروع برنامه
-def main(lui=0):
+def delOldData():
+    while True:
+        now = datetime.now()
+        if now.hour == 0 and now.minute <= 2:
+            mydb.delOldShift()
+def callTelegram():
     ut = datetime.now()
     last_ut = datetime.now()
+    lui=0
     try:
         while True:
             td = last_ut - ut
@@ -2284,7 +2290,13 @@ def main(lui=0):
         else:
             bot.sendMessage('6274361322', traceback.format_exc())
             print(traceback.format_exc())
-        main(lui)
+def main():
+    threadDelOldData = threading.Thread(target=delOldData)
+    threadCallTelegram = threading.Thread(target=callTelegram)
+    threadDelOldData.start()
+    threadCallTelegram.start()
+
+
 
 
 if __name__ == '__main__':

@@ -1214,3 +1214,21 @@ VALUES({idShift},\'{dateShift}\',\'{requster}\',0,{sendedForCreator},{idDetailSh
         myCursor.execute(sqlQuery)
         result = myCursor.fetchall()
         return result
+    def delOldShift(self):
+        datePersian = JalaliDate(datetime.datetime.now())
+        print('del all')
+        sqlQuery = f"select idshift from botshiftkari.shift where dateEndShift < '{datePersian}'"
+        mydb = self.connector()
+        mydb.autocommit = True
+        myCursor = mydb.cursor()
+        myCursor.execute(sqlQuery)
+        idsShift = myCursor.fetchall()
+        for idShift in idsShift:
+            sqlQuery = f"delete from botshiftkari.dayshift where idshift = {idShift[0]} "
+            print(sqlQuery)
+            myCursor.execute(sqlQuery)
+            sqlQuery = f"delete from botshiftkari.detailshift where idshift = {idShift[0]} "
+            myCursor.execute(sqlQuery)
+            sqlQuery = f"delete from botshiftkari.shift where idshift = {idShift[0]} "
+            myCursor.execute(sqlQuery)
+        return None
