@@ -2290,6 +2290,8 @@ def callTelegram():
         else:
             bot.sendMessage('6274361322', traceback.format_exc())
             print(traceback.format_exc())
+            threadCallTelegram = threading.Thread(target=callTelegram)
+            threadCallTelegram.start()
 def main():
     threadDelOldData = threading.Thread(target=delOldData)
     threadCallTelegram = threading.Thread(target=callTelegram)
