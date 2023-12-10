@@ -2267,10 +2267,10 @@ def delOldData():
         now = datetime.now()
         if now.hour == 0 and now.minute <= 2:
             mydb.delOldShift()
-def callTelegram():
+def callTelegram(luiIn):
     ut = datetime.now()
     last_ut = datetime.now()
-    lui=0
+    lui=luiIn
     try:
         while True:
             td = last_ut - ut
@@ -2290,11 +2290,11 @@ def callTelegram():
         else:
             bot.sendMessage('6274361322', traceback.format_exc())
             print(traceback.format_exc())
-            threadCallTelegram = threading.Thread(target=callTelegram)
+            threadCallTelegram = threading.Thread(target=callTelegram,args=(lui+1))
             threadCallTelegram.start()
 def main():
     threadDelOldData = threading.Thread(target=delOldData)
-    threadCallTelegram = threading.Thread(target=callTelegram)
+    threadCallTelegram = threading.Thread(target=callTelegram,args=(0,))
     threadDelOldData.start()
     threadCallTelegram.start()
 
