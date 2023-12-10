@@ -732,6 +732,7 @@ def handle_new_messages(user_id, userName, update):
                 mydb.delLisence(1, spBtn[2])
                 bot.sendMessage(user_id, msg.messageLib.delLicensed.value)
             elif spBtn[1] == 'noApproveCreator':
+
                 bot.sendMessage(spBtn[3], msg.messageLib.disAcceptShift.value)
                 tmr = mydb.get_member_property_chatid('membership_type', spBtn[3])
                 helper.send_shift_to_other(bot, spBtn[2], spBtn[3], tmr, 1)
@@ -776,7 +777,6 @@ def handle_new_messages(user_id, userName, update):
             elif spBtn[1] == 'approveAllDay':
                 listIdDay = str(spBtn[2]).split('#')
                 requsterSift = None
-                print(f'listIdDay={len(listIdDay)}')
                 for item in listIdDay:
                     ids = str(item).split('=')
                     requsterSift = helper.registerDay(ids[0], bot, user_id, ids[1])
@@ -2273,6 +2273,7 @@ def delOldData():
             threadCallTelegram.start()
 
 def callTelegram(luiIn):
+    print(luiIn)
     ut = datetime.now()
     last_ut = datetime.now()
     lui=luiIn
