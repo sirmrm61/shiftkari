@@ -1572,11 +1572,11 @@ def handle_new_messages(user_id, userName, update):
                 tds = mydb.getTotalDayShift(spBtn[2], 1)
                 emptyDay = mydb.getTotalDayShift(spBtn[2], 0)
                 if emptyDay > 0:
-                    if tds == 0:
-                        bot.sendMessage(user_id, str(msg.messageLib.shiftTotalDay.value).format(emptyDay),
-                                        reply_markup=menu.keyLib.kbApproveAllShiftYesNO(shiftId=spBtn[2]))
-                    else:
-                        helper.NOApproveAllShift(spBtn[2], user_id, bot)
+                    # if tds == 0:
+                    #     bot.sendMessage(user_id, str(msg.messageLib.shiftTotalDay.value).format(emptyDay),
+                    #                     reply_markup=menu.keyLib.kbApproveAllShiftYesNO(shiftId=spBtn[2]))
+                    # else:
+                    helper.NOApproveAllShift(spBtn[2], user_id, bot)
                 else:
                     mydb.shift_update_by_id('progress', 4, spBtn[2])
                     bot.sendMessage(user_id, msg.messageLib.shiftIsFull.value)

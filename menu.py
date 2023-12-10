@@ -617,13 +617,9 @@ class keyLib:
         return InlineKeyboardMarkup(inline_keyboard=res)
 
     def createMenuFromListDayForApproveCreatorNew(self, idShift, totalInRow=1, ability=0):
-        print(f'idShift={idShift}')
-        print(f'totalInRow={totalInRow}')
-        print(f'ability={ability}')
         lk = []
         listIdDay = []
         listDay = mydb.getListSelectedDay(idShift)
-        print(listDay)
         for item in listDay:
             listIdDay += str(item[1]) + '#'
             actionText = 'spare'
