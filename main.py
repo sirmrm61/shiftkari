@@ -1652,9 +1652,11 @@ def handle_new_messages(user_id, userName, update):
             elif spBtn[1] == 'approveShiftManager':
                 mydb.shift_update_by_id(fieldName='progress', fieldValue=2, idshift=spBtn[2])
                 approver = mydb.get_shift_property('approver', spBtn[2])
-                bot.sendMessage(approver, msg.messageLib.shiftApprovedByManager.value)
-                helper.registerFullShiftDay(spBtn[2], approver)
-                bot.sendMessage(user_id, msg.messageLib.requesterNotify.value)
+                print(approver)
+                if  approver is not None:
+                    bot.sendMessage(approver, msg.messageLib.shiftApprovedByManager.value)
+                    helper.registerFullShiftDay(spBtn[2], approver)
+                    bot.sendMessage(user_id, msg.messageLib.requesterNotify.value)
             elif spBtn[1] == 'disApproveShiftManager':
                 approver = mydb.get_shift_property('approver', spBtn[2])
                 bot.sendMessage(approver, msg.messageLib.shiftDisApprovedByManager.value)
