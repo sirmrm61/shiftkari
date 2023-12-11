@@ -318,7 +318,7 @@ class mysqlconnector:
         myCursor.reset()
         sqlQuery = 'select {0} from `botshiftkari`.`student` where idMember={1}'.format(fieldName, idMember)
         myCursor.execute(sqlQuery)
-        result = myCursor.fetchall()
+        result = myCursor.fetchone()
         if result is None:
             return None
         else:
