@@ -706,7 +706,6 @@ def handle_new_messages(user_id, userName, update):
                 mydb.member_update_chatid('registration_progress', 202, user_id)
                 bot.sendMessage(user_id, msg.messageLib.licenseEmpty.value)
             elif spBtn[1] == 'listLicenseNeed':
-                print(1)
                 listNeed = mydb.getListLicenseNeed()
                 for item in listNeed:
                     bot.sendMessage(user_id, helper.formatLicenseNeed(item))
@@ -1205,7 +1204,6 @@ def handle_new_messages(user_id, userName, update):
             elif spBtn[1] == 'continueRegShif':
                 idShift = int(spBtn[2])
                 totalEmptyDay = mydb.checkNoneTimeDayInFreeTime(idShift)
-                print(f'totalEmptyDay={totalEmptyDay}')
                 msgId = mydb.get_shift_property('messageID', idShift)
                 if totalEmptyDay > 0:
                     bot.editMessageText((user_id, msgId), str(msg.messageLib.errorConti.value).format(totalEmptyDay),
@@ -1230,8 +1228,6 @@ def handle_new_messages(user_id, userName, update):
                 dateDetail = spBtn[4]
                 msgInfo = bot.editMessageText((user_id, msgId), str(msg.messageLib.enterTime.value).format(dateDetail),
                                               parse_mode='HTML')
-                print(f'msgId={msgId}')
-                print(f'messageID={msgInfo["message_id"]}')
                 mydb.shift_update_by_id('messageID', msgInfo['message_id'], idShift)
                 mydb.member_update_chatid('registration_progress', 400, user_id)
                 mydb.member_update_chatid('editMsgId', spBtn[3], user_id)
@@ -1268,7 +1264,6 @@ def handle_new_messages(user_id, userName, update):
                     bot.sendMessage(chat_id=user_id, parse_mode='HTML', text='ماه انتخاب کنید',
                                     reply_markup=menu.keyLib.kbCreateMenuMonthInYear(tag='5_{}'.format(user_id)))
             elif spBtn[1] == 'month':
-                print(f'prog={tempMember.register_progress}')
                 if tempMember.register_progress not in (11, 5):
                     bot.sendMessage(user_id, msg.messageLib.noBussiness.value)
                     return
@@ -1653,7 +1648,6 @@ def handle_new_messages(user_id, userName, update):
             elif spBtn[1] == 'approveShiftManager':
                 mydb.shift_update_by_id(fieldName='progress', fieldValue=2, idshift=spBtn[2])
                 approver = mydb.get_shift_property('approver', spBtn[2])
-                print(approver)
                 if  approver is not None:
                     bot.sendMessage(approver, msg.messageLib.shiftApprovedByManager.value)
                     helper.registerFullShiftDay(spBtn[2], approver)
@@ -1749,7 +1743,7 @@ def handle_new_messages(user_id, userName, update):
                 tempMember.register_progress = 1
                 mydb.member_update_chatid('membership_type', 1, message['chat']['id'])
                 mydb.member_update_chatid('chat_id', user_id, message['chat']['id'])
-                pprint(mydb.member_update_chatid('registration_progress', 1, message['chat']['id']))
+                mydb.member_update_chatid('registration_progress', 1, message['chat']['id'])
                 bot.sendMessage(message['chat']['id'],
                                 str(msg.messageLib.enterName.value))
         if btn == 'btnTechnicalResponsible':
@@ -1773,7 +1767,7 @@ def handle_new_messages(user_id, userName, update):
                 tempMember.register_progress = 1
                 mydb.member_update_chatid('membership_type', 2, message['chat']['id'])
                 mydb.member_update_chatid('chat_id', user_id, message['chat']['id'])
-                pprint(mydb.member_update_chatid('registration_progress', 1, message['chat']['id']))
+                mydb.member_update_chatid('registration_progress', 1, message['chat']['id'])
                 bot.sendMessage(message['chat']['id'],
                                 str(msg.messageLib.enterName.value))
         if btn == 'btnStudent':
@@ -1797,7 +1791,7 @@ def handle_new_messages(user_id, userName, update):
                 tempMember.register_progress = 1
                 mydb.member_update_chatid('membership_type', 3, user_id)
                 mydb.member_update_chatid('chat_id', user_id, user_id)
-                pprint(mydb.member_update_chatid('registration_progress', 1, user_id))
+                mydb.member_update_chatid('registration_progress', 1, user_id)
                 bot.sendMessage(user_id,
                                 str(msg.messageLib.enterName.value))
             else:
@@ -1817,7 +1811,7 @@ def handle_new_messages(user_id, userName, update):
                 tempMember.register_progress = 1
                 mydb.member_update_chatid('membership_type', 4, user_id)
                 mydb.member_update_chatid('chat_id', user_id, user_id)
-                pprint(mydb.member_update_chatid('registration_progress', 1, user_id))
+                mydb.member_update_chatid('registration_progress', 1, user_id)
                 bot.sendMessage(user_id,
                                 str(msg.messageLib.enterName.value))
             else:
@@ -1877,9 +1871,6 @@ def handle_new_messages(user_id, userName, update):
                 bot.sendMessage(admin[0],
                                 str(msg.messageLib.labelSelfiPhoto.value))
                 img = 'download/{}'.format(mydb.get_student_property('personal_photo', message['chat']['id']))
-                # todo: print delete command
-                print(
-                    'download/{}'.format(mydb.get_student_property('personal_photo', message['chat']['id'])))
                 isExisting = os.path.exists(img)
                 if isExisting:
                     bot.sendPhoto(admin[0], open(img, 'rb'))
@@ -1933,8 +1924,6 @@ def handle_new_messages(user_id, userName, update):
                 bot.sendMessage(admin[0],
                                 str(msg.messageLib.labelSelfiPhoto.value))
                 img = 'download/{}'.format(mydb.get_student_property('personal_photo', message['chat']['id']))
-                print(
-                    'download/{}'.format(mydb.get_student_property('personal_photo', message['chat']['id'])))
                 isExisting = os.path.exists(img)
                 if isExisting:
                     bot.sendPhoto(admin[0], open(img, 'rb'))
@@ -1989,8 +1978,6 @@ def handle_new_messages(user_id, userName, update):
                 bot.sendMessage(admin[0],
                                 str(msg.messageLib.labelSelfiPhoto.value))
                 img = 'download/{}'.format(mydb.get_student_property('personal_photo', message['chat']['id']))
-                print(
-                    'download/{}'.format(mydb.get_student_property('personal_photo', message['chat']['id'])))
                 isExisting = os.path.exists(img)
                 if isExisting:
                     bot.sendPhoto(admin[0], open(img, 'rb'))
@@ -2045,8 +2032,6 @@ def handle_new_messages(user_id, userName, update):
                 bot.sendMessage(admin[0],
                                 str(msg.messageLib.labelSelfiPhoto.value))
                 img = 'download/{}'.format(mydb.get_student_property('personal_photo', message['chat']['id']))
-                print(
-                    'download/{}'.format(mydb.get_student_property('personal_photo', message['chat']['id'])))
                 isExisting = os.path.exists(img)
                 if isExisting:
                     bot.sendPhoto(admin[0], open(img, 'rb'))
@@ -2101,8 +2086,6 @@ def handle_new_messages(user_id, userName, update):
                 bot.sendMessage(admin[0],
                                 str(msg.messageLib.labelSelfiPhoto.value))
                 img = 'download/{}'.format(mydb.get_student_property('personal_photo', message['chat']['id']))
-                print(
-                    'download/{}'.format(mydb.get_student_property('personal_photo', message['chat']['id'])))
                 isExisting = os.path.exists(img)
                 if isExisting:
                     bot.sendPhoto(admin[0], open(img, 'rb'))
@@ -2157,8 +2140,6 @@ def handle_new_messages(user_id, userName, update):
                 bot.sendMessage(admin[0],
                                 str(msg.messageLib.labelSelfiPhoto.value))
                 img = 'download/{}'.format(mydb.get_student_property('personal_photo', message['chat']['id']))
-                print(
-                    'download/{}'.format(mydb.get_student_property('personal_photo', message['chat']['id'])))
                 isExisting = os.path.exists(img)
                 if isExisting:
                     bot.sendPhoto(admin[0], open(img, 'rb'))
@@ -2213,8 +2194,6 @@ def handle_new_messages(user_id, userName, update):
                 bot.sendMessage(admin[0],
                                 str(msg.messageLib.labelSelfiPhoto.value))
                 img = 'download/{}'.format(mydb.get_student_property('personal_photo', message['chat']['id']))
-                print(
-                    'download/{}'.format(mydb.get_student_property('personal_photo', message['chat']['id'])))
                 isExisting = os.path.exists(img)
                 if isExisting:
                     bot.sendPhoto(admin[0], open(img, 'rb'))
@@ -2274,7 +2253,6 @@ def delOldData():
             threadCallTelegram.start()
 
 def callTelegram(luiIn):
-    print(luiIn)
     ut = datetime.now()
     last_ut = datetime.now()
     lui=luiIn

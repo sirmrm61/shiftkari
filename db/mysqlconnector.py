@@ -772,7 +772,6 @@ VALUES({idShift},\'{dateShift}\',\'{requster}\',0,{sendedForCreator},{idDetailSh
             `approveCreator`,
             `sendedForCreator`,`status`,`idDetailShift`,`flagtime`)
             VALUES({idShift},\'{dateShift}\',\'{requster}\',0,{sendedForCreator},{status},{idDetailShift},{ft})'''
-        print(sqlQuery)
         myCursor.execute(sqlQuery)
         return myCursor.lastrowid
 
@@ -1216,7 +1215,6 @@ VALUES({idShift},\'{dateShift}\',\'{requster}\',0,{sendedForCreator},{idDetailSh
         return result
     def delOldShift(self):
         datePersian = JalaliDate(datetime.datetime.now())
-        print('del all')
         sqlQuery = f"select idshift from botshiftkari.shift where dateEndShift < '{datePersian}'"
         mydb = self.connector()
         mydb.autocommit = True
@@ -1225,7 +1223,6 @@ VALUES({idShift},\'{dateShift}\',\'{requster}\',0,{sendedForCreator},{idDetailSh
         idsShift = myCursor.fetchall()
         for idShift in idsShift:
             sqlQuery = f"delete from botshiftkari.dayshift where idshift = {idShift[0]} "
-            print(sqlQuery)
             myCursor.execute(sqlQuery)
             sqlQuery = f"delete from botshiftkari.detailshift where idshift = {idShift[0]} "
             myCursor.execute(sqlQuery)
