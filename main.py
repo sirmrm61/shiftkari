@@ -1268,7 +1268,7 @@ def handle_new_messages(user_id, userName, update):
                     bot.sendMessage(chat_id=user_id, parse_mode='HTML', text='ماه انتخاب کنید',
                                     reply_markup=menu.keyLib.kbCreateMenuMonthInYear(tag='5_{}'.format(user_id)))
             elif spBtn[1] == 'month':
-                print(tempMember.register_progress)
+                print(f'prog={tempMember.register_progress}')
                 if tempMember.register_progress not in (11, 5):
                     bot.sendMessage(user_id, msg.messageLib.noBussiness.value)
                     return
