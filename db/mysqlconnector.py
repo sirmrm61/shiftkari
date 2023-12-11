@@ -227,11 +227,11 @@ class mysqlconnector:
 
     def get_member_property_chatid(self, fieldName, chatid):
         sqlQuery = 'select `{1}` from `botshiftkari`.`membership` where  chat_id = \'{0}\''.format(chatid, fieldName)
+        print(sqlQuery)
         mydb = self.connector()
-        mydb.autocommit = True
         myCursor = mydb.cursor()
         myCursor.execute(sqlQuery)
-        result = myCursor.fetchone();
+        result = myCursor.fetchone()
         if result is None:
             return None
         else:
