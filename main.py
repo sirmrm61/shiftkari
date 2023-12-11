@@ -1722,6 +1722,9 @@ def handle_new_messages(user_id, userName, update):
                 if spBtn[2] == 'disable':
                     mydb.member_update_chatid('del',1,spBtn[3])
                     bot.sendMessage(user_id,msg.messageLib.disableUser.value)
+                elif spBtn[2] == 'enable':
+                    mydb.member_update_chatid('del',0,spBtn[3])
+                    bot.sendMessage(user_id,msg.messageLib.enableUser.value)
                 elif spBtn[2] == 'remove':
                     mydb.del_member_chatid(spBtn[3])
                     bot.sendMessage(user_id, msg.messageLib.removeUser.value)

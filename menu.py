@@ -184,7 +184,7 @@ class keyLib:
                 chatId))])
         elif disableMember == 1:
             lk.append(
-                [InlineKeyboardButton(text='فعال کردن کاربر', callback_data='btn_operateAdmin_disable_{0}'.format(
+                [InlineKeyboardButton(text='فعال کردن کاربر', callback_data='btn_operateAdmin_enable_{0}'.format(
                     chatId))])
 
         return InlineKeyboardMarkup(inline_keyboard=lk)
