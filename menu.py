@@ -176,7 +176,6 @@ class keyLib:
     def kbCreateOperateAdminForUser(self=None, chatId=None):
         typeMember = mydb.get_member_property_chatid('membership_type',chatId)
         disableMember = mydb.get_member_property_chatid('del', chatId)
-        print(f'disableMember={disableMember}')
         lk = []
         lk.append([InlineKeyboardButton(text='حذف کاربر', callback_data='btn_operateAdmin_remove_{0}'.format(
             chatId))])
@@ -187,16 +186,6 @@ class keyLib:
             lk.append(
                 [InlineKeyboardButton(text='فعال کردن کاربر', callback_data='btn_operateAdmin_disable_{0}'.format(
                     chatId))])
-        if typeMember != 4:
-            lk.append([InlineKeyboardButton(text='شیفت های ایجاد شده', callback_data='btn_operateAdmin_createShift_{0}'.format(
-                chatId))])
-            lk.append(
-                [InlineKeyboardButton(text='شیفت های درخواست شده', callback_data='btn_operateAdmin_requestShift_{0}'.format(
-                    chatId))])
-            lk.append(
-                [InlineKeyboardButton(text='شیفت های پذیرش شده', callback_data='btn_operateAdmin_remove_{0}'.format(
-                    chatId))])
-
 
         return InlineKeyboardMarkup(inline_keyboard=lk)
 

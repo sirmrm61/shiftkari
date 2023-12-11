@@ -1718,6 +1718,13 @@ def handle_new_messages(user_id, userName, update):
 {2}'''.format(itemRow1, itemRow2, itemRow3))
                 else:
                     bot.sendMessage(message['chat']['id'], msg.messageLib.emptyList.value)
+            elif spBtn[1] == 'operateAdmin':
+                if spBtn[2] == 'disable':
+                    mydb.member_update_chatid('del',1,spBtn[3])
+                    bot.sendMessage(user_id,msg.messageLib.disableUser.value)
+                elif spBtn[2] == 'remove':
+                    mydb.del_member_chatid(spBtn[3])
+                    bot.sendMessage(user_id, msg.messageLib.removeUser.value)
             elif spBtn[1] == 'operate':
                 helper.send_profile(spBtn[2],bot,user_id)
                 bot.sendMessage(user_id,'عملیات در دسترس',
