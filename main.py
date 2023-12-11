@@ -1721,7 +1721,7 @@ def handle_new_messages(user_id, userName, update):
             elif spBtn[1] == 'operate':
                 helper.send_profile(spBtn[2],bot,user_id)
                 bot.sendMessage(user_id,'عملیات در دسترس',
-                                reply_markup=menu.keyLib.kbCreateOperateAdminForUser(spBtn[2]))
+                                reply_markup=menu.keyLib.kbCreateOperateAdminForUser(chatId=spBtn[2]))
         if btn == 'btnFounder':
             if tempMember.register_progress == 18 and tempMember.op == 16:
                 mydb.member_update_chatid('membership_type', 1, user_id)
