@@ -81,6 +81,10 @@ class keyLib:
              InlineKeyboardButton(text='خیر', callback_data='btn_NoDel_{}'.format(str(chat_id)))]
         ])
 
+    def kbDelShift(self=None, shiftId=None):
+        return InlineKeyboardMarkup(inline_keyboard=[
+            [InlineKeyboardButton(text='حذف شیفت', callback_data='btn_DelShiftAdmin_{}'.format(str(shiftId)))]
+        ])
     def kbCreateMenuFunder(self=None, chatId=None):
         return InlineKeyboardMarkup(inline_keyboard=[
             [InlineKeyboardButton(text='حذف شیفت', callback_data='btn_deleteShift_{}'.format(str(chatId))),

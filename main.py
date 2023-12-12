@@ -623,6 +623,17 @@ def handle_new_messages(user_id, userName, update):
             else:
                 bot.sendMessage(user_id, msg.messageLib.errorRegisterLicense.value)
             mydb.member_update_chatid('registration_progress', 10, user_id)
+        elif tempMember.register_progress == 305:
+            resultSearch = []
+            resultSearch = mydb.searchShift(message['text'])
+            if len(resultSearch) == 0:
+                bot.sendMessage(user_id, msg.messageLib.searchEmptyList.value,
+                                reply_markup=menu.keyLib.kbCreateCancelSearchMenu())
+                return
+            for shiftRow in resultSearch:
+                bot.sendMessage(message['chat']["id"], helper.formatShiftMessage(shiftRow),
+                                reply_markup=menu.keyLib.kbDelShift(shiftRow[9]))
+            mydb.member_update_chatid('registration_progress', 10, user_id)
         elif tempMember.register_progress in (304, 301, 302, 303):
             resultSearch = []
             if tempMember.register_progress == 304:
@@ -706,6 +717,10 @@ def handle_new_messages(user_id, userName, update):
                 elif spBtn[2] == 'founder':
                     mydb.member_update_chatid('registration_progress', 304, user_id)
                     bot.sendMessage(user_id, msg.messageLib.searchMessageFounder.value,
+                                    reply_markup=menu.keyLib.kbCreateCancelSearchMenu())
+                elif spBtn[2] == 'shift':
+                    mydb.member_update_chatid('registration_progress', 305, user_id)
+                    bot.sendMessage(user_id, msg.messageLib.searchMessageShift.value,
                                     reply_markup=menu.keyLib.kbCreateCancelSearchMenu())
             elif spBtn[1] == 'cancelSearch':
                 mydb.member_update_chatid('registration_progress', 10, user_id)
@@ -1620,6 +1635,12 @@ def handle_new_messages(user_id, userName, update):
                     helper.yesApproveAllShift(spBtn[2], user_id, bot)
                 else:
                     bot.sendMessage(user_id, msg.messageLib.shiftIsFull.value)
+            elif spBtn[1] == 'DelShiftAdmin':
+                if tempMember.membership_type != 4:
+                    bot.sendMessage(user_id, msg.messageLib.userIsNotAdmin.value)
+                    return
+                mydb.deleteShift(spBtn[2])
+                bot.sendMessage(user_id,msg.messageLib.delShiftAdminMsg.value)
             elif spBtn[1] == 'deleteShift':
                 allShift = mydb.get_all_shift_by_creator(creator=message['chat']["id"])
                 if len(allShift) == 0:

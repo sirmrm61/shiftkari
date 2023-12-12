@@ -1110,7 +1110,22 @@ VALUES({idShift},\'{dateShift}\',\'{requster}\',0,{sendedForCreator},{idDetailSh
         myCursor.execute(sqlQuery)
         result = myCursor.fetchall()
         return result
-
+    def searchShift(self, searchVerb):
+        sqlQuery = f'''SELECT concat(mem.name,mem.last_name) as fullname,creator,
+                        DateShift,startTime,endTime,wage,pharmacyAddress,progress,approver,shi.idshift,
+                        shi.dateEndShift,shi.wfStudent,shi.dateRegiter
+                        FROM botshiftkari.shift shi inner join botshiftkari.membership mem on
+                         mem.chat_id = shi.Creator where 
+                         mem.name like \'%{searchVerb}%\' or
+                         mem.last_name like \'%{searchVerb}%\' or
+                         shi.DateShift like \'%{searchVerb}%\' or
+                         shi.dateEndShift like \'%{searchVerb}%\' or
+                         shi.pharmacyAddress like \'%{searchVerb}%\''''
+        mydb = self.connector()
+        myCursor = mydb.cursor()
+        myCursor.execute(sqlQuery)
+        result = myCursor.fetchall()
+        return result
     def searchStudent(self, searchVerb):
         sqlQuery = f'''SELECT fn, phone_number, username, chat_id, vdmind, vs.desc,
                      opTime, national_code, start_date, end_date, shift_access,
@@ -1173,6 +1188,8 @@ VALUES({idShift},\'{dateShift}\',\'{requster}\',0,{sendedForCreator},{idDetailSh
             sqlQuery = f'delete from botshiftkari.dayshift  where  idShift={idShift} '
             myCursor.execute(sqlQuery)
             sqlQuery = f'delete from botshiftkari.shift  where  idShift={idShift} '
+            myCursor.execute(sqlQuery)
+            sqlQuery = f"delete from botshiftkari.detailshift where idshift = {idShift} "
             myCursor.execute(sqlQuery)
             return 1
         except:
