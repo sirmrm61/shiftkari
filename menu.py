@@ -486,7 +486,7 @@ class keyLib:
             selectedDay = [item[0] for item in sdFullData]
         currentDate = str(JalaliDate(datetime.datetime.now() + datetime.timedelta(days=int(isEM)))).split('-')
         endDateSelection = None
-        if isEM == 0:
+        if int(isEM) == 0:
             endDateSelection = str(JalaliDate(datetime.datetime.now() + datetime.timedelta(days=3))).split('-')
             print(f'isEm={isEM}')
             print(f'endDateSelection={endDateSelection}')
