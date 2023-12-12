@@ -540,15 +540,15 @@ class keyLib:
         # تاریخ جاری تا پایان ماه
         for day in range(startDay, endDay):
             cd = f'{str(year).zfill(4)}-{str(month).zfill(2)}-{str(day).zfill(2)}'
-            print(cd)
-            print(f'{(isEM == 0)}')
-            print(f'{year > int(endDateSelection[0])}')
-            print(f'{(year == int(endDateSelection[0]) and month > int(endDateSelection[1]))}')
-            print(f'{(year == int(endDateSelection[0]) and month == int(endDateSelection[1]) and day > int(endDateSelection[2]))}')
+            # print(cd)
+            # print(f'{(isEM == 0)}')
+            # print(f'{year > int(endDateSelection[0])}')
+            # print(f'{(year == int(endDateSelection[0]) and month > int(endDateSelection[1]))}')
+            # print(f'{(year == int(endDateSelection[0]) and month == int(endDateSelection[1]) and day > int(endDateSelection[2]))}')
             if (isEM == 0) and ((year > int(endDateSelection[0])) or
                                 (year == int(endDateSelection[0]) and month > int(endDateSelection[1])) or
                                 (year == int(endDateSelection[0]) and month == int(endDateSelection[1]) and
-                                 day > int(endDateSelection[2]))):
+                                 day >= int(endDateSelection[2]))):
                 listDay.append(InlineKeyboardButton(text=f'🙅{day}', callback_data='spare'))
             elif cd in selectedDay:
                 itemDay = [item for item in sdFullData if
