@@ -632,7 +632,7 @@ def handle_new_messages(user_id, userName, update):
                 return
             for shiftRow in resultSearch:
                 bot.sendMessage(message['chat']["id"], helper.formatShiftMessage(shiftRow),
-                                reply_markup=menu.keyLib.kbDelShift(shiftRow[9]))
+                                reply_markup=menu.keyLib.kbDelShift(shiftId=shiftRow[9]))
             mydb.member_update_chatid('registration_progress', 10, user_id)
         elif tempMember.register_progress in (304, 301, 302, 303):
             resultSearch = []
