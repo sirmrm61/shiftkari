@@ -1639,7 +1639,7 @@ def handle_new_messages(user_id, userName, update):
                 if tempMember.membership_type != 4:
                     bot.sendMessage(user_id, msg.messageLib.userIsNotAdmin.value)
                     return
-                if mydb.deleteShift(spBtn[2])==1:
+                if mydb.deleteShift(idShift=spBtn[2]) == 1:
                     bot.sendMessage(user_id,msg.messageLib.delShiftAdminMsg.value)
                 else:
                     print('error')
