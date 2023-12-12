@@ -116,6 +116,12 @@ def handle_new_messages(user_id, userName, update):
             elif tempMember.membership_type == 4:
                 bot.sendMessage(message['chat']['id'], msg.messageLib.yourOperation.value,
                                 reply_markup=menu.keyLib.kbCreateMenuManager(chatId=message['chat']['id']))
+        elif 'text' in message and str(message['text']).lower().startswith('/emday '.lower()):
+            if tempMember.membership_type is None or tempMember.membership_type != 4:
+                bot.sendMessage(user_id, msg.messageLib.userIsNotAdmin.value)
+                return
+            totalDay = str(message['text']).lower().split(' ')
+            print(totalDay)
         elif 'text' in message and str(message['text']).lower().startswith('/changeHrStudent'.lower()):
             if tempMember.membership_type is None or tempMember.membership_type != 4:
                 bot.sendMessage(user_id, msg.messageLib.userIsNotAdmin.value)

@@ -145,6 +145,7 @@ class keyLib:
                                   callback_data='btn_shiftEMHr_{}'.format(str(chatId)))],
             [InlineKeyboardButton(text='دوره شیفت اضطراری', callback_data='btn_shiftPD_{}'.format(str(chatId)))],
             [InlineKeyboardButton(text='تعداد شیفت اضطراری', callback_data='btn_shiftPD_{}'.format(str(chatId)))],
+            [InlineKeyboardButton(text='بازه شیفت اضطراری', callback_data='btn_shiftEmCycle_{}'.format(str(chatId)))],
             [InlineKeyboardButton(text='ارسال پیام', callback_data='btn_sendMessage_{}'.format(str(chatId))),
              InlineKeyboardButton(text='لیست شیفت', callback_data='btn_listSiftManager_{}'.format(str(chatId))),
              InlineKeyboardButton(text='ویرایش پروفایل', callback_data='btn_epf_{}'.format(str(chatId)))],
