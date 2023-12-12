@@ -1145,11 +1145,11 @@ def handle_new_messages(user_id, userName, update):
                 typePh = mydb.get_shift_property('pharmacyType', idShift)
                 msgId = mydb.get_shift_property('messageID', idShift)
                 if isMorning == 0:
-                    msgInfo = helper.send_createShift(bot, user_id, idShift, 3, msgId, 1)
+                    msgInfo = helper.send_createShift(bot, user_id, idShift, 3, msgId, 1,isEM=isEm)
                     if msgInfo is not None:
                         mydb.shift_update_by_id('messageID', msgInfo["message_id"], idShift)
                 elif isMorning == 1 and int(typePh) == 1:
-                    msgInfo = helper.send_createShift(bot, user_id, idShift, 4, msgId, 2)
+                    msgInfo = helper.send_createShift(bot, user_id, idShift, 4, msgId, 2,isEM=isEm)
                     if msgInfo is not None:
                         mydb.shift_update_by_id('messageID', msgInfo["message_id"], idShift)
                 elif isMorning == 3:
