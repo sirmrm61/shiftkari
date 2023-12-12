@@ -543,10 +543,10 @@ class keyLib:
             print(cd)
             print(f'{(isEM == 0)}')
             print(f'{year > int(endDateSelection[0])}')
-            print(f'{(year == int(endDateSelection[0]) and month == int(endDateSelection[1]))}')
+            print(f'{(year == int(endDateSelection[0]) and month > int(endDateSelection[1]))}')
             print(f'{(year == int(endDateSelection[0]) and month == int(endDateSelection[1]) and day > int(endDateSelection[2]))}')
             if (isEM == 0) and ((year > int(endDateSelection[0])) or
-                                (year == int(endDateSelection[0]) and month == int(endDateSelection[1])) or
+                                (year == int(endDateSelection[0]) and month > int(endDateSelection[1])) or
                                 (year == int(endDateSelection[0]) and month == int(endDateSelection[1]) and
                                  day > int(endDateSelection[2]))):
                 listDay.append(InlineKeyboardButton(text=f'🙅{day}', callback_data='spare'))
