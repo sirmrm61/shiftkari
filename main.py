@@ -29,7 +29,7 @@ botKeyApi = mydb.get_property_domain('botkey')
 bot = telepot.Bot(botKeyApi)
 
 # splitDate = JalaliDate(datetime.now())
-# print(splitDate)
+# print(JalaliDate(datetime.now() + timedelta(days=3)))
 # helper.send_shift_to_technicalResponsible(29, bot )
 # exit()
 # admins = mydb.getAdmins()

@@ -174,14 +174,15 @@ class keyLib:
                                                                                chatId, op))]])
 
     def kbCreateOperateAdminForUser(self=None, chatId=None):
-        typeMember = mydb.get_member_property_chatid('membership_type',chatId)
+        typeMember = mydb.get_member_property_chatid('membership_type', chatId)
         disableMember = mydb.get_member_property_chatid('del', chatId)
         lk = []
         lk.append([InlineKeyboardButton(text='حذف کاربر', callback_data='btn_operateAdmin_remove_{0}'.format(
             chatId))])
-        if disableMember==0:
-            lk.append([InlineKeyboardButton(text='غیر فعال کردن کاربر', callback_data='btn_operateAdmin_disable_{0}'.format(
-                chatId))])
+        if disableMember == 0:
+            lk.append(
+                [InlineKeyboardButton(text='غیر فعال کردن کاربر', callback_data='btn_operateAdmin_disable_{0}'.format(
+                    chatId))])
         elif disableMember == 1:
             lk.append(
                 [InlineKeyboardButton(text='فعال کردن کاربر', callback_data='btn_operateAdmin_enable_{0}'.format(
@@ -484,6 +485,9 @@ class keyLib:
             sdFullData = mydb.getListSelectedDay(idShift)
             selectedDay = [item[0] for item in sdFullData]
         currentDate = str(JalaliDate(datetime.datetime.now() + datetime.timedelta(days=int(isEM)))).split('-')
+        endDateSelection = None
+        if isEM == 0:
+            endDateSelection = JalaliDate(datetime.datetime.now() + datetime.timedelta(days=3))
         dayValid = int(currentDate[2])
         if int(currentDate[1]) < month:
             dayValid = 0
@@ -525,12 +529,18 @@ class keyLib:
             startDay = dayValid
         else:
             endDay += 1
+        # روزهای تقویم قبل از شروع ماه جاری
         for idx in range(1, dayStart):
             listDay.append(InlineKeyboardButton(text='-', callback_data='spare'))
+        # از روز اول ماه جاری تا تاریخ جاری
         for idx in range(1, startDay):
             listDay.append(InlineKeyboardButton(text=f'🙅{idx}', callback_data='spare'))
+        # تاریخ جاری تا پایان ماه
         for day in range(startDay, endDay):
-            if f'{str(year).zfill(4)}-{str(month).zfill(2)}-{str(day).zfill(2)}' in selectedDay:
+            cd = f'{str(year).zfill(4)}-{str(month).zfill(2)}-{str(day).zfill(2)}'
+            if (isEM == 0) and (cd > endDateSelection):
+                listDay.append(InlineKeyboardButton(text=f'🙅{day}', callback_data='spare'))
+            elif cd in selectedDay:
                 itemDay = [item for item in sdFullData if
                            item[0] == f'{str(year).zfill(4)}-{str(month).zfill(2)}-{str(day).zfill(2)}']
                 emoji = None
