@@ -1186,10 +1186,13 @@ VALUES({idShift},\'{dateShift}\',\'{requster}\',0,{sendedForCreator},{idDetailSh
             myCursor = mydb.cursor()
             mydb.autocommit = True
             sqlQuery = f'delete from botshiftkari.dayshift  where  idShift={idShift} '
+            print(sqlQuery)
             myCursor.execute(sqlQuery)
             sqlQuery = f'delete from botshiftkari.shift  where  idShift={idShift} '
+            print(sqlQuery)
             myCursor.execute(sqlQuery)
             sqlQuery = f"delete from botshiftkari.detailshift where idshift = {idShift} "
+            print(sqlQuery)
             myCursor.execute(sqlQuery)
             return 1
         except:
