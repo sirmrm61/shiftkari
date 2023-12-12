@@ -487,9 +487,8 @@ class keyLib:
         currentDate = str(JalaliDate(datetime.datetime.now() + datetime.timedelta(days=int(isEM)))).split('-')
         endDateSelection = None
         if int(isEM) == 0:
-            endDateSelection = str(JalaliDate(datetime.datetime.now() + datetime.timedelta(days=3))).split('-')
-            print(f'isEm={isEM}')
-            print(f'endDateSelection={endDateSelection}')
+            emDay = mydb.get_property_domain('emDay')
+            endDateSelection = str(JalaliDate(datetime.datetime.now() + datetime.timedelta(days=int(emDay)))).split('-')
         dayValid = int(currentDate[2])
         if int(currentDate[1]) < month:
             dayValid = 0
