@@ -488,6 +488,8 @@ class keyLib:
         endDateSelection = None
         if isEM == 0:
             endDateSelection = JalaliDate(datetime.datetime.now() + datetime.timedelta(days=3))
+            print(f'isEm={isEM}')
+            print(f'endDateSelection={endDateSelection}')
         dayValid = int(currentDate[2])
         if int(currentDate[1]) < month:
             dayValid = 0
