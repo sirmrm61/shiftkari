@@ -121,7 +121,12 @@ def handle_new_messages(user_id, userName, update):
                 bot.sendMessage(user_id, msg.messageLib.userIsNotAdmin.value)
                 return
             totalDay = str(message['text']).lower().split(' ')
-            print(totalDay)
+            if len(totalDay)!= 2:
+                bot(user_id,msg.messageLib.noBussiness.value)
+            else:
+                mydb.domain_update_by_key('emDay',totalDay[1])
+                bot.sendMessage(user_id, str(msg.messageLib.changeEmDay.value).format(totalDay[1]))
+
         elif 'text' in message and str(message['text']).lower().startswith('/changeHrStudent'.lower()):
             if tempMember.membership_type is None or tempMember.membership_type != 4:
                 bot.sendMessage(user_id, msg.messageLib.userIsNotAdmin.value)
