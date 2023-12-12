@@ -815,6 +815,9 @@ def handle_new_messages(user_id, userName, update):
                 hrEmShift = mydb.get_property_domain('hrEmShift')
                 bot.sendMessage(user_id, str(msg.messageLib.shiftEMHrLabel.value).format(hrEmShift))
             elif spBtn[1] == 'shiftPD':
+                emDay = mydb.get_property_domain('emDay')
+                bot.sendMessage(user_id, str(msg.messageLib.shiftEmCycle.value).format(emDay))
+            elif spBtn[1] == 'shiftPD':
                 TSPDEM = mydb.get_property_domain('TSPDEM')
                 PDEM = mydb.get_property_domain('PDEM')
                 bot.sendMessage(user_id, str(msg.messageLib.pdLabel.value).format(PDEM, TSPDEM))
