@@ -487,7 +487,7 @@ class keyLib:
         currentDate = str(JalaliDate(datetime.datetime.now() + datetime.timedelta(days=int(isEM)))).split('-')
         endDateSelection = None
         if isEM == 0:
-            endDateSelection = JalaliDate(datetime.datetime.now() + datetime.timedelta(days=3))
+            endDateSelection = str(JalaliDate(datetime.datetime.now() + datetime.timedelta(days=3))).split('-')
             print(f'isEm={isEM}')
             print(f'endDateSelection={endDateSelection}')
         dayValid = int(currentDate[2])
@@ -540,7 +540,10 @@ class keyLib:
         # تاریخ جاری تا پایان ماه
         for day in range(startDay, endDay):
             cd = f'{str(year).zfill(4)}-{str(month).zfill(2)}-{str(day).zfill(2)}'
-            if (isEM == 0) and (cd > endDateSelection):
+            if (isEM == 0) and (year > int(endDateSelection[0]) or
+                                (year == int(endDateSelection[0]) and month > int(endDateSelection[1])) or
+                                (year == int(endDateSelection[0]) and month > int(endDateSelection[1]) and
+                                 day > int(endDateSelection[2]))):
                 listDay.append(InlineKeyboardButton(text=f'🙅{day}', callback_data='spare'))
             elif cd in selectedDay:
                 itemDay = [item for item in sdFullData if
