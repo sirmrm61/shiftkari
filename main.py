@@ -1638,7 +1638,7 @@ def handle_new_messages(user_id, userName, update):
                     bot.sendMessage(user_id, msg.messageLib.shiftIsFull.value)
             elif spBtn[1] == 'confirmSendToTechnician':
                 creator = mydb.get_shift_property('Creator', spBtn[2])
-                helper.send_shift_to_technicalResponsible(int(spBtn[2], bot, creator, 2))
+                helper.send_shift_to_technicalResponsible(int(spBtn[2]), bot, creator, 2)
                 bot.sendMessage(user_id,msg.messageLib.msgSendToTechnician.value)
             elif spBtn[1] == 'DelShiftAdmin':
                 if tempMember.membership_type != 4:
