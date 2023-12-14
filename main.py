@@ -28,6 +28,7 @@ idFromFile = None
 botKeyApi = mydb.get_property_domain('botkey')
 bot = telepot.Bot(botKeyApi)
 
+
 # splitDate = JalaliDate(datetime.now())
 # print(JalaliDate(datetime.now() + timedelta(days=3)))
 # helper.send_shift_to_technicalResponsible(29, bot )
@@ -121,10 +122,10 @@ def handle_new_messages(user_id, userName, update):
                 bot.sendMessage(user_id, msg.messageLib.userIsNotAdmin.value)
                 return
             totalDay = str(message['text']).lower().split(' ')
-            if len(totalDay)!= 2:
-                bot(user_id,msg.messageLib.noBussiness.value)
+            if len(totalDay) != 2:
+                bot(user_id, msg.messageLib.noBussiness.value)
             else:
-                mydb.domain_update_by_key('emDay',totalDay[1])
+                mydb.domain_update_by_key('emDay', totalDay[1])
                 bot.sendMessage(user_id, str(msg.messageLib.changeEmDay.value).format(totalDay[1]))
 
         elif 'text' in message and str(message['text']).lower().startswith('/changeHrStudent'.lower()):
@@ -651,7 +652,7 @@ def handle_new_messages(user_id, userName, update):
                 return
             for item in resultSearch:
                 bot.sendMessage(user_id, helper.formatSearchFounder(item, tempMember.register_progress),
-                                reply_markup=menu.keyLib.kbCreateOperateSearchMenu(chatId= item[3],
+                                reply_markup=menu.keyLib.kbCreateOperateSearchMenu(chatId=item[3],
                                                                                    op=tempMember.register_progress))
             mydb.member_update_chatid('registration_progress', 10, user_id)
         elif tempMember.register_progress == 400:
@@ -1174,11 +1175,11 @@ def handle_new_messages(user_id, userName, update):
                 typePh = mydb.get_shift_property('pharmacyType', idShift)
                 msgId = mydb.get_shift_property('messageID', idShift)
                 if isMorning == 0:
-                    msgInfo = helper.send_createShift(bot, user_id, idShift, 3, msgId, 1,isEM=isEm)
+                    msgInfo = helper.send_createShift(bot, user_id, idShift, 3, msgId, 1, isEM=isEm)
                     if msgInfo is not None:
                         mydb.shift_update_by_id('messageID', msgInfo["message_id"], idShift)
                 elif isMorning == 1 and int(typePh) == 1:
-                    msgInfo = helper.send_createShift(bot, user_id, idShift, 4, msgId, 2,isEM=isEm)
+                    msgInfo = helper.send_createShift(bot, user_id, idShift, 4, msgId, 2, isEM=isEm)
                     if msgInfo is not None:
                         mydb.shift_update_by_id('messageID', msgInfo["message_id"], idShift)
                 elif isMorning == 3:
@@ -1640,7 +1641,7 @@ def handle_new_messages(user_id, userName, update):
                     bot.sendMessage(user_id, msg.messageLib.userIsNotAdmin.value)
                     return
                 if mydb.deleteShift(idShift=spBtn[2]) == 1:
-                    bot.sendMessage(user_id,msg.messageLib.delShiftAdminMsg.value)
+                    bot.sendMessage(user_id, msg.messageLib.delShiftAdminMsg.value)
                 else:
                     print('error')
             elif spBtn[1] == 'deleteShift':
@@ -1656,6 +1657,10 @@ def handle_new_messages(user_id, userName, update):
                 # todo: اگر شیفت پر است برای افرادی که شیف را پر کرده اند پیام بفرستد
                 bot.sendMessage(user_id, msg.messageLib.confirmDeleteShift.value,
                                 reply_markup=menu.keyLib.kbCreateMenuConfirmDelete(shiftId=spBtn[2]))
+            elif spBtn[1] == 'confirmSendToTechnician':
+                creator = mydb.get_shift_property('Creator', spBtn[2])
+                helper.send_shift_to_technicalResponsible(int(spBtn[2], bot, creator, 2))
+                bot.sendMessage(user_id,msg.messageLib.msgSendToTechnician.value)
             elif spBtn[1] == 'confirmDelete':  # تائیدیه پاک کردن شیفت توسط مدیر سیستم
                 mydb.shift_update_by_id(fieldName='del', fieldValue='1', idshift=spBtn[2])
                 listDay = mydb.getListDayIsNotEmpty(spBtn[2], None)
@@ -1685,7 +1690,7 @@ def handle_new_messages(user_id, userName, update):
             elif spBtn[1] == 'approveShiftManager':
                 mydb.shift_update_by_id(fieldName='progress', fieldValue=2, idshift=spBtn[2])
                 approver = mydb.get_shift_property('approver', spBtn[2])
-                if  approver is not None:
+                if approver is not None:
                     bot.sendMessage(approver, msg.messageLib.shiftApprovedByManager.value)
                     helper.registerFullShiftDay(spBtn[2], approver)
                     bot.sendMessage(user_id, msg.messageLib.requesterNotify.value)
@@ -1757,17 +1762,17 @@ def handle_new_messages(user_id, userName, update):
                     bot.sendMessage(message['chat']['id'], msg.messageLib.emptyList.value)
             elif spBtn[1] == 'operateAdmin':
                 if spBtn[2] == 'disable':
-                    mydb.member_update_chatid('del',1,spBtn[3])
-                    bot.sendMessage(user_id,msg.messageLib.disableUser.value)
+                    mydb.member_update_chatid('del', 1, spBtn[3])
+                    bot.sendMessage(user_id, msg.messageLib.disableUser.value)
                 elif spBtn[2] == 'enable':
-                    mydb.member_update_chatid('del',0,spBtn[3])
-                    bot.sendMessage(user_id,msg.messageLib.enableUser.value)
+                    mydb.member_update_chatid('del', 0, spBtn[3])
+                    bot.sendMessage(user_id, msg.messageLib.enableUser.value)
                 elif spBtn[2] == 'remove':
                     mydb.del_member_chatid(spBtn[3])
                     bot.sendMessage(user_id, msg.messageLib.removeUser.value)
             elif spBtn[1] == 'operate':
-                helper.send_profile(spBtn[2],bot,user_id)
-                bot.sendMessage(user_id,'عملیات در دسترس',
+                helper.send_profile(spBtn[2], bot, user_id)
+                bot.sendMessage(user_id, 'عملیات در دسترس',
                                 reply_markup=menu.keyLib.kbCreateOperateAdminForUser(chatId=spBtn[2]))
         if btn == 'btnFounder':
             if tempMember.register_progress == 18 and tempMember.op == 16:
@@ -2291,6 +2296,7 @@ def handle_updates(updates):
         # پردازش پیام جدید
         handle_new_messages(user_id, user_name, update)
 
+
 def delOldData():
     while True:
         now = datetime.now()
@@ -2299,10 +2305,11 @@ def delOldData():
         if not threadCallTelegram.isAlive():
             threadCallTelegram.start()
 
+
 def callTelegram(luiIn):
     ut = datetime.now()
     last_ut = datetime.now()
-    lui=luiIn
+    lui = luiIn
     try:
         while True:
             td = last_ut - ut
@@ -2322,16 +2329,17 @@ def callTelegram(luiIn):
         else:
             bot.sendMessage('6274361322', traceback.format_exc())
             print(traceback.format_exc())
-            threadCallTelegram = threading.Thread(target=callTelegram(lui+1))
+            threadCallTelegram = threading.Thread(target=callTelegram(lui + 1))
             threadCallTelegram.start()
+
 
 threadCallTelegram = threading.Thread(target=callTelegram(0))
 threadDelOldData = threading.Thread(target=delOldData)
+
+
 def main():
     threadDelOldData.start()
     threadCallTelegram.start()
-
-
 
 
 if __name__ == '__main__':

@@ -164,9 +164,7 @@ class keyLib:
              InlineKeyboardButton(text=' مسئول فنی', callback_data='btn_search_responsible'),
              InlineKeyboardButton(text='موسس', callback_data='btn_search_founder')],
             [InlineKeyboardButton(text='شیفت ', callback_data='btn_search_shift'),
-             InlineKeyboardButton(text=' داروخانه ', callback_data='btn_search_pharmacy'),
-             InlineKeyboardButton(text='پروانه', callback_data='btn_search_license'),
-             InlineKeyboardButton(text='آمار استفاده', callback_data='btn_search_used')],
+             InlineKeyboardButton(text='پروانه', callback_data='btn_search_license')],
         ])
 
     def kbCreateCancelSearchMenu(self=None):
@@ -257,7 +255,10 @@ class keyLib:
 
     def kbCreateMenuConfirmDelete(self=None, shiftId=None):
         return InlineKeyboardMarkup(inline_keyboard=[
-            [InlineKeyboardButton(text='حذف کردن شیفت', callback_data='btn_confirmDelete_{}'.format(str(shiftId)))]
+            [InlineKeyboardButton(text='حذف کردن شیفت', callback_data='btn_confirmDelete_{}'.format(str(shiftId)))],
+            [InlineKeyboardButton(text='ارسال برای مسئولان', callback_data='btn_confirmSendToTechnician_{}'.format(str(shiftId)))],
+            [InlineKeyboardButton(text='ارسال برای دانشجوها', callback_data='btn_confirmSendToStudent_{}'.format(str(shiftId)))],
+            [InlineKeyboardButton(text='ارسال برای همه', callback_data='btn_confirmSendToAll_{}'.format(str(shiftId)))]
         ])
 
     def kbCreateLicenseMenu(self=None, idL=None):
