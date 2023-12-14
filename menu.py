@@ -83,7 +83,12 @@ class keyLib:
 
     def kbDelShift(self=None, shiftId=None):
         return InlineKeyboardMarkup(inline_keyboard=[
-            [InlineKeyboardButton(text='حذف شیفت', callback_data='btn_DelShiftAdmin_{}'.format(str(shiftId)))]
+            [InlineKeyboardButton(text='حذف شیفت', callback_data='btn_DelShiftAdmin_{}'.format(str(shiftId)))],
+            [InlineKeyboardButton(text='ارسال برای مسئولان',
+                                  callback_data='btn_confirmSendToTechnician_{}'.format(str(shiftId)))],
+            [InlineKeyboardButton(text='ارسال برای دانشجوها',
+                                  callback_data='btn_confirmSendToStudent_{}'.format(str(shiftId)))],
+            [InlineKeyboardButton(text='ارسال برای همه', callback_data='btn_confirmSendToAll_{}'.format(str(shiftId)))]
         ])
     def kbCreateMenuFunder(self=None, chatId=None):
         return InlineKeyboardMarkup(inline_keyboard=[
@@ -256,9 +261,6 @@ class keyLib:
     def kbCreateMenuConfirmDelete(self=None, shiftId=None):
         return InlineKeyboardMarkup(inline_keyboard=[
             [InlineKeyboardButton(text='حذف کردن شیفت', callback_data='btn_confirmDelete_{}'.format(str(shiftId)))],
-            [InlineKeyboardButton(text='ارسال برای مسئولان', callback_data='btn_confirmSendToTechnician_{}'.format(str(shiftId)))],
-            [InlineKeyboardButton(text='ارسال برای دانشجوها', callback_data='btn_confirmSendToStudent_{}'.format(str(shiftId)))],
-            [InlineKeyboardButton(text='ارسال برای همه', callback_data='btn_confirmSendToAll_{}'.format(str(shiftId)))]
         ])
 
     def kbCreateLicenseMenu(self=None, idL=None):

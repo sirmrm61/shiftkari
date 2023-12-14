@@ -1636,6 +1636,10 @@ def handle_new_messages(user_id, userName, update):
                     helper.yesApproveAllShift(spBtn[2], user_id, bot)
                 else:
                     bot.sendMessage(user_id, msg.messageLib.shiftIsFull.value)
+            elif spBtn[1] == 'confirmSendToTechnician':
+                creator = mydb.get_shift_property('Creator', spBtn[2])
+                helper.send_shift_to_technicalResponsible(int(spBtn[2], bot, creator, 2))
+                bot.sendMessage(user_id,msg.messageLib.msgSendToTechnician.value)
             elif spBtn[1] == 'DelShiftAdmin':
                 if tempMember.membership_type != 4:
                     bot.sendMessage(user_id, msg.messageLib.userIsNotAdmin.value)
@@ -1657,10 +1661,7 @@ def handle_new_messages(user_id, userName, update):
                 # todo: اگر شیفت پر است برای افرادی که شیف را پر کرده اند پیام بفرستد
                 bot.sendMessage(user_id, msg.messageLib.confirmDeleteShift.value,
                                 reply_markup=menu.keyLib.kbCreateMenuConfirmDelete(shiftId=spBtn[2]))
-            elif spBtn[1] == 'confirmSendToTechnician':
-                creator = mydb.get_shift_property('Creator', spBtn[2])
-                helper.send_shift_to_technicalResponsible(int(spBtn[2], bot, creator, 2))
-                bot.sendMessage(user_id,msg.messageLib.msgSendToTechnician.value)
+
             elif spBtn[1] == 'confirmDelete':  # تائیدیه پاک کردن شیفت توسط مدیر سیستم
                 mydb.shift_update_by_id(fieldName='del', fieldValue='1', idshift=spBtn[2])
                 listDay = mydb.getListDayIsNotEmpty(spBtn[2], None)
