@@ -723,6 +723,14 @@ def handle_new_messages(user_id, userName, update):
                     mydb.member_update_chatid('registration_progress', 305, user_id)
                     bot.sendMessage(user_id, msg.messageLib.searchMessageShift.value,
                                     reply_markup=menu.keyLib.kbCreateCancelSearchMenu())
+                elif spBtn[2] == 'licenseEmpty':
+                    mydb.member_update_chatid('registration_progress', 306, user_id)
+                    bot.sendMessage(user_id, msg.messageLib.searchMessageLicenseEmpty.value,
+                                    reply_markup=menu.keyLib.kbCreateCancelSearchMenu())
+                elif spBtn[2] == 'licenseNeed':
+                    mydb.member_update_chatid('registration_progress', 307, user_id)
+                    bot.sendMessage(user_id, msg.messageLib.searchMessageLicenseNeed.value,
+                                    reply_markup=menu.keyLib.kbCreateCancelSearchMenu())
             elif spBtn[1] == 'cancelSearch':
                 mydb.member_update_chatid('registration_progress', 10, user_id)
                 bot.sendMessage(user_id, msg.messageLib.searchCancel.value)

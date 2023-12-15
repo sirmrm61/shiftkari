@@ -169,7 +169,8 @@ class keyLib:
              InlineKeyboardButton(text=' مسئول فنی', callback_data='btn_search_responsible'),
              InlineKeyboardButton(text='موسس', callback_data='btn_search_founder')],
             [InlineKeyboardButton(text='شیفت ', callback_data='btn_search_shift'),
-             InlineKeyboardButton(text='پروانه', callback_data='btn_search_license')],
+             InlineKeyboardButton(text='پروانه با زمان آزاد', callback_data='btn_search_licenseEmpty'),
+             InlineKeyboardButton(text='درخواست پروانه', callback_data='btn_search_licenseNeed')],
         ])
 
     def kbCreateCancelSearchMenu(self=None):
