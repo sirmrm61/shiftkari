@@ -1636,6 +1636,16 @@ def handle_new_messages(user_id, userName, update):
                     helper.yesApproveAllShift(spBtn[2], user_id, bot)
                 else:
                     bot.sendMessage(user_id, msg.messageLib.shiftIsFull.value)
+            elif spBtn[1] == 'confirmSendToAll':
+                creator = mydb.get_shift_property('Creator', spBtn[2])
+                helper.send_shift_to_technicalResponsible(int(spBtn[2]), bot, creator, 2)
+                bot.sendMessage(user_id, msg.messageLib.msgSendToTechnician.value)
+                helper.send_shift_to_studentEM(spBtn[2], bot, creator)
+                bot.sendMessage(user_id, msg.messageLib.msgSendToStudent.value)
+            elif spBtn[1] == 'confirmSendToStudent':
+                creator = mydb.get_shift_property('Creator', spBtn[2])
+                helper.send_shift_to_studentEM(spBtn[2], bot, creator)
+                bot.sendMessage(user_id, msg.messageLib.msgSendToStudent.value)
             elif spBtn[1] == 'confirmSendToTechnician':
                 creator = mydb.get_shift_property('Creator', spBtn[2])
                 helper.send_shift_to_technicalResponsible(int(spBtn[2]), bot, creator, 2)
