@@ -624,6 +624,23 @@ def handle_new_messages(user_id, userName, update):
             else:
                 bot.sendMessage(user_id, msg.messageLib.errorRegisterLicense.value)
             mydb.member_update_chatid('registration_progress', 10, user_id)
+        elif tempMember.register_progress == 306:
+            listEmpty = mydb.getListLicenseEmpty(searchTerm=message['text'])
+            if len(listEmpty) == 0:
+                bot.sendMessage(user_id, msg.messageLib.emptyList.value)
+                return
+            for item in listEmpty:
+                bot.sendMessage(user_id, helper.formatLicenseEmpty(item),
+                                reply_markup=menu.keyLib.kbRemoveRequest(idReq=item[0]))
+
+        elif tempMember.register_progress == 307:
+            listNeed = mydb.getListLicenseNeed(searchTerm=message['text'])
+            if len(listNeed) == 0:
+                bot.sendMessage(user_id, msg.messageLib.emptyList.value)
+                return
+            for item in listNeed:
+                bot.sendMessage(user_id, helper.formatLicenseNeed(item),
+                                reply_markup=menu.keyLib.kbRemoveRequest(idReq=item[0]))
         elif tempMember.register_progress == 305:
             resultSearch = []
             resultSearch = mydb.searchShift(message['text'])
@@ -734,6 +751,9 @@ def handle_new_messages(user_id, userName, update):
             elif spBtn[1] == 'cancelSearch':
                 mydb.member_update_chatid('registration_progress', 10, user_id)
                 bot.sendMessage(user_id, msg.messageLib.searchCancel.value)
+            elif spBtn[1] == 'removeReq':
+                mydb.removeReq(idReq=spBtn[2])
+                bot.sendMessage(user_id,msg.messageLib.msgRemoveLicense.value)
             elif spBtn[1] == 'licenseNeed':
                 mydb.member_update_chatid('registration_progress', 201, user_id)
                 bot.sendMessage(user_id, msg.messageLib.licenseNeed.value)

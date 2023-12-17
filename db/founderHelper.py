@@ -239,8 +239,11 @@ class HelperFunder:
         detail = f'\n جزئیات پروانه:{dataRow[3]}'
         dr = dataRow[4]
         date_register = f'تاریخ ایجاد :{JalaliDate.to_jalali(dr.year, dr.month, dr.day)}'
+        tmp = datetime.datetime.strptime(dr,'%Y-%m-%d %H:%M:%S')
+        pastDay =f'{(datetime.datetime.now() - tmp).days} روز قبل این درخواست ایجاد شده است. '
         return f'''
 {date_register}
+{pastDay}
 {requsterL}
 {phone_number}
 {detail}
@@ -256,8 +259,11 @@ class HelperFunder:
         detail = f'\n جزئیات درخواست:{dataRow[6]}'
         dr = dataRow[7]
         date_register = f'تاریخ ایجاد درخواست:{JalaliDate.to_jalali(dr.year, dr.month, dr.day)}'
+        tmp = datetime.datetime.strptime(dr,'%Y-%m-%d %H:%M:%S')
+        pastDay =f'{(datetime.datetime.now() - tmp).days} روز قبل این درخواست ایجاد شده است. '
         return f'''
 {date_register}
+{pastDay}
 {requsterL}
 {phone_number}
 {pharmacy_name}

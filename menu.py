@@ -714,3 +714,8 @@ class keyLib:
         lkb.append([InlineKeyboardButton(text='پایان انتخاب',
                                          callback_data='btn_endSelection_{}'.format(str(idShift)))])
         return InlineKeyboardMarkup(inline_keyboard=lkb)
+
+    def kbRemoveRequest(self=None,idReq=None):
+        return InlineKeyboardMarkup(inline_keyboard=[
+            [InlineKeyboardButton(text='حذف درخواست', callback_data=f'btn_removeReq_{idReq}')]
+        ])

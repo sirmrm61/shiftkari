@@ -724,6 +724,7 @@ class mysqlconnector:
         myCursor.execute(sqlQuery)
         result = myCursor.fetchall()
         return result
+
     def checkExsistDetail(self, mem: Membership, newType):
         mydb = self.connector()
         myCursor = mydb.cursor()
@@ -1043,18 +1044,41 @@ VALUES({idShift},\'{dateShift}\',\'{requster}\',0,{sendedForCreator},{idDetailSh
         myCursor.execute(sqlQuery)
         return myCursor.lastrowid
 
-    def getListLicenseEmpty(self):
+    def removeReq(self, idReq):
+        sqlQuery = f'''delete from `botshiftkari`.`activity_license` where `id_activity_license` = f{idReq} '''
+        mydb = self.connector()
+        myCursor = mydb.cursor()
+        myCursor.execute(sqlQuery)
+        return None
+    def getListLicenseEmpty(self, searchTerm=None):
         sqlQuery = f'''select id_activity_license, fn, phone_number, detail, date_register from 
                         `botshiftkari`.`vw_licenseempty` where date_register >= {datetime.datetime.now()}'''
+        if searchTerm is not None:
+            condition = f'''
+                 or   (fn like \'%{searchTerm}%\' or
+                         phone_number like \'%{searchTerm}%\' or
+                         detail like \'%{searchTerm}%\')
+             '''
+            sqlQuery += condition
         mydb = self.connector()
         myCursor = mydb.cursor()
         myCursor.execute(sqlQuery)
         result = myCursor.fetchall()
         return result
 
-    def getListLicenseNeed(self):
+    def getListLicenseNeed(self, searchTerm=None):
         sqlQuery = f'''select id_activity_license, fn, phone_number, pharmacy_name, pharmacy_type, pharmacy_address,
         detail, date_register from `botshiftkari`.`vw_licenseneed` '''
+        if searchTerm is not None:
+            condition = f'''
+                where   fn like \'%{searchTerm}%\' or
+                        phone_number like \'%{searchTerm}%\' or
+                        pharmacy_name like \'%{searchTerm}%\' or
+                        pharmacy_type like \'%{searchTerm}%\' or
+                        pharmacy_address like \'%{searchTerm}%\' or
+                        detail like \'%{searchTerm}%\'
+            '''
+            sqlQuery += condition
         mydb = self.connector()
         myCursor = mydb.cursor()
         myCursor.execute(sqlQuery)
@@ -1110,6 +1134,7 @@ VALUES({idShift},\'{dateShift}\',\'{requster}\',0,{sendedForCreator},{idDetailSh
         myCursor.execute(sqlQuery)
         result = myCursor.fetchall()
         return result
+
     def searchShift(self, searchVerb):
         sqlQuery = f'''SELECT concat(mem.name,mem.last_name) as fullname,creator,
                         DateShift,startTime,endTime,wage,pharmacyAddress,progress,approver,shi.idshift,
@@ -1126,6 +1151,7 @@ VALUES({idShift},\'{dateShift}\',\'{requster}\',0,{sendedForCreator},{idDetailSh
         myCursor.execute(sqlQuery)
         result = myCursor.fetchall()
         return result
+
     def searchStudent(self, searchVerb):
         sqlQuery = f'''SELECT fn, phone_number, username, chat_id, vdmind, vs.desc,
                      opTime, national_code, start_date, end_date, shift_access,
@@ -1230,6 +1256,7 @@ VALUES({idShift},\'{dateShift}\',\'{requster}\',0,{sendedForCreator},{idDetailSh
         myCursor.execute(sqlQuery)
         result = myCursor.fetchall()
         return result
+
     def delOldShift(self):
         datePersian = JalaliDate(datetime.datetime.now())
         sqlQuery = f"select idshift from botshiftkari.shift where dateEndShift < '{datePersian}'"
