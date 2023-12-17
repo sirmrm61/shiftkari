@@ -948,7 +948,7 @@ def handle_new_messages(user_id, userName, update):
                         pharmacyTypeTmp = mydb.get_funder_property('pharmacy_type', user_id)
                         if pharmacyTypeTmp == 'شبانه روزی':
                             mydb.shift_update_by_id('pharmacyType', 1, idShift)
-                            helper.send_createShift(bot, user_id, idShift, 2, None, 3, 0)
+                            helper.send_createShift(bot, user_id, idShift, 1, None, 3, 0)
                             # داروخانه های شبانه روزی با فقط با زمانهای آزاد کار کنند
                             # morning = mydb.get_property_domain('morning')
                             # evening = mydb.get_property_domain('evening')
@@ -1010,7 +1010,7 @@ def handle_new_messages(user_id, userName, update):
                     pharmacyTypeTmp = mydb.get_funder_property('pharmacy_type', user_id)
                     if pharmacyTypeTmp == 'شبانه روزی':
                         mydb.shift_update_by_id('pharmacyType', 1, idShift)
-                        helper.send_createShift(bot, user_id, idShift, 2, None, 3, 2)
+                        helper.send_createShift(bot, user_id, idShift, 1, None, 3, 2)
                         # داروخانه های شبانه روزی با فقط با زمانهای آزاد کار کنند
                         # helper.send_createShift(bot, user_id, idShift, 2, None, 3, 2)
                         # morning = mydb.get_property_domain('morning')
@@ -1033,9 +1033,9 @@ def handle_new_messages(user_id, userName, update):
                 msgId = mydb.get_shift_property('messageID', idShift)
                 isEM = mydb.get_shift_property('shiftIsEM', idShift)
                 if isEM == 0:
-                    helper.send_createShift(bot, user_id, idShift, 2, msgId, 3, 2)
+                    helper.send_createShift(bot, user_id, idShift, 1, msgId, 3, 2)
                 elif isEM == 1:
-                    helper.send_createShift(bot, user_id, idShift, 2, msgId, 3, 0)
+                    helper.send_createShift(bot, user_id, idShift, 1, msgId, 3, 0)
                 # idShift = spBtn[2]
                 # msgId = mydb.get_shift_property('messageID', idShift)
                 # morning = mydb.get_property_domain('morning')
