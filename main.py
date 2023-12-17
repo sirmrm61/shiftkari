@@ -1029,13 +1029,21 @@ def handle_new_messages(user_id, userName, update):
                 mydb.member_update_chatid('lastShiftId', idShift, user_id)
             elif spBtn[1] == 'btNightDayCS':
                 idShift = spBtn[2]
+                mydb.shift_update_by_id('pharmacyType', 1, idShift)
                 msgId = mydb.get_shift_property('messageID', idShift)
-                morning = mydb.get_property_domain('morning')
-                evening = mydb.get_property_domain('evening')
-                night = mydb.get_property_domain('night')
-                bot.editMessageText((user_id, msgId),
-                                    str(msg.messageLib.promptStandardShift.value).format(morning, evening, night),
-                                    reply_markup=menu.keyLib.kbTypePharmacyTime(idShift=idShift))
+                isEM = mydb.get_shift_property('shiftIsEM', idShift)
+                if isEM == 0:
+                    helper.send_createShift(bot, user_id, idShift, 2, msgId, 3, 2)
+                elif isEM == 1:
+                    helper.send_createShift(bot, user_id, idShift, 2, msgId, 3, 0)
+                # idShift = spBtn[2]
+                # msgId = mydb.get_shift_property('messageID', idShift)
+                # morning = mydb.get_property_domain('morning')
+                # evening = mydb.get_property_domain('evening')
+                # night = mydb.get_property_domain('night')
+                # bot.editMessageText((user_id, msgId),
+                #                     str(msg.messageLib.promptStandardShift.value).format(morning, evening, night),
+                #                     reply_markup=menu.keyLib.kbTypePharmacyTime(idShift=idShift))
             elif spBtn[1] == 'backToSelectDay':
                 idShift = spBtn[2]
                 msgId = mydb.get_shift_property('messageID', idShift)
