@@ -1054,12 +1054,12 @@ VALUES({idShift},\'{dateShift}\',\'{requster}\',0,{sendedForCreator},{idDetailSh
 
     def getListLicenseEmpty(self, searchTerm=None):
         sqlQuery = f'''select id_activity_license, fn, phone_number, detail, date_register from 
-                        `botshiftkari`.`vw_licenseempty` where date_register >= {datetime.datetime.now()}'''
+                        `botshiftkari`.`vw_licenseempty`'''
         if searchTerm is not None:
             condition = f'''
-                 or   (fn like \'%{searchTerm}%\' or
+                 where   fn like \'%{searchTerm}%\' or
                          phone_number like \'%{searchTerm}%\' or
-                         detail like \'%{searchTerm}%\')
+                         detail like \'%{searchTerm}%\'
              '''
             sqlQuery += condition
         mydb = self.connector()
@@ -1087,14 +1087,6 @@ VALUES({idShift},\'{dateShift}\',\'{requster}\',0,{sendedForCreator},{idDetailSh
         result = myCursor.fetchall()
         return result
 
-    def getListLicenseEmpty(self):
-        sqlQuery = f'''select id_activity_license, fn, phone_number, detail, date_register
-         from `botshiftkari`.`vw_licenseempty`'''
-        mydb = self.connector()
-        myCursor = mydb.cursor()
-        myCursor.execute(sqlQuery)
-        result = myCursor.fetchall()
-        return result
 
     def getMyListLicense(self, userId):
         sqlQuery = f'''select id_activity_license, type, detail, date_register, creator, del
