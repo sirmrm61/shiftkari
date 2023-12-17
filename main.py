@@ -948,14 +948,16 @@ def handle_new_messages(user_id, userName, update):
                         pharmacyTypeTmp = mydb.get_funder_property('pharmacy_type', user_id)
                         if pharmacyTypeTmp == 'شبانه روزی':
                             mydb.shift_update_by_id('pharmacyType', 1, idShift)
-                            morning = mydb.get_property_domain('morning')
-                            evening = mydb.get_property_domain('evening')
-                            night = mydb.get_property_domain('night')
-                            msgInfo = bot.sendMessage(user_id,
-                                                      str(msg.messageLib.promptStandardShift.value).format(morning,
-                                                                                                           evening,
-                                                                                                           night),
-                                                      reply_markup=menu.keyLib.kbTypePharmacyTime(idShift=idShift))
+                            helper.send_createShift(bot, user_id, idShift, 2, None, 3, 0)
+                            # داروخانه های شبانه روزی با فقط با زمانهای آزاد کار کنند
+                            # morning = mydb.get_property_domain('morning')
+                            # evening = mydb.get_property_domain('evening')
+                            # night = mydb.get_property_domain('night')
+                            # msgInfo = bot.sendMessage(user_id,
+                            #                           str(msg.messageLib.promptStandardShift.value).format(morning,
+                            #                                                                                evening,
+                            #                                                                                night),
+                            #                           reply_markup=menu.keyLib.kbTypePharmacyTime(idShift=idShift))
                         else:
                             mydb.shift_update_by_id('pharmacyType', 2, idShift)
                             msgInfo = helper.send_createShift(bot, user_id, idShift, 2, None)
@@ -1008,13 +1010,16 @@ def handle_new_messages(user_id, userName, update):
                     pharmacyTypeTmp = mydb.get_funder_property('pharmacy_type', user_id)
                     if pharmacyTypeTmp == 'شبانه روزی':
                         mydb.shift_update_by_id('pharmacyType', 1, idShift)
-                        morning = mydb.get_property_domain('morning')
-                        evening = mydb.get_property_domain('evening')
-                        night = mydb.get_property_domain('night')
-                        msgInfo = bot.sendMessage(user_id,
-                                                  str(msg.messageLib.promptStandardShift.value).format(morning, evening,
-                                                                                                       night),
-                                                  reply_markup=menu.keyLib.kbTypePharmacyTime(idShift=idShift))
+                        mydb.shift_update_by_id('pharmacyType', 1, idShift)
+                        # داروخانه های شبانه روزی با فقط با زمانهای آزاد کار کنند
+                        # helper.send_createShift(bot, user_id, idShift, 2, None, 3, 2)
+                        # morning = mydb.get_property_domain('morning')
+                        # evening = mydb.get_property_domain('evening')
+                        # night = mydb.get_property_domain('night')
+                        # msgInfo = bot.sendMessage(user_id,
+                        #                           str(msg.messageLib.promptStandardShift.value).format(morning, evening,
+                        #                                                                                night),
+                        #                           reply_markup=menu.keyLib.kbTypePharmacyTime(idShift=idShift))
                     else:
                         mydb.shift_update_by_id('pharmacyType', 2, idShift)
                         msgInfo = helper.send_createShift(bot, user_id, idShift, 2, None)

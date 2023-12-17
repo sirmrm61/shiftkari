@@ -36,8 +36,8 @@ class keyLib:
 
     def kbTypePharmacyTime(self=None, idShift=0):
         return InlineKeyboardMarkup(inline_keyboard=[
-            [InlineKeyboardButton(text='زمان آزاد', callback_data=f'btn_freeTime_{idShift}'),
-             InlineKeyboardButton(text='زمان استاندارد', callback_data=f'btn_timeStandard_{idShift}')]
+            [InlineKeyboardButton(text='زمان آزاد', callback_data=f'btn_freeTime_{idShift}'),]
+             # InlineKeyboardButton(text='زمان استاندارد', callback_data=f'btn_timeStandard_{idShift}')]
         ])
 
     def kbTypeShift(self=None):
