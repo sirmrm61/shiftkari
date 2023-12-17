@@ -1051,6 +1051,7 @@ VALUES({idShift},\'{dateShift}\',\'{requster}\',0,{sendedForCreator},{idDetailSh
         myCursor = mydb.cursor()
         myCursor.execute(sqlQuery)
         return None
+
     def getListLicenseEmpty(self, searchTerm=None):
         sqlQuery = f'''select id_activity_license, fn, phone_number, detail, date_register from 
                         `botshiftkari`.`vw_licenseempty` where date_register >= {datetime.datetime.now()}'''
