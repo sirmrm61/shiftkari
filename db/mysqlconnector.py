@@ -1045,7 +1045,7 @@ VALUES({idShift},\'{dateShift}\',\'{requster}\',0,{sendedForCreator},{idDetailSh
         return myCursor.lastrowid
 
     def removeReq(self, idReq):
-        sqlQuery = f'''delete from `botshiftkari`.`activity_license` where `id_activity_license` = f{idReq} '''
+        sqlQuery = f'''delete from `botshiftkari`.`activity_license` where `id_activity_license` = {idReq} '''
         mydb = self.connector()
         myCursor = mydb.cursor()
         myCursor.execute(sqlQuery)
