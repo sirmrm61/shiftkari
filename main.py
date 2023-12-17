@@ -1010,7 +1010,7 @@ def handle_new_messages(user_id, userName, update):
                     pharmacyTypeTmp = mydb.get_funder_property('pharmacy_type', user_id)
                     if pharmacyTypeTmp == 'شبانه روزی':
                         mydb.shift_update_by_id('pharmacyType', 1, idShift)
-                        mydb.shift_update_by_id('pharmacyType', 1, idShift)
+                        helper.send_createShift(bot, user_id, idShift, 2, None, 3, 2)
                         # داروخانه های شبانه روزی با فقط با زمانهای آزاد کار کنند
                         # helper.send_createShift(bot, user_id, idShift, 2, None, 3, 2)
                         # morning = mydb.get_property_domain('morning')
