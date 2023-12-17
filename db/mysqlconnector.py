@@ -1047,6 +1047,7 @@ VALUES({idShift},\'{dateShift}\',\'{requster}\',0,{sendedForCreator},{idDetailSh
     def removeReq(self, idReq):
         sqlQuery = f'''delete from `botshiftkari`.`activity_license` where `id_activity_license` = {idReq} '''
         mydb = self.connector()
+        mydb.autocommit = True
         myCursor = mydb.cursor()
         myCursor.execute(sqlQuery)
         return None
