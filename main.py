@@ -194,7 +194,7 @@ def handle_new_messages(user_id, userName, update):
         elif 'text' in message and tempMember.register_progress == 0 and message['text'] == '/start':
             bot.sendMessage(message['chat']['id'], str(msg.messageLib.helloClient.value).format(
                 message['chat']['first_name']), reply_markup=menu.keyLib.kbWhoAreYou())
-        elif 'text' in message and tempMember.register_progress != 0 and message['text'] == '/start':
+        elif 'text' in message and tempMember.register_progress > 9 and message['text'] == '/start':
             helper.myInfo(tempMember, bot, message, user_id)
             # titlePos = None
             # if tempMember.membership_type == 1:
@@ -216,12 +216,20 @@ def handle_new_messages(user_id, userName, update):
             # except:  #
             #     bot.sendMessage('6274361322', '{0}:{1}'.format(message['chat']['id'], message['text']))
         elif tempMember.register_progress == 1:
+            if message['text'] == '/start':
+                bot.sendMessage(message['chat']['id'],
+                                str(msg.messageLib.enterName.value))
+                return
             mydb.member_update_chatid('name', message['text'], message['chat']['id'])
             bot.sendMessage(message['chat']['id'],
                             str(msg.messageLib.enterLastName.value))
             mydb.member_update_chatid('registration_progress', 2, message['chat']['id'])
             tempMember.register_progress = 2
         elif tempMember.register_progress == 2:
+            if message['text'] == '/start':
+                bot.sendMessage(message['chat']['id'],
+                                str(msg.messageLib.enterLastName.value))
+                return
             mydb.member_update_chatid('last_name', message['text'], message['chat']['id'])
             bot.sendMessage(message['chat']['id'],
                             str(msg.messageLib.enterPhoneNumber.value))
@@ -262,6 +270,10 @@ def handle_new_messages(user_id, userName, update):
                 tempMember.register_progress = 10
         elif tempMember.register_progress == 4:
             if tempMember.membership_type == 1:
+                if message['text'] == '/start':
+                    bot.sendMessage(message['chat']['id'],
+                                    str(msg.messageLib.enterPharmacyName.value))
+                    return
                 mydb.founder_update('pharmacy_name', message['text'], message['chat']['id'])
                 bot.sendMessage(message['chat']['id'],
                                 str(msg.messageLib.enterPharmacyType.value),
@@ -343,7 +355,7 @@ def handle_new_messages(user_id, userName, update):
                     bot.sendMessage(message['chat']['id'],
                                     str(msg.messageLib.errorSendFile.value))
             elif tempMember.membership_type == 3:
-                # todo: check number
+                #todo: check number
                 mydb.student_update('hourPermit', unidecode(message['text']), user_id)
                 bot.sendMessage(message['chat']['id'],
                                 str(msg.messageLib.enterWorkoverPermitPhoto.value))
