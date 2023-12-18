@@ -85,38 +85,7 @@ def handle_new_messages(user_id, userName, update):
 
         message = update['message']
         if 'text' in message and message['text'] == '/myinfo':
-            titlePos = None
-            if tempMember.register_progress < 10:
-                bot.sendMessage(user_id, msg.messageLib.noRegisterUser.value)
-                bot.sendMessage(user_id, msg.messageLib.noForRegisterUser.value)
-                return
-            if tempMember.membership_type == 1:
-                titlePos = 'موسس'
-            elif tempMember.membership_type == 2:
-                titlePos = 'مسئول فنی'
-            elif tempMember.membership_type == 3:
-                titlePos = 'دانشجو'
-            elif tempMember.membership_type == 4:
-                titlePos = 'مدیر'
-
-            bot.sendMessage(message['chat']['id'],
-                            str(msg.messageLib.myInfo.value).format(titlePos))
-            bot.sendMessage(message['chat']['id'],
-                            str(msg.messageLib.labeName.value).format(tempMember.name, tempMember.last_name))
-            bot.sendMessage(message['chat']['id'],
-                            str(msg.messageLib.labelPhoneNumber.value).format(tempMember.phone_number))
-            if tempMember.membership_type == 1:
-                bot.sendMessage(message['chat']['id'], msg.messageLib.yourOperation.value,
-                                reply_markup=menu.keyLib.kbCreateMenuFunder(chatId=message['chat']['id']))
-            elif tempMember.membership_type == 2:
-                bot.sendMessage(message['chat']['id'], msg.messageLib.yourOperation.value,
-                                reply_markup=menu.keyLib.kbCreateMenuResponsible(chatId=message['chat']['id']))
-            elif tempMember.membership_type == 3:
-                bot.sendMessage(message['chat']['id'], msg.messageLib.yourOperation.value,
-                                reply_markup=menu.keyLib.kbCreateMenuStudent(chatId=message['chat']['id']))
-            elif tempMember.membership_type == 4:
-                bot.sendMessage(message['chat']['id'], msg.messageLib.yourOperation.value,
-                                reply_markup=menu.keyLib.kbCreateMenuManager(chatId=message['chat']['id']))
+            helper.myInfo(tempMember, bot, message, user_id)
         elif 'text' in message and str(message['text']).lower().startswith('/emday '.lower()):
             if tempMember.membership_type is None or tempMember.membership_type != 4:
                 bot.sendMessage(user_id, msg.messageLib.userIsNotAdmin.value)
@@ -226,25 +195,26 @@ def handle_new_messages(user_id, userName, update):
             bot.sendMessage(message['chat']['id'], str(msg.messageLib.helloClient.value).format(
                 message['chat']['first_name']), reply_markup=menu.keyLib.kbWhoAreYou())
         elif 'text' in message and tempMember.register_progress != 0 and message['text'] == '/start':
-            titlePos = None
-            if tempMember.membership_type == 1:
-                titlePos = 'موسس'
-            elif tempMember.membership_type == 2:
-                titlePos = 'مسئول فنی'
-            elif tempMember.membership_type == 3:
-                titlePos = 'دانشجو'
-            elif tempMember.membership_type == 4:
-                titlePos = 'مدیر'
-            if tempMember.register_progress < 10:
-                bot.sendMessage(user_id, msg.messageLib.userNotCompelete.value,
-                                reply_markup=menu.keyLib.kbCreateMenuNotCompelete())
-                return
-            try:
-                bot.sendMessage(message['chat']['id'],
-                                str(msg.messageLib.duplicateregistration.value).format(titlePos),
-                                reply_markup=menu.keyLib.kbCreateDelKey(message['chat']['id']))
-            except:  # TODO: عوض کردن کد admin
-                bot.sendMessage('6274361322', '{0}:{1}'.format(message['chat']['id'], message['text']))
+            helper.myInfo(tempMember, bot, message, user_id)
+            # titlePos = None
+            # if tempMember.membership_type == 1:
+            #     titlePos = 'موسس'
+            # elif tempMember.membership_type == 2:
+            #     titlePos = 'مسئول فنی'
+            # elif tempMember.membership_type == 3:
+            #     titlePos = 'دانشجو'
+            # elif tempMember.membership_type == 4:
+            #     titlePos = 'مدیر'
+            # if tempMember.register_progress < 10:
+            #     bot.sendMessage(user_id, msg.messageLib.userNotCompelete.value,
+            #                     reply_markup=menu.keyLib.kbCreateMenuNotCompelete())
+            #     return
+            # try:
+            #     bot.sendMessage(message['chat']['id'],
+            #                     str(msg.messageLib.duplicateregistration.value).format(titlePos),
+            #                     reply_markup=menu.keyLib.kbCreateDelKey(message['chat']['id']))
+            # except:  #
+            #     bot.sendMessage('6274361322', '{0}:{1}'.format(message['chat']['id'], message['text']))
         elif tempMember.register_progress == 1:
             mydb.member_update_chatid('name', message['text'], message['chat']['id'])
             bot.sendMessage(message['chat']['id'],
@@ -753,7 +723,7 @@ def handle_new_messages(user_id, userName, update):
                 bot.sendMessage(user_id, msg.messageLib.searchCancel.value)
             elif spBtn[1] == 'removeReq':
                 mydb.removeReq(idReq=spBtn[2])
-                bot.sendMessage(user_id,msg.messageLib.msgRemoveLicense.value)
+                bot.sendMessage(user_id, msg.messageLib.msgRemoveLicense.value)
             elif spBtn[1] == 'licenseNeed':
                 mydb.member_update_chatid('registration_progress', 201, user_id)
                 bot.sendMessage(user_id, msg.messageLib.licenseNeed.value)
@@ -1010,7 +980,7 @@ def handle_new_messages(user_id, userName, update):
                     pharmacyTypeTmp = mydb.get_funder_property('pharmacy_type', user_id)
                     if pharmacyTypeTmp == 'شبانه روزی':
                         mydb.shift_update_by_id('pharmacyType', 1, idShift)
-                        msgInfo =  helper.send_createShift(bot, user_id, idShift, 1, None, 3, 2)
+                        msgInfo = helper.send_createShift(bot, user_id, idShift, 1, None, 3, 2)
                         # داروخانه های شبانه روزی با فقط با زمانهای آزاد کار کنند
                         # helper.send_createShift(bot, user_id, idShift, 2, None, 3, 2)
                         # morning = mydb.get_property_domain('morning')
@@ -1690,7 +1660,7 @@ def handle_new_messages(user_id, userName, update):
             elif spBtn[1] == 'confirmSendToTechnician':
                 creator = mydb.get_shift_property('Creator', spBtn[2])
                 helper.send_shift_to_technicalResponsible(int(spBtn[2]), bot, creator, 2)
-                bot.sendMessage(user_id,msg.messageLib.msgSendToTechnician.value)
+                bot.sendMessage(user_id, msg.messageLib.msgSendToTechnician.value)
             elif spBtn[1] == 'DelShiftAdmin':
                 if tempMember.membership_type != 4:
                     bot.sendMessage(user_id, msg.messageLib.userIsNotAdmin.value)

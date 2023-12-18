@@ -773,3 +773,36 @@ class HelperFunder:
                                     int(splitDate[2]), int(sde[2]), idShift, isEM, typeShift, isMorning)
         mydb.member_update_chatid('editMsgId', msgInfo["message_id"], user_id)
         return msgInfo
+    def myInfo(self,tempMember,bot,message,user_id):
+        titlePos = None
+        if tempMember.register_progress < 10:
+            bot.sendMessage(user_id, msg.messageLib.noRegisterUser.value)
+            bot.sendMessage(user_id, msg.messageLib.noForRegisterUser.value)
+            return
+        if tempMember.membership_type == 1:
+            titlePos = 'موسس'
+        elif tempMember.membership_type == 2:
+            titlePos = 'مسئول فنی'
+        elif tempMember.membership_type == 3:
+            titlePos = 'دانشجو'
+        elif tempMember.membership_type == 4:
+            titlePos = 'مدیر'
+
+        bot.sendMessage(message['chat']['id'],
+                        str(msg.messageLib.myInfo.value).format(titlePos))
+        bot.sendMessage(message['chat']['id'],
+                        str(msg.messageLib.labeName.value).format(tempMember.name, tempMember.last_name))
+        bot.sendMessage(message['chat']['id'],
+                        str(msg.messageLib.labelPhoneNumber.value).format(tempMember.phone_number))
+        if tempMember.membership_type == 1:
+            bot.sendMessage(message['chat']['id'], msg.messageLib.yourOperation.value,
+                            reply_markup=menu.keyLib.kbCreateMenuFunder(chatId=message['chat']['id']))
+        elif tempMember.membership_type == 2:
+            bot.sendMessage(message['chat']['id'], msg.messageLib.yourOperation.value,
+                            reply_markup=menu.keyLib.kbCreateMenuResponsible(chatId=message['chat']['id']))
+        elif tempMember.membership_type == 3:
+            bot.sendMessage(message['chat']['id'], msg.messageLib.yourOperation.value,
+                            reply_markup=menu.keyLib.kbCreateMenuStudent(chatId=message['chat']['id']))
+        elif tempMember.membership_type == 4:
+            bot.sendMessage(message['chat']['id'], msg.messageLib.yourOperation.value,
+                            reply_markup=menu.keyLib.kbCreateMenuManager(chatId=message['chat']['id']))
