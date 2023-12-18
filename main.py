@@ -858,7 +858,7 @@ def handle_new_messages(user_id, userName, update):
             elif spBtn[1] == 'shiftEMHr':
                 hrEmShift = mydb.get_property_domain('hrEmShift')
                 bot.sendMessage(user_id, str(msg.messageLib.shiftEMHrLabel.value).format(hrEmShift))
-            elif spBtn[1] == 'shiftPD':
+            elif spBtn[1] == 'shiftEmCycle':
                 emDay = mydb.get_property_domain('emDay')
                 bot.sendMessage(user_id, str(msg.messageLib.shiftEmCycle.value).format(emDay))
             elif spBtn[1] == 'shiftPD':
