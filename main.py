@@ -5,9 +5,8 @@ import time
 from model.membership import Membership
 from persiantools.jdatetime import JalaliDate
 from dateutil.relativedelta import relativedelta
-from datetime import timedelta, date, datetime, time
+from datetime import timedelta,  datetime, time
 import os
-from pprint import pprint
 import msg
 import db.mysqlconnector as msc
 import uuid
