@@ -636,7 +636,7 @@ class HelperFunder:
                     for item in listNotEmptyDay:
                         dateStr += item[1] + ','
                 bot.sendMessage(chatId, self.formatShiftMessage(shiftRow) + dateStr,
-                                reply_markup=menu.keyLib.createMenuFromListDayForApproveCreatorNew(self=None,idShift=shiftRow[9]))
+                                reply_markup=menu.keyLib.createMenuFromListDayForApproveCreatorNew(self=None,idShift=shiftRow[9],totalInRow=1,ability=2))
         else:
             bot.sendMessage(chatId, msg.messageLib.noShift.value)
 
