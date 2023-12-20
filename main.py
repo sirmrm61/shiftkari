@@ -789,10 +789,10 @@ def handle_new_messages(user_id, userName, update):
                     mydb.insertSendMsg(creatorChatID, msgInfo['message_id'], spBtn[2], user_id)
                     helper.send_profile(user_id, bot, creatorChatID, idShift=spBtn[2])
                     msgInfo = bot.sendMessage(creatorChatID,
-                                              'روز های مورد تائید را نتخاب نمائید سپس به کلید اطلاع به درخواست دهنده را کلیک نمائید',
+                                              msg.messageLib.msgCreatror.value,
                                               reply_markup=menu.keyLib.createMenuFromListDayForApproveCreator(None,
                                                                                                               listDayAccept,
-                                                                                                              2,
+                                                                                                              1,
                                                                                                               idShift=
                                                                                                               spBtn[2],
                                                                                                               reqUser=user_id))

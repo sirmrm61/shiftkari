@@ -689,7 +689,7 @@ class keyLib:
                         InlineKeyboardButton(text="ادامه",
                                              callback_data=f'btn_continueRegShif_{idShift}')])
         if len(res) > 0 and ability == 2:
-            res.append([InlineKeyboardButton(text='شیفت را می پذیرم',
+            res.append([InlineKeyboardButton(text='مشاهده جزئیات',
                                              callback_data='btn_shiftApprove_{}'.format(str(idShift)))])
         if ability == 4:
             res.append([InlineKeyboardButton(text='پایان انتخاب',
