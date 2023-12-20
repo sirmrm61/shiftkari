@@ -2,8 +2,7 @@ import datetime
 
 import mysql.connector
 import db.env as helper
-from pprint import pprint
-from model.membership import Founder, Membership, Student, TechnicalManager
+from model.membership import Founder, Membership
 from datetime import datetime as DT
 from persiantools.jdatetime import JalaliDate
 
@@ -35,7 +34,7 @@ class mysqlconnector:
     def userDb(self):
         return self._userDb
 
-    @portDb.setter
+    @userDb.setter
     def userDb(self, new_userDb):
         self._userDb = new_userDb
 
@@ -54,7 +53,7 @@ class mysqlconnector:
     def insert_Founder(self, member: Founder):
         sqlQuery = 'select * from `botshiftkari`.`membership` where chat_id = \'{}\''.format(member.chatId)
         mydb = self.connector()
-        mydb.autocommit = True;
+        mydb.autocommit = True
         myCursor = mydb.cursor()
         myCursor.execute(sqlQuery)
         result = myCursor.fetchall()
@@ -65,7 +64,7 @@ class mysqlconnector:
             val = (
                 member.name, member.last_name, member.phone_number, member.membership_type, member.membership_fee_paid,
                 member.register_progress, member.userName, member.chatId, member.lastMessage)
-            result = myCursor.execute(sql, val)
+            myCursor.execute(sql, val)
             myCursor.reset()
         else:
             sql = 'UPDATE `botshiftkari`.`membership` SET'
@@ -183,7 +182,7 @@ class mysqlconnector:
         mydb.autocommit = True
         myCursor = mydb.cursor()
         myCursor.execute(sqlQuery)
-        result = myCursor.fetchone();
+        result = myCursor.fetchone()
         if result is None:
             return None
         else:
@@ -200,7 +199,7 @@ class mysqlconnector:
         mydb.autocommit = True
         myCursor = mydb.cursor()
         myCursor.execute(sqlQuery)
-        result = myCursor.fetchone();
+        result = myCursor.fetchone()
         if result is None:
             return None
         else:
@@ -212,14 +211,15 @@ class mysqlconnector:
             return result[0]
 
     def get_member_property_Adminchatid(self, fieldName, chatid):
-        sqlQuery = 'select `{1}` from `botshiftkari`.`membership` where registration_progress = 15 and  adminChatId = \'{0}\''.format(
+        sqlQuery = 'select `{1}` from `botshiftkari`.`membership` where registration_progress = 15 and  adminChatId = ' \
+                   '\'{0}\''.format(
             chatid,
             fieldName)
         mydb = self.connector()
         mydb.autocommit = True
         myCursor = mydb.cursor()
         myCursor.execute(sqlQuery)
-        result = myCursor.fetchone();
+        result = myCursor.fetchone()
         if result is None:
             return None
         else:
@@ -227,7 +227,6 @@ class mysqlconnector:
 
     def get_member_property_chatid(self, fieldName, chatid):
         sqlQuery = 'select `{1}` from `botshiftkari`.`membership` where  chat_id = \'{0}\''.format(chatid, fieldName)
-        print(sqlQuery)
         mydb = self.connector()
         myCursor = mydb.cursor()
         myCursor.execute(sqlQuery)
@@ -243,7 +242,7 @@ class mysqlconnector:
         mydb.autocommit = True
         myCursor = mydb.cursor()
         myCursor.execute(sqlQuery)
-        result = myCursor.fetchone();
+        result = myCursor.fetchone()
         if result is None:
             return None
         else:
@@ -252,7 +251,7 @@ class mysqlconnector:
     def create_member(self, member: Membership):
         sqlQuery = 'select * from `botshiftkari`.`membership` where chat_id = \'{}\''.format(member.chatId)
         mydb = self.connector()
-        mydb.autocommit = True;
+        mydb.autocommit = True
         myCursor = mydb.cursor()
         myCursor.execute(sqlQuery)
         result = myCursor.fetchall()
@@ -265,7 +264,7 @@ class mysqlconnector:
                 member.register_progress, member.userName, member.chatId, member.lastMessage)
             result = myCursor.execute(sql, val)
             myCursor.reset()
-        return member;
+        return member
 
     def get_funder_property(self, fieldName, chatid):
         sqlQuery = 'select id from `botshiftkari`.`membership` where  chat_id = \'{0}\''.format(chatid)
@@ -273,7 +272,7 @@ class mysqlconnector:
         mydb.autocommit = True
         myCursor = mydb.cursor()
         myCursor.execute(sqlQuery)
-        result = myCursor.fetchone();
+        result = myCursor.fetchone()
         idMember = result[0]
         sqlQuery = 'select {0} from `botshiftkari`.`founder` where idMember={1}'.format(fieldName, idMember)
         myCursor.execute(sqlQuery)
@@ -289,7 +288,7 @@ class mysqlconnector:
         mydb.autocommit = True
         myCursor = mydb.cursor()
         myCursor.execute(sqlQuery)
-        result = myCursor.fetchone();
+        result = myCursor.fetchone()
         idMember = result[0]
         sqlQuery = 'select id from `botshiftkari`.`founder` where idMember={}'.format(idMember)
         myCursor.execute(sqlQuery)
@@ -353,7 +352,7 @@ class mysqlconnector:
         mydb.autocommit = True
         myCursor = mydb.cursor()
         myCursor.execute(sqlQuery)
-        result = myCursor.fetchone();
+        result = myCursor.fetchone()
         idMember = result[0]
         sqlQuery = 'select {0} from `botshiftkari`.`technicalmanager` where idMember={1}'.format(fieldName, idMember)
         myCursor.execute(sqlQuery)
@@ -369,7 +368,7 @@ class mysqlconnector:
         mydb.autocommit = True
         myCursor = mydb.cursor()
         myCursor.execute(sqlQuery)
-        result = myCursor.fetchone();
+        result = myCursor.fetchone()
         idMember = result[0]
         sqlQuery = 'select id from `botshiftkari`.`technicalmanager` where idMember={}'.format(idMember)
         myCursor.execute(sqlQuery)
@@ -525,7 +524,7 @@ class mysqlconnector:
                          mem.chat_id = shi.Creator where progress = 2 and shi.del = 0'''
         myCursor.execute(sqlQuery)
         result = myCursor.fetchall()
-        return result;
+        return result
 
     def get_all_member(self=None, type=None):
         mydb = self.connector()
@@ -1086,7 +1085,6 @@ VALUES({idShift},\'{dateShift}\',\'{requster}\',0,{sendedForCreator},{idDetailSh
         myCursor.execute(sqlQuery)
         result = myCursor.fetchall()
         return result
-
 
     def getMyListLicense(self, userId):
         sqlQuery = f'''select id_activity_license, type, detail, date_register, creator, del
