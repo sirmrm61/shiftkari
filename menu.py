@@ -493,7 +493,7 @@ class keyLib:
         if idShift != 0:
             sdFullData = mydb.getListSelectedDay(idShift)
             selectedDay = [item[0] for item in sdFullData]
-        currentDate = str(JalaliDate(datetime.datetime.now() + datetime.timedelta(days=int(isEM)))).split('-')
+        currentDate = str(JalaliDate(datetime.datetime.now() + datetime.timedelta(days=int(isEM - 1)))).split('-')
         endDateSelection = None
         if int(isEM) == 0:
             emDay = mydb.get_property_domain('emDay')
