@@ -671,7 +671,7 @@ class keyLib:
                     lk.append(InlineKeyboardButton(text=f'{item[0]}<=>{item[6]}',
                                                 callback_data=actTmp))
                 if ability == 3:
-                lk.append(InlineKeyboardButton(text=f'{item[0]}<=>{item[6]}',
+                     lk.append(InlineKeyboardButton(text=f'{item[0]}<=>{item[6]}',
                                                callback_data=actionText))
         listIdDay = listIdDay[:-1]
         if len(lk) > 1 and ability == 1: lk.append(InlineKeyboardButton(text="همه روزها",
