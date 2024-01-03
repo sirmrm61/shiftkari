@@ -712,8 +712,9 @@ class keyLib:
                 ht = f'{day[10]}-{day[11]}_3'
             lkb.append([InlineKeyboardButton(text=f'{day[6]}-{day[7]}-{day[8]}-<>{day[10]}-{day[11]}',
                                              callback_data=f'btn_dayShift_{idShift}_{day[4]}_{day[6]}-{day[7]}-{day[8]}<->{ht}')])
-        lkb.append([InlineKeyboardButton(text='پایان انتخاب',
-                                         callback_data='btn_endSelection_{}'.format(str(idShift)))])
+
+            lkb.append([InlineKeyboardButton(text='مشاهده جزئیات',
+                                             callback_data='btn_shiftApprove_{}'.format(str(idShift)))])
         return InlineKeyboardMarkup(inline_keyboard=lkb)
 
     def kbRemoveRequest(self=None,idReq=None):
