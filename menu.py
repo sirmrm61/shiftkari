@@ -486,14 +486,14 @@ class keyLib:
             res.append(lk[idx * N: (idx + 1) * N])  # ToDo: check day is empty
         return InlineKeyboardMarkup(inline_keyboard=res)
 
-    def createMenuForSelectDay(self, year, month, startDay, endDay, idShift=0, totalInRow=7, isEM=2, typeShift=0,
+    def createMenuForSelectDay(self, year, month, startDay, endDay, idShift=0, totalInRow=7, isEM=1, typeShift=0,
                                isMorning=0):
         selectedDay = []
         sdFullData = None
         if idShift != 0:
             sdFullData = mydb.getListSelectedDay(idShift)
             selectedDay = [item[0] for item in sdFullData]
-        currentDate = str(JalaliDate(datetime.datetime.now() + datetime.timedelta(days=int(isEM - 1)))).split('-')
+        currentDate = str(JalaliDate(datetime.datetime.now() + datetime.timedelta(days=int(isEM)))).split('-')
         endDateSelection = None
         if int(isEM) == 0:
             emDay = mydb.get_property_domain('emDay')

@@ -313,6 +313,20 @@ def handle_new_messages(user_id, userName, update):
                 tempMember.register_progress = 5
         elif tempMember.register_progress == 5:
             if tempMember.membership_type == 2:
+                mydb.technicalManager_update('lcode',message['text'],user_id);
+                bot.sendMessage(message['chat']['id'],
+                                str(msg.messageLib.enetrPhotoPharmaceutical.value))
+                mydb.member_update_chatid('registration_progress', 6, message['chat']['id'])
+                tempMember.register_progress = 6
+            elif tempMember.membership_type == 3:
+                #todo: check number
+                mydb.student_update('hourPermit', unidecode(message['text']), user_id)
+                bot.sendMessage(message['chat']['id'],
+                                str(msg.messageLib.enterWorkoverPermitPhoto.value))
+                mydb.member_update_chatid('registration_progress', 7, message['chat']['id'])
+                tempMember.register_progress = 7
+        elif tempMember.register_progress == 6:
+            if tempMember.membership_type == 2:
                 if 'photo' in message:
                     file_id = message['photo'][-1]['file_id']
                     file_path = bot.getFile(file_id)['file_path']
@@ -352,16 +366,8 @@ def handle_new_messages(user_id, userName, update):
                     tempMember.register_progress = 10
                 else:
                     bot.sendMessage(message['chat']['id'],
-                                    str(msg.messageLib.errorSendFile.value))
-            elif tempMember.membership_type == 3:
-                #todo: check number
-                mydb.student_update('hourPermit', unidecode(message['text']), user_id)
-                bot.sendMessage(message['chat']['id'],
-                                str(msg.messageLib.enterWorkoverPermitPhoto.value))
-                mydb.member_update_chatid('registration_progress', 7, message['chat']['id'])
-                tempMember.register_progress = 7
-        elif tempMember.register_progress == 6:
-            if tempMember.membership_type == 1:
+                                    str(msg.messageLib.erroeSendFileL.value))
+            elif tempMember.membership_type == 1:
                 mydb.founder_update('pharmacy_address', message['text'], message['chat']['id'])
                 bot.sendMessage(message['chat']['id'],
                                 str(msg.messageLib.enterPharmacyLicensePhoto.value))
