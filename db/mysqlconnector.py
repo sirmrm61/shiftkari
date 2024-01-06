@@ -713,7 +713,7 @@ class mysqlconnector:
     def get_all_student_idmeMember(self, creator=None):
         mydb = self.connector()
         myCursor = mydb.cursor()
-        currenDate = str(JalaliDate(datetime.now())).replace('-','')
+        currenDate = str(JalaliDate(datetime.datetime.now())).replace('-','')
         print(currenDate)
         sqlQuery = ''
         if creator is None:
