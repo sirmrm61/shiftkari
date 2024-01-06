@@ -27,7 +27,7 @@ class HelperFunder:
     def __init__(self, op=0):
         self._op = op
 
-    def send_info_Developer(userID,bot):
+    def send_info_Developer(self,userID,bot):
         bot.sendMessage(userID,'تولید کننده:مسعود رمضانی')
         bot.sendMessage(userID,'شماره تماس:09153318140')
         bot.sendMessage(userID,'پست الکترونیک:09153318140')
