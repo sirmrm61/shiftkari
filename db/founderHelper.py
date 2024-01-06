@@ -696,7 +696,17 @@ class HelperFunder:
             mydb.registerDayShift(idShift, txtTmp, requester, 0, 2)
 
     def NOApproveAllShift(self, idShift, userID, bot):
-        bot.sendMessage(userID,
+        tm = mydb.get_member_property_chatid('membership_type',userID)
+        if int(tm) == 3:
+            shiftRow = mydb.get_all_property_shift_byId(idShift)
+            ids = mydb.get_member_property_chatid('id',userID)
+            days = mydb.getDayShiftForStudent(ids, idShift)
+            if len(days) > 0:
+                bot.sendMessage(userID, self.formatShiftMessage(shiftRow, 3),
+                                reply_markup=menu.keyLib.kbCreateMenuApproveShift(idShift=shiftRow[9], days=days,
+                                                                                  ability=4))
+        else:
+            bot.sendMessage(userID,
                         msg.messageLib.shiftSelectDay.value,
                         reply_markup=menu.keyLib.createMenuFromListDayForApproveCreatorNew(self=None, idShift=idShift,
                                                                                            ability=4))
