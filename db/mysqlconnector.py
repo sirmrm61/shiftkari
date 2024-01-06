@@ -713,13 +713,15 @@ class mysqlconnector:
     def get_all_student_idmeMember(self, creator=None):
         mydb = self.connector()
         myCursor = mydb.cursor()
+        currenDate = str(JalaliDate(datetime.now())).replace('-','')
+        print(currenDate)
         sqlQuery = ''
         if creator is None:
             sqlQuery = 'SELECT mem.chat_id,mem.id from botshiftkari.membership as mem where mem.del=0 ' \
-                       'and mem.membership_type=3 and mem.verifyAdmin = 1 '
+                       'and mem.membership_type=3 and mem.verifyAdmin = 1 and (\'{currenDate}\' between start_date and end_date) '
         else:
             sqlQuery = f'SELECT mem.chat_id,mem.id from botshiftkari.membership as mem where mem.del=0 ' \
-                       f'and mem.membership_type=3  and mem.verifyAdmin = 1 and not mem.chat_id = \'{creator}\' '
+                       f'and mem.membership_type=3  and mem.verifyAdmin = 1 and (\'{currenDate}\' between start_date and end_date) and not mem.chat_id = \'{creator}\' '
         myCursor.execute(sqlQuery)
         result = myCursor.fetchall()
         return result
