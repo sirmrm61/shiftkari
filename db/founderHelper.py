@@ -702,7 +702,7 @@ class HelperFunder:
             ids = mydb.get_member_property_chatid('id',userID)
             days = mydb.getDayShiftForStudent(ids, idShift)
             if len(days) > 0:
-                bot.sendMessage(userID, self.formatShiftMessage(shiftRow, 3),
+                bot.sendMessage(userID, msg.messageLib.shiftSelectDay.value,
                                 reply_markup=menu.keyLib.kbCreateMenuApproveShift(idShift=shiftRow[9], days=days,
                                                                                   ability=4))
         else:

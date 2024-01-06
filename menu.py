@@ -714,7 +714,8 @@ class keyLib:
                 actionText=f'btn_dayShift_{idShift}_{day[4]}_{day[6]}-{day[7]}-{day[8]}<->{ht}'
             lkb.append([InlineKeyboardButton(text=f'{day[6]}-{day[7]}-{day[8]}-<>{day[10]}-{day[11]}',
                                              callback_data=actionText)])
-        lkb.append([InlineKeyboardButton(text='مشاهده جزئیات',
+        if  ability == 0: 
+            lkb.append([InlineKeyboardButton(text='مشاهده جزئیات',
                                              callback_data='btn_shiftApprove_{}'.format(str(idShift)))])
         return InlineKeyboardMarkup(inline_keyboard=lkb)
 
