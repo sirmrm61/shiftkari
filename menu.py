@@ -717,6 +717,9 @@ class keyLib:
         if  ability == 0: 
             lkb.append([InlineKeyboardButton(text='مشاهده جزئیات',
                                              callback_data='btn_shiftApprove_{}'.format(str(idShift)))])
+        if ability == 4:
+            lkb.append([InlineKeyboardButton(text='پایان انتخاب',
+                                             callback_data='btn_endSelection_{}'.format(str(idShift)))])
         return InlineKeyboardMarkup(inline_keyboard=lkb)
 
     def kbRemoveRequest(self=None,idReq=None):
