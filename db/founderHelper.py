@@ -781,7 +781,6 @@ class HelperFunder:
         sde = str(dateEndMonth).split('-')
         msgInfo = self.sendCalendar(bot, user_id, msgId, int(splitDate[0]), int(splitDate[1]),
                                     int(splitDate[2]), int(sde[2]), idShift, isEM, typeShift, isMorning)
-        print(msgInfo)
         if msgInfo is not None:
             mydb.member_update_chatid('editMsgId', msgInfo["message_id"], user_id)
         return msgInfo

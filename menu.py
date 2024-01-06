@@ -698,6 +698,7 @@ class keyLib:
         return InlineKeyboardMarkup(inline_keyboard=res)
 
     def kbCreateMenuApproveShift(self=None, idShift=None, days=None, ability=0):
+        actionText='spare'
         ht = ''
         lkb = []
         for day in days:
@@ -709,8 +710,10 @@ class keyLib:
                 ht = f'{day[10]}-{day[11]}_2'
             elif int(day[3]) == 1:
                 ht = f'{day[10]}-{day[11]}_3'
+            if ability != 0:
+                actionText=f'btn_dayShift_{idShift}_{day[4]}_{day[6]}-{day[7]}-{day[8]}<->{ht}'
             lkb.append([InlineKeyboardButton(text=f'{day[6]}-{day[7]}-{day[8]}-<>{day[10]}-{day[11]}',
-                                             callback_data=f'btn_dayShift_{idShift}_{day[4]}_{day[6]}-{day[7]}-{day[8]}<->{ht}')])
+                                             callback_data=actionText)])
         lkb.append([InlineKeyboardButton(text='مشاهده جزئیات',
                                              callback_data='btn_shiftApprove_{}'.format(str(idShift)))])
         return InlineKeyboardMarkup(inline_keyboard=lkb)
