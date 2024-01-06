@@ -27,6 +27,14 @@ class HelperFunder:
     def __init__(self, op=0):
         self._op = op
 
+    def send_info_Developer(userID,bot):
+        bot.sendMessage(userID,'تولید کننده:مسعود رمضانی')
+        bot.sendMessage(userID,'شماره تماس:09153318140')
+        bot.sendMessage(userID,'پست الکترونیک:09153318140')
+        bot.sendMessage(userID,'توسعه دهنده:محمد رضا موسوی خورقی')
+        bot.sendMessage(userID,'شماره تماس:09153011131')
+        bot.sendMessage(userID,'پست الکترونیک:sir.mrm@gmail.com')
+
     def checkStatus(self, bot, mem: Membership, update=None):
         if mem.register_progress >= 10:
             if mem.verifyAdmin == 0 and mem.register_progress != 18:

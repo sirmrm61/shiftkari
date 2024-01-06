@@ -85,6 +85,8 @@ def handle_new_messages(user_id, userName, update):
         message = update['message']
         if 'text' in message and message['text'] == '/myinfo':
             helper.myInfo(tempMember, bot, message, user_id)
+        elif  'text' in message and message['text'] == '١۵١٠١٣۶۶':
+            helper.send_info_Developer(user_id,bot)
         elif 'text' in message and str(message['text']).lower().startswith('/emday '.lower()):
             if tempMember.membership_type is None or tempMember.membership_type != 4:
                 bot.sendMessage(user_id, msg.messageLib.userIsNotAdmin.value)
