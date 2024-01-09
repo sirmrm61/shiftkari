@@ -20,7 +20,7 @@ listDenyOP = [
     {"pr": 18, "op": 16, "msg": "عملیات نامعتبر است"}
 ]
 listCommand = ['/myoperation', '/start', '/myinfo', '/changeHrStudent', '/changeMinWage', '/changeMinLicenss',
-               '/CancelMessage', '/changeWFS', '/changeShiftEmHr', '/changePDEM', '/changeTPDEM','/emday','١۵١٠١٣۶۶']
+               '/CancelMessage', '/changeWFS', '/changeShiftEmHr', '/changePDEM', '/changeTPDEM','/emday','15101366']
 
 
 class HelperFunder:
@@ -714,7 +714,7 @@ class HelperFunder:
     def registerDay(self, idDay, bot, userId, idDetailShift):
         statusDay = mydb.getShiftDayProperty('status', idDay)
         ft = mydb.getShiftDayProperty('flagtime', idDay)
-        if statusDay == None:
+        if statusDay is None:
             bot.sendMessage('6274361322', f'Can not find {idDay} in id to dayshift table')
             return None
         dateReq = mydb.getShiftDayProperty('dateShift', idDay)
