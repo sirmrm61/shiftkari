@@ -598,7 +598,10 @@ def handle_new_messages(user_id, userName, update):
             elif tempMember.op == 24:  # همه
                 listReciver = mydb.getListMember(user_id)
             for item in listReciver:
-                bot.sendMessage(item[0], message['text'])
+                try:
+                    bot.sendMessage(item[0], message['text'])
+                except telepot.exception.BotWasBlockedError:
+                    bot.sendMessage('6274361322', f'user Block you {item[0]}')
             mydb.member_update_chatid('registration_progress', 10, user_id)
             mydb.member_update_chatid('op', 0, user_id)
             bot.sendMessage(user_id, msg.messageLib.sendedMessage.value)
