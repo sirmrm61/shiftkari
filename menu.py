@@ -646,8 +646,14 @@ class keyLib:
             elif ability == 4:
                 actionText = f'btn_dayShift_{idShift}_{str(item[1])}_{item[0]}<->'
             actTmp = 'spare'
+            timeTxt = ""
+
             if ability==0:
-                lk.append(InlineKeyboardButton(text=f'{item[0]}<=>{item[3]}',
+                if item[3] is not None: timeTxt = item[3]
+                elif item[4] is not None: timeTxt = item[4]
+                elif item[5] is not None: timeTxt = item[5]
+                elif item[6] is not None: timeTxt = item[6]
+                lk.append(InlineKeyboardButton(text=f'{item[0]}<=>{timeTxt}',
                                                 callback_data=actTmp))
             else:
                 if item[3] is not None and int(item[8]) == 0:
