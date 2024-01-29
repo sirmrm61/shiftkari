@@ -904,7 +904,7 @@ VALUES({idShift},\'{dateShift}\',\'{requster}\',0,{sendedForCreator},{idDetailSh
     def getListMember(self, sender, group=None):
         sqlQuery = ''
         if group is None:
-            sqlQuery = f"SELECT chat_id FROM botshiftkari.membership where not chat_id = '{sender}'"
+            sqlQuery = f"SELECT chat_id FROM botshiftkari.membership where not chat_id = '{sender}' and membership_type > 0"
         else:
             sqlQuery = f"SELECT chat_id FROM botshiftkari.membership where not chat_id = '{sender}'  and membership_type = {group}"
         mydb = self.connector()
