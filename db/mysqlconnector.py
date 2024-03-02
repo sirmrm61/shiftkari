@@ -692,6 +692,7 @@ class mysqlconnector:
                          mem.chat_id = shi.Creator where `progress` > '0'  and    `progress` < '3'  and 
                          `send` = 0 and  date_add(shi.dateRegiter,interval {0} HOUR)<now() and dateShift > \'{1}\''''.format(
             result[0], JalaliDate(datetime.datetime.now()))
+        print(sqlQuery)
         myCursor.execute(sqlQuery)
         result = myCursor.fetchall()
         return result
