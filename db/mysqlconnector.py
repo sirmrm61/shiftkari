@@ -717,8 +717,8 @@ class mysqlconnector:
         print(currenDate)
         sqlQuery = ''
         if creator is None:
-            sqlQuery = 'SELECT mem.chat_id,mem.id from botshiftkari.vw_student as mem where mem.del=0 ' \
-                       'and mem.verifyAdmin = 1 and (\'{currenDate}\' between start_date and end_date) '
+            sqlQuery = f'SELECT mem.chat_id,mem.id from botshiftkari.vw_student as mem where mem.del=0 ' \
+                       f'and mem.verifyAdmin = 1 and (\'{currenDate}\' between start_date and end_date) '
         else:
             sqlQuery = f'SELECT mem.chat_id,mem.id from botshiftkari.vw_student as mem where mem.del=0 ' \
                        f' and mem.verifyAdmin = 1 and (\'{currenDate}\' between start_date and end_date) and not mem.chat_id = \'{creator}\' '
