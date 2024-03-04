@@ -952,7 +952,7 @@ def handle_new_messages(user_id, userName, update):
                             #                           reply_markup=menu.keyLib.kbTypePharmacyTime(idShift=idShift))
                         else:
                             mydb.shift_update_by_id('pharmacyType', 2, idShift)
-                            msgInfo = helper.send_createShift(bot, user_id, idShift, 2, None)
+                            msgInfo = helper.send_createShift(bot, user_id, idShift, 2, None,0,0)
                     mydb.shift_update_by_id('messageID', msgInfo['message_id'], idShift)
                     mydb.member_update_chatid('lastShiftId', idShift, user_id)
                 else:
