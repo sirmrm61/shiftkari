@@ -365,6 +365,8 @@ class HelperFunder:
             students = mydb.get_all_student_idmeMember()  # 3 is tpe of student
             for shiftRow in shiftRows:
                 for st in students:
+                    if(st[0]==shiftRow[1]): 
+                        continue
                     days = mydb.getDayShiftForStudent(st[1], shiftRow[9])
                     bot.sendMessage(st[0], self.formatShiftMessage(shiftRow, 3),
                                     reply_markup=menu.keyLib.kbCreateMenuApproveShift(idShift=shiftRow[9], days=days,
