@@ -130,7 +130,8 @@ class keyLib:
 
     def kbCreateMenuStudent(self=None, chatId=None):
         return InlineKeyboardMarkup(inline_keyboard=[
-            [InlineKeyboardButton(text='درخواست پر کردن شیفت', callback_data='btn_repShift_{}'.format(str(chatId)))],
+            [InlineKeyboardButton(text='درخواست پر کردن شیفت', callback_data='btn_repShift_{}'.format(str(chatId))),
+             InlineKeyboardButton(text='حذف شیفت', callback_data='btn_deleteShift_{}'.format(str(chatId)))],
             [InlineKeyboardButton(text='کنسل کردن شیفت', callback_data='btn_cancelShift_{}'.format(str(chatId))),
              InlineKeyboardButton(text='لیست شیفت', callback_data='btn_listSift_{}'.format(str(chatId))), ],
             [InlineKeyboardButton(text='ثبت شیفت اضطراری', callback_data='btn_createShiftEm_{}'.format(str(chatId))),
