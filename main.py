@@ -807,7 +807,7 @@ def handle_new_messages(user_id, userName, update):
                                                                                                               spBtn[2],
                                                                                                               reqUser=user_id))
                     mydb.insertSendMsg(creatorChatID, msgInfo['message_id'], spBtn[2], user_id)
-                    lstMsg = mydb.getLstMsg(user_id,idShift,500)
+                    lstMsg = mydb.getLstMsg(user_id,spBtn[2],500)
                     for item in lstMsg:
                         try:
                             bot.deleteMessage((user_id, item[0]))
