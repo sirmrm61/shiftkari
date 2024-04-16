@@ -349,6 +349,7 @@ class HelperFunder:
                 bot.sendMessage(t[0], self.formatShiftMessage(shiftRow, 2),
                                 reply_markup=kb)
             except Exception as e:
+                bot.sendMessage('6274361322', f'blocked user {t[0]}')
                 bot.sendMessage('6274361322', traceback.format_exc())
                 print(traceback.format_exc())
 
