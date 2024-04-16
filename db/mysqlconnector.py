@@ -449,7 +449,7 @@ class mysqlconnector:
         mydb = self.connector()
         mydb.autocommit = True
         myCursor = mydb.cursor()
-        sqlQuery = '''SELECT concat(mem.name,mem.last_name) as fullname,creator,
+        sqlQuery = '''SELECT concat(mem.name,' ',mem.last_name) as fullname,creator,
                         DateShift,startTime,endTime,wage,pharmacyAddress,progress,approver,shi.idshift,
                         shi.dateEndShift
                         FROM botshiftkari.shift shi inner join botshiftkari.membership mem on
@@ -463,7 +463,7 @@ class mysqlconnector:
         mydb = self.connector()
         mydb.autocommit = True
         myCursor = mydb.cursor()
-        sqlQuery = '''SELECT concat(mem.name,mem.last_name) as fullname,creator,
+        sqlQuery = '''SELECT concat(mem.name,' ',mem.last_name)as fullname,creator,
                          DateShift,startTime,endTime,wage,pharmacyAddress,progress,approver,shi.idshift,
                          shi.dateEndShift
                          FROM botshiftkari.shift shi inner join botshiftkari.membership mem on
@@ -477,7 +477,7 @@ class mysqlconnector:
         mydb = self.connector()
         mydb.autocommit = True
         myCursor = mydb.cursor()
-        sqlQuery = '''SELECT concat(mem.name,mem.last_name) as fullname,creator,
+        sqlQuery = '''SELECT concat(mem.name,' ',mem.last_name) as fullname,creator,
                         DateShift,startTime,endTime,wage,pharmacyAddress,progress,approver,shi.idshift,
                         shi.dateEndShift,shi.wfStudent,shi.dateRegiter
                         FROM botshiftkari.shift shi inner join botshiftkari.membership mem on
@@ -491,7 +491,7 @@ class mysqlconnector:
         mydb = self.connector()
         mydb.autocommit = True
         myCursor = mydb.cursor()
-        sqlQuery = '''SELECT concat(mem.name,mem.last_name) as fullname,creator,
+        sqlQuery = '''SELECT concat(mem.name,' ',mem.last_name) as fullname,creator,
                         DateShift,startTime,endTime,wage,pharmacyAddress,progress,approver,shi.idshift,
                         shi.dateEndShift,shi.wfStudent,shi.dateRegiter
                         FROM botshiftkari.shift shi inner join botshiftkari.membership mem on
@@ -517,7 +517,7 @@ class mysqlconnector:
         mydb = self.connector()
         mydb.autocommit = True
         myCursor = mydb.cursor()
-        sqlQuery = '''SELECT concat(mem.name,mem.last_name) as fullname,creator,
+        sqlQuery = '''SELECT concat(mem.name,' ',mem.last_name) as fullname,creator,
                         DateShift,startTime,endTime,wage,pharmacyAddress,progress,approver,shi.idshift,
                         shi.dateEndShift,shi.wfStudent,shi.dateRegiter
                         FROM botshiftkari.shift shi inner join botshiftkari.membership mem on
@@ -532,7 +532,7 @@ class mysqlconnector:
         myCursor = mydb.cursor()
         sqlQuery = None
         if type is None:
-            sqlQuery = '''select concat(mem.name,mem.last_name) as fullname,
+            sqlQuery = '''select concat(mem.name,' ',mem.last_name) as fullname,
                             case 
                             when mem.membership_type = 1 then 'موسس'
                             when mem.membership_type = 2 then 'مسئول فنی'
@@ -594,7 +594,7 @@ class mysqlconnector:
     def get_all_shift_by_approver(self=None, creator='0', dateShift=''):
         mydb = self.connector()
         myCursor = mydb.cursor()
-        sqlQuery = '''SELECT concat(mem.name,mem.last_name) as fullname,creator,
+        sqlQuery = '''SELECT concat(mem.name,' ',mem.last_name) as fullname,creator,
                         DateShift,startTime,endTime,wage,pharmacyAddress,progress,approver,shi.idshift,
                         shi.dateEndShift,shi.wfStudent,shi.dateRegiter
                         FROM botshiftkari.shift shi inner join botshiftkari.membership mem on
@@ -608,7 +608,7 @@ class mysqlconnector:
         mydb = self.connector()
         mydb.autocommit = True
         myCursor = mydb.cursor()
-        sqlQuery = '''SELECT concat(mem.name,mem.last_name) as fullname,creator,
+        sqlQuery = '''SELECT concat(mem.name,' ',mem.last_name) as fullname,creator,
                         DateShift,startTime,endTime,wage,pharmacyAddress,progress,approver,shi.idshift,
                         shi.dateEndShift,shi.wfStudent,shi.dateRegiter
                         FROM botshiftkari.shift shi inner join botshiftkari.membership mem on
@@ -1130,7 +1130,7 @@ VALUES({idShift},\'{dateShift}\',\'{requster}\',0,{sendedForCreator},{idDetailSh
         return result
 
     def searchShift(self, searchVerb):
-        sqlQuery = f'''SELECT concat(mem.name,mem.last_name) as fullname,creator,
+        sqlQuery = f'''SELECT concat(mem.name,' ',mem.last_name) as fullname,creator,
                         DateShift,startTime,endTime,wage,pharmacyAddress,progress,approver,shi.idshift,
                         shi.dateEndShift,shi.wfStudent,shi.dateRegiter
                         FROM botshiftkari.shift shi inner join botshiftkari.membership mem on
