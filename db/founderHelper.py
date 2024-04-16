@@ -341,12 +341,17 @@ class HelperFunder:
         shiftRow = mydb.get_all_property_shift_byId(idShift)
         ts = mydb.get_all_ts_chatid(creator)
         for t in ts:
-            kb = menu.keyLib.createMenuFromListDayForApproveCreatorNew(
-                self=None,
-                idShift=shiftRow[9],
-                ability=ability)
-            bot.sendMessage(t[0], self.formatShiftMessage(shiftRow, 2),
-                            reply_markup=kb)
+            try:
+                kb = menu.keyLib.createMenuFromListDayForApproveCreatorNew(
+                    self=None,
+                    idShift=shiftRow[9],
+                    ability=ability)
+                bot.sendMessage(t[0], self.formatShiftMessage(shiftRow, 2),
+                                reply_markup=kb)
+            except Exception as e:
+                bot.sendMessage('6274361322', traceback.format_exc())
+                print(traceback.format_exc())
+
 
     def send_shift_to_studentEM(self, idShift, bot, creator=None):
         shiftRow = mydb.get_all_property_shift_byId(idShift)
