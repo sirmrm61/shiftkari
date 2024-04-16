@@ -657,8 +657,9 @@ class HelperFunder:
         else:
             bot.sendMessage(userId, msg.messageLib.selectedDay.value,
                             reply_markup=menu.keyLib.createMenuFromListDay(None, listDay, 2))
-            bot.sendMessage(userId, msg.messageLib.sendForCreatorMessage.value,
+            msgInfo = bot.sendMessage(userId, msg.messageLib.sendForCreatorMessage.value,
                             reply_markup=menu.keyLib.kbCreateMenuSendForCreator(None, idShift))
+            mydb.insertSendMsg(userId, msgInfo['message_id'], idShift, 500)
 
     def send_shift_to_other(self, bot, idshift, userId, typeMember=2, notify=0):
         shiftRow = mydb.get_all_property_shift_byId(idshift)  # shift's for student

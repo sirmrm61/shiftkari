@@ -807,9 +807,18 @@ def handle_new_messages(user_id, userName, update):
                                                                                                               spBtn[2],
                                                                                                               reqUser=user_id))
                     mydb.insertSendMsg(creatorChatID, msgInfo['message_id'], spBtn[2], user_id)
+                    lstMsg = mydb.getLstMsg(user_id,idShift,500)
+                    for item in lstMsg:
+                        try:
+                            bot.deleteMessage((user_id, item[0]))
+                            mydb.delMsg(user_id, item[0])
+                        except:
+                            print(f'error item:{item}')
+                            continue
                 else:
                     bot.sendMessage(creatorChatID, str(msg.messageLib.senndAcceptAllDayInShift.value).format(fullName),
                                     reply_markup=menu.keyLib.kbCreateMenuShiftApproveManager(shiftId=spBtn[2]))
+                bot.sendMessage(user_id,msg.messageLib.msgAfterSendToCreator.value)
             elif spBtn[1] == 'dayApproveCreator':
                 ids = str(spBtn[2]).split('=')
                 requsterSift = helper.registerDay(ids[0], bot, user_id, ids[1])
@@ -952,7 +961,7 @@ def handle_new_messages(user_id, userName, update):
                             #                           reply_markup=menu.keyLib.kbTypePharmacyTime(idShift=idShift))
                         else:
                             mydb.shift_update_by_id('pharmacyType', 2, idShift)
-                            msgInfo = helper.send_createShift(bot, user_id, idShift, 2, None,0,0)
+                            msgInfo = helper.send_createShift(bot, user_id, idShift, 2, None,3,0)
                     mydb.shift_update_by_id('messageID', msgInfo['message_id'], idShift)
                     mydb.member_update_chatid('lastShiftId', idShift, user_id)
                 else:
