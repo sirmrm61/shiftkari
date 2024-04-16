@@ -661,8 +661,9 @@ class HelperFunder:
         if len(listDay) == 0:
             bot.sendMessage(userId, msg.messageLib.emptSelectedDay.value)
         else:
-            bot.sendMessage(userId, msg.messageLib.selectedDay.value,
+            msgInfo = bot.sendMessage(userId, msg.messageLib.selectedDay.value,
                             reply_markup=menu.keyLib.createMenuFromListDay(None, listDay, 2))
+            mydb.insertSendMsg(userId, msgInfo['message_id'], idShift, 500)
             msgInfo = bot.sendMessage(userId, msg.messageLib.sendForCreatorMessage.value,
                             reply_markup=menu.keyLib.kbCreateMenuSendForCreator(None, idShift))
             mydb.insertSendMsg(userId, msgInfo['message_id'], idShift, 500)
